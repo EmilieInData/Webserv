@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/17 16:22:44 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/18 19:11:41 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@
 #define GREEN  	"\033[38;5;194m"
 #define PURPLE  "\033[38;5;62m"
 
-bool	cleaning(char c);
-void	do_parsing(std::string line);
-void	print_tokens(std::vector<std::string> buffer);
+bool	    cleaning(char c);
+std::string	firstToken(std::string& line);
+void	    print_tokens(std::vector<std::string> buffer);
+void	    doParsing(std::string line, std::vector<std::string>& buffer);
 
 #endif
