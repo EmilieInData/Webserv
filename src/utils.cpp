@@ -1,26 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/20 15:17:05 by cle-tron         ###   ########.fr       */
+/*   Created: 2025/06/18 16:55:07 by cle-tron          #+#    #+#             */
+/*   Updated: 2025/06/18 17:31:37 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
-#include "HttpParserTester.hpp"
-
-int	main() {
-
-	HttpRequest	test = HttpRequest();
+vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {
 	
-//	HttpParserTester::parseHttpMessageTest();
 
 
 
 
-	return 0;
 }
+

@@ -1,7 +1,7 @@
 webserv
 
-*.swp
-
+**/.swp
+**/.*
 
 # Prerequisites
 *.d

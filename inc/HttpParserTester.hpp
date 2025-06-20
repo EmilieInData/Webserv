@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   HttpParserTester.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/20 15:17:05 by cle-tron         ###   ########.fr       */
+/*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
+/*   Updated: 2025/06/20 15:20:00 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
-#include "HttpParserTester.hpp"
+#ifndef	HTTPARSERTESTER_HPP
+#define	HTTPARSERTESTER_HPP
 
-int	main() {
+class	HttpParserTester	{
+private:
+	HttpParserTester();
+	HttpParserTester( HttpParserTester const & src );
+	~HttpParserTester();
 
-	HttpRequest	test = HttpRequest();
-	
-//	HttpParserTester::parseHttpMessageTest();
+	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
+	static void	crWithoutLf();
 
+public:
+	static void	parseHttpMessageTest();
 
+};
 
-	return 0;
-}
+#endif

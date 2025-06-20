@@ -12,12 +12,17 @@ MKDIR		= mkdir -p
 INC_DIR		= inc/
 SRC_DIR		= src/
 OBJ_DIR		= obj/
+TEST_DIR	= tests/
 
-SRC_FILES	= main HttpRequest
+SRC_FILES	= main HttpRequest HttpParser
+TEST_FILES	= HttpParserTester
 
-SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC_FILES)))
-OBJS		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
-DEPS		= $(addprefix $(OBJ_DIR), $(addsuffix .d, $(SRC_FILES)))
+ALL_FILES	+= $(SRC_FILES)
+ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
+
+SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(ALL_FILES)))
+OBJS		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(ALL_FILES)))
+DEPS		= $(addprefix $(OBJ_DIR), $(addsuffix .d, $(ALL_FILES)))
 
 
 
