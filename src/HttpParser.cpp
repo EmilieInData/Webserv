@@ -6,13 +6,14 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/21 12:13:13 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/21 18:45:55 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
 #include <iostream>
 #include <cctype>
+#include <cstring>
 
 std::vector<std::string>	HttpParser::split( std::string const & str, char const delimiter ) {
 
@@ -81,23 +82,26 @@ void	HttpParser::parseHttpMessage( std::string const & message ) {
 
 	std::vector<std::string> lines = crlfSplit( message );
 
-	if ( !lines.back().empty()) throw std::invalid_argument( 400 );
+	if ( lines.empty() || !lines.back().empty()) throw std::invalid_argument( S_400 );
 
 	std::vector<std::string>::iterator	it;
 	std::vector<std::string>::iterator	ite = lines.end();
 	std::string::const_iterator			s_it, s_ite;
 
-	int header = 0;
+	int header = 0, host = 0;
 
 	for ( it = lines.begin(); it != ite; ++it ) {
 		if ( header == 0 && (*it).empty()) continue;
 		if ( header > 0 && !(*it).empty()) 
-			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( 400 );
+			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( S_400 );
 		s_ite = (*it).end();
 		for ( s_it = (*it).begin(); s_it != s_ite; ++s_it )
-			if ( *s_it == '\r' ) throw std::invalid_argument( 400 );
+			if ( *s_it == '\r' ) throw std::invalid_argument( S_400 );
+		if ( strncmp( (*it).c_str(), "Host:", 5 ) == 0 )
+			host++;
 		header++;
 	}
+	if ( host != 1 ) throw std::invalid_argument( S_400 );
 //	for ( it = lines.begin(); it != ite; ++it ) 
 //		std::cout << *it << "|\n";
 }
@@ -109,21 +113,23 @@ std::vector<std::string>	HttpParser::parseRequestLine( std::string const & line 
 
 	for ( s_it = line.begin(); s_it != s_ite; ++s_it )
 		if ( *s_it == ' ' ) spaces++;
-	if ( spaces != 2 ) throw std::invalid_argument( 400 );
+	if ( spaces != 2 ) throw std::invalid_argument( S_400 );
 
 	std::vector<std::string>	tokens = split( line, ' ' );
 	
-	if ( tokens.length() != 3 ) throw std::invalid_argument( 400 );
+	if ( tokens.size() != 3 ) throw std::invalid_argument( S_400 );
 
-///hacer los tests !!!	
+	if ( tokens[1].length() > 8000 ) throw std::invalid_argument( S_414 );
+
+	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( S_400 );
 
 
 
-	std::vector<std::string>::iterator	it;
+/*std::vector<std::string>::iterator	it;
 	std::vector<std::string>::iterator	ite = tokens.end();
 
 	for ( it = tokens.begin(); it != ite; ++it ) 
-		std::cout << *it << "|";
+		std::cout << *it << "|";*/
 	return tokens;
 }
 
