@@ -6,12 +6,17 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/20 14:48:57 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/21 12:11:21 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef	HTTPARSER_HPP
 #define	HTTPARSER_HPP
+
+#define 400 "400 Bad Request"
+#define 414 "URI Too Long"
+#define 501 "Not Implemented"
+
 
 #include <string>
 #include <vector>

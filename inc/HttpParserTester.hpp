@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/20 15:20:00 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/21 12:11:21 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,12 @@ private:
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
 	static void	crWithoutLf();
+	static void	emptyLinesBeforeReqLine();
+	static void	isspaceBeforeHeader();
 
 public:
 	static void	parseHttpMessageTest();
-
+	static void	parseRequestLineTest();
 };
 
 #endif
