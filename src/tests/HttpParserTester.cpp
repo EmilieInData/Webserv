@@ -6,12 +6,13 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/21 18:41:50 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 14:40:10 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParserTester.hpp"
 #include "HttpParser.hpp"
+#include "RequestLine.hpp"
 #include <iostream>
 #include <string>
 
@@ -98,11 +99,6 @@ void	HttpParserTester::shouldHaveOneHost() {
 	}
 }
 
-
-
-
-
-
 void	HttpParserTester::parseHttpMessageTest() {
 	
 	std::cout << "_____________Http message tests_____________" << std::endl;
@@ -122,7 +118,8 @@ void	HttpParserTester::parseHttpMessageTest() {
 void	HttpParserTester::shouldHaveTwoSpaces() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		HttpParser::parseRequestLine( req_line );
+		RequestLine * req = HttpParser::parseRequestLine( req_line );
+		delete req;
 		std::cout << "Valid reqline:    two spaces accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  two spaces don't accepted / Test FAIL" << std::endl;
@@ -146,8 +143,9 @@ void	HttpParserTester::shouldHaveTwoSpaces() {
 void	HttpParserTester::shouldHaveThreeTokens() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		HttpParser::parseRequestLine( req_line );
+		RequestLine * req = HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid req-line:   three tokens accepted / Test OK" << std::endl;
+		delete req;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  three tokens don't accepted / Test FAIL" << std::endl;
 	}
@@ -164,7 +162,6 @@ void	HttpParserTester::uriTooLong() {
 	try {
 		std::string	uri( 8001, 'x' );
 		std::string req_line( "GET " + uri + " HTTP/1.1" );
-	//	std::cout << req_line << std::endl;
 		HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid req-line:   8001 octects accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
@@ -173,8 +170,8 @@ void	HttpParserTester::uriTooLong() {
 
 	try {
 		std::string	uri( 8000, 'x' );
-		std::string req_line( "GET " + uri + " HTTP/1.1" );
-		HttpParser::parseRequestLine( req_line );
+		RequestLine * req = HttpParser::parseRequestLine( "GET " + uri + " HTTP/1.1" );
+		delete req;
 		std::cout << "Valid req-line:   8000 octects accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ": 8000 octets don't accepted / Test FAIL" << std::endl;
@@ -184,8 +181,9 @@ void	HttpParserTester::uriTooLong() {
 void	HttpParserTester::httpVersion() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		HttpParser::parseRequestLine( req_line );
+		RequestLine * req = HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid http-vers:  HTTP/1.1 version accepted / Test OK" << std::endl;
+		delete req;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  HTTP/1.1 version don't accepted / Test FAIL" << std::endl;
 	}
@@ -218,6 +216,9 @@ void	HttpParserTester::parseRequestLineTest() {
 	shouldHaveThreeTokens();
 	uriTooLong();
 	httpVersion();
+ 
+	std::cout << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+
 }
 
 

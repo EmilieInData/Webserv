@@ -14,7 +14,7 @@ SRC_DIR		= src/
 OBJ_DIR		= obj/
 TEST_DIR	= tests/
 
-SRC_FILES	= main HttpRequest HttpParser
+SRC_FILES	= main HttpRequest HttpParser RequestLine
 TEST_FILES	= HttpParserTester
 
 ALL_FILES	+= $(SRC_FILES)

@@ -6,11 +6,12 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/21 18:45:55 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 14:30:09 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
+#include "RequestLine.hpp"
 #include <iostream>
 #include <cctype>
 #include <cstring>
@@ -78,7 +79,7 @@ std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 	return tokens;
 }
 
-void	HttpParser::parseHttpMessage( std::string const & message ) {
+std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message ) {
 
 	std::vector<std::string> lines = crlfSplit( message );
 
@@ -102,11 +103,11 @@ void	HttpParser::parseHttpMessage( std::string const & message ) {
 		header++;
 	}
 	if ( host != 1 ) throw std::invalid_argument( S_400 );
-//	for ( it = lines.begin(); it != ite; ++it ) 
-//		std::cout << *it << "|\n";
+
+	return lines;
 }
 
-std::vector<std::string>	HttpParser::parseRequestLine( std::string const & line ) {
+RequestLine *	HttpParser::parseRequestLine( std::string const & line ) {
 	
 	std::string::const_iterator	s_it, s_ite = line.end();
 	int							spaces = 0;
@@ -123,16 +124,8 @@ std::vector<std::string>	HttpParser::parseRequestLine( std::string const & line 
 
 	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( S_400 );
 
-
-
-/*std::vector<std::string>::iterator	it;
-	std::vector<std::string>::iterator	ite = tokens.end();
-
-	for ( it = tokens.begin(); it != ite; ++it ) 
-		std::cout << *it << "|";*/
-	return tokens;
+	return new RequestLine( tokens );
 }
-
 
 
 
