@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 14:30:09 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:28:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 	return lines;
 }
 
-RequestLine *	HttpParser::parseRequestLine( std::string const & line ) {
+RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	
 	std::string::const_iterator	s_it, s_ite = line.end();
 	int							spaces = 0;
@@ -124,9 +124,27 @@ RequestLine *	HttpParser::parseRequestLine( std::string const & line ) {
 
 	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( S_400 );
 
-	return new RequestLine( tokens );
+	return	 RequestLine( tokens );
 }
 
+std::string	HttpParser::parsePath( std::string const & uri ) {
+	
+	std::size_t	found = uri.find( "?" );
 
+	if ( found != std::string::npos )
+		return uri.substr( 0, found );
+	else
+		return uri;
+}
 
+std::string	HttpParser::parseQuery( std::string const & uri ) {
+
+	std::size_t	found = uri.find( "?" );
+
+	if ( found != std::string::npos )
+		return uri.substr( found + 1, uri.length());
+	else
+		return "";
+
+}
 

@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 14:28:58 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:32:35 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ public:
 	
 	std::string	getHttpMethod() const;
 	std::string	getRequestUri() const;
+	std::string	getPath() const;
+	std::string	getQuery() const;
 	std::string	getHttpVersion() const;
 };
 

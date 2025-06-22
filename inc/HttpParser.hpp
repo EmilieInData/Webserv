@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 14:26:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:10:21 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,11 @@ public:
 	static std::vector<std::string>	split( std::string const & str, char const delimiter );
 	static std::vector<std::string>	crlfSplit( std::string const & str );
 	static std::vector<std::string>	isspaceSplit( std::string const & str );
-	static RequestLine *			parseRequestLine( std::string const & line );
+
+	static RequestLine				parseRequestLine( std::string const & line );
+	static std::string				parsePath( std::string const & uri );
+	static std::string				parseQuery( std::string const & uri );
+
 	static std::vector<std::string>	parseHttpMessage( std::string const & str );
 };
 

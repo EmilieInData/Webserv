@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 13:38:09 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 14:15:42 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:13:24 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ class	RequestLine	{
 private:
 	std::string	method;
 	std::string	uri;
+	std::string	path;
+	std::string	query;
 	std::string	version;
 	
 public:
@@ -32,6 +34,8 @@ public:
 	
 	std::string	getMethod() const;
 	std::string	getUri() const;
+	std::string	getPath() const;
+	std::string getQuery() const;
 	std::string	getVersion() const;
 };
 

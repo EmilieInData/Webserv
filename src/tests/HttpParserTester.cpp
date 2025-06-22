@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 14:40:10 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:21:37 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,7 @@ void	HttpParserTester::parseHttpMessageTest() {
 void	HttpParserTester::shouldHaveTwoSpaces() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		RequestLine * req = HttpParser::parseRequestLine( req_line );
-		delete req;
+		HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid reqline:    two spaces accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  two spaces don't accepted / Test FAIL" << std::endl;
@@ -143,9 +142,8 @@ void	HttpParserTester::shouldHaveTwoSpaces() {
 void	HttpParserTester::shouldHaveThreeTokens() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		RequestLine * req = HttpParser::parseRequestLine( req_line );
+		HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid req-line:   three tokens accepted / Test OK" << std::endl;
-		delete req;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  three tokens don't accepted / Test FAIL" << std::endl;
 	}
@@ -170,8 +168,7 @@ void	HttpParserTester::uriTooLong() {
 
 	try {
 		std::string	uri( 8000, 'x' );
-		RequestLine * req = HttpParser::parseRequestLine( "GET " + uri + " HTTP/1.1" );
-		delete req;
+		HttpParser::parseRequestLine( "GET " + uri + " HTTP/1.1" );
 		std::cout << "Valid req-line:   8000 octects accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ": 8000 octets don't accepted / Test FAIL" << std::endl;
@@ -181,9 +178,8 @@ void	HttpParserTester::uriTooLong() {
 void	HttpParserTester::httpVersion() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
-		RequestLine * req = HttpParser::parseRequestLine( req_line );
+		HttpParser::parseRequestLine( req_line );
 		std::cout << "Valid http-vers:  HTTP/1.1 version accepted / Test OK" << std::endl;
-		delete req;
 	} catch( std::invalid_argument e ) {
 		std::cout << e.what() << ":  HTTP/1.1 version don't accepted / Test FAIL" << std::endl;
 	}

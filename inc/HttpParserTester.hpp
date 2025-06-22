@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/21 18:39:19 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:30:28 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ private:
 	static void shouldHaveThreeTokens();
 	static void	uriTooLong();
 	static void httpVersion();
+
 
 	
 public:
