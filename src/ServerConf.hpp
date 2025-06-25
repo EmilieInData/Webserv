@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/24 21:05:48 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:18:08 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,20 @@ class ServerConf
 		unsigned int						getBodySize() const;
 		std::string							getReturnDirective() const;
 		std::map<unsigned int, std::string>	getErrorPage() const;
+
+		bool	checkFlag(std::string const& value);
 		
-		void	fillListens(std::vector<std::string>::iterator it);
-		// void	fillServerName(std::vector<std::string>& value);
-		// void	fillAutoIndex(std::vector<std::string>& value);
-		// void	fillRoot(std::vector<std::string>& value);
-		// void	fillIndex(std::vector<std::string>& value);
-		// void	fillBodySize(std::vector<std::string>& value);
-		// void	fillReturnDirectives(std::vector<std::string>& value);
-		// void	fillErrorPage(std::vector<std::string>& value);
-		// void	fillLocations(std::vector<std::string>& value);
-	
+		size_t	fillListens(std::vector<std::string>& buffer, size_t i);
+		size_t	fillServerName(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillErrorPage(std::vector<std::string>& buffer, size_t i);
+		// size_t	fillLocations(std::vector<std::string>& buffer, size_t i);
+
 	protected:
-		//mettre une valeur par defaut quand je cree la class avec une fonction	
 		bool    							autoindex;
 		std::string							root;
 		std::string							index;
@@ -60,8 +61,10 @@ class ServerConf
 		
 		//no in location
 		std::vector<listen>					listens;
-		std::string							serverName; //put to default if no exist
+		std::vector<std::string>			serverName;
 		std::map<std::string, LocationConf>	locations;
+
+		std::vector<std::string>			flag;
 };
 
 #endif

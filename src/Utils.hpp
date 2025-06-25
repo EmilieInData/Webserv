@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/24 18:54:25 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:17:02 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -28,5 +29,18 @@
 #define PINK    "\033[38;5;207m"
 #define GREEN  	"\033[38;5;194m"
 #define PURPLE  "\033[38;5;62m"
+
+//listen
+bool		isInt(std::string const& value);
+bool		isIp(std::string const& value);
+bool		isSocket(std::string const& value);
+int			strToInt(std::string const& value);
+bool		checkIpAddress(std::string const& value);
+bool		checkSocketAddress(std::string const& value);
+std::string	socketToIp(std::string const& value);
+int			socketToPort(std::string const& value);
+
+//server_name
+
 
 #endif

@@ -1,0 +1,10 @@
+
+//verifier le bon nombre d'arg et le ; a la fin
+//verifier si le type des args est correct
+//parser/transformer les args
+//checker le flag si l'arg existe deja ou non et l'ajouter
+//checker les doublons de ligne dans le fichier de config
+//ajouter aux attributs de la classe associees
+//checker si l'arg est valide (port pas ferme, fichier existants ...) ??
+
+//gerer les changements de bloc server et location en changeant leur iterateurs aussi

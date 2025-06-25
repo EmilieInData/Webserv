@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/24 21:15:48 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/25 19:21:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,21 +136,22 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		throw std::invalid_argument(" Parsing error, miss '{' after 'server' to opening the block\n");
 	checkStructure(buffer); //parenthesis well closed, blocks well positionned
 	
-	//ServerConf	S;
-	servers.push_back(ServerConf());
+	servers.push_back(ServerConf());//creer le premier bloc server dans le contener
 	std::vector<ServerConf>::iterator itServer;
 	itServer = servers.begin();
-	std::vector<std::string>::iterator itBuf;
+	
 	while(i < buffer.size())
 	{
-		itBuf = buffer.begin() + i;
-		if (buffer[i] == "listen")
+		if (buffer[i] == "listen") // NO IN LOCATION
 		{
-			itServer->fillListens(itBuf);
-			i++; //pour quitter l'arg
+			i = itServer->fillListens(buffer, i + 1); //I quit args & ';' done here
+			continue;
 		}
-		// else if (buffer[i] == "server_name")
-			
+		else if (buffer[i] == "server_name") //NO IN LOCATION
+		{
+			i = itServer->fillServerName(buffer, i + 1);
+			continue;
+		}	
 		// else if (buffer[i] == "autoindex")
 
 		// else if (buffer[i] == "root")
@@ -169,7 +170,8 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		// 	i++;
 		// else if (buffer[i] == "server")
 		// 	//creer un nouveau server dans le vector et changer l'it de position
-		if (buffer[i] == ";" || buffer[i] == "{" || buffer[i] == "}")
+		//if (buffer[i] == ";" || buffer[i] == "{" || buffer[i] == "}")
+		if (buffer[i] == "{" || buffer[i] == "}")
 			i++;
 		else
 			throw std::invalid_argument(" Parsing error, invalid directives\n");

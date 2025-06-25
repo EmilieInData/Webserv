@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/24 21:10:48 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/25 13:09:01 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ class LocationConf
 
 		std::string               			cgiPass; // tjr ds un bloc location
 		std::vector<std::string>    		allowedMethods; // default= GET POST
+
+		std::vector<std::string>			flag;
 };
 
 #endif
