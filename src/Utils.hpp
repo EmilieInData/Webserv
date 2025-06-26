@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/25 19:17:02 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/26 17:46:05 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ std::string	socketToIp(std::string const& value);
 int			socketToPort(std::string const& value);
 
 //server_name
-
+bool	checkDns(std::vector<std::string>& tmp);
+bool	checkLabel(std::string const& str);
 
 #endif

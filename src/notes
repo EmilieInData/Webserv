@@ -1,4 +1,4 @@
-
+//passer le premier arg a la fonction buffer[i + 1]
 //verifier le bon nombre d'arg et le ; a la fin
 //verifier si le type des args est correct
 //parser/transformer les args
@@ -8,3 +8,8 @@
 //checker si l'arg est valide (port pas ferme, fichier existants ...) ??
 
 //gerer les changements de bloc server et location en changeant leur iterateurs aussi
+
+
+//--> TO DO
+
+//gerer les accolades colles {}

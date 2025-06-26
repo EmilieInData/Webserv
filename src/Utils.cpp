@@ -6,11 +6,13 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/25 18:24:19 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:13:10 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
+
+// >> listen
 
 bool	isInt(std::string const& value)
 {
@@ -52,7 +54,8 @@ bool	isSocket(std::string const& value)
 		if (value[i] == ':')
 		{
 			if (!value[i + 1] || value[i + 1] == '.' || value[i + 1] == ':' || flag != 3)
-				throw std::invalid_argument(" Parsing error, 'listen' socket address is not correct\n");
+				throw std::invalid_argument(" Parsing error, 'listen' socket"
+					" address is not correct\n");
 		}
 	}
 	return true;
@@ -151,3 +154,70 @@ int			socketToPort(std::string const& value)
 	int num = strToInt(str);
 	return num;
 }
+
+// >> server_name
+
+bool	checkDns(std::vector<std::string>& tmp)
+{
+	for (size_t i = 0; i < tmp.size(); i++)
+	{
+		for (size_t j = 0; j < tmp[i].length(); j++)
+		{
+			if ((tmp[i][j] >= '0' && tmp[i][j] <= '9') || (tmp[i][j] >= 'a' && tmp[i][j] <= 'z')
+				|| (tmp[i][j] >= 'A' && tmp[i][j] <= 'Z') || tmp[i][j] == '.' || tmp[i][j] == '-')
+				continue;
+			return false;
+		}
+		if (!checkLabel(tmp[i]))
+			return false;
+	}
+	return true;
+}
+
+bool	checkLabel(std::string const& str)
+{
+	std::vector<std::string>	tmp;
+	
+	if (str.length() > 255)
+		throw std::invalid_argument(" Parsing error, 'server_name' arguments"
+			" may not exceed 255 characters\n");
+	int j = 0;
+	for (size_t i = 0; i < str.length(); i++)//cutted in label in a vector
+	{
+		if (str[i] == '.')
+		{
+			if (i == 0 || i == str.length() - 1)
+				throw std::invalid_argument(" Parsing error, 'server_name' arguments"
+					" cannot begin or end by '.'\n");
+			if(str[i + 1] && str[i + 1] == '.')
+				throw std::invalid_argument(" Parsing error, 'server_name' arguments"
+					" cannot have two consecutive '.'\n");
+			tmp.push_back(str.substr(j, i - j));
+			j = i + 1;
+		}
+	}
+	if (tmp.empty())
+		j = 0;
+	tmp.push_back(str.substr(j));
+	for (size_t i = 0; i < tmp.size(); i++)//checking labels
+	{
+		if (tmp[i].length() > 63)
+			throw std::invalid_argument(" Parsing error, 'server_name' argument's"
+				" labels may not exceed 63 characters\n");
+		if (tmp[i][0] == '-' || tmp[i][tmp[i].length() - 1] == '-')
+			throw std::invalid_argument(" Parsing error, 'server_name' argument's"
+				" labels cannot begin or end by '-'\n");
+	}
+	return true;
+}
+
+// www.example.com
+// www est un label, example est un autre label, com est un autre label
+
+// Chaque label doit respecter les règles DNS:
+// Ne contenir que des lettres, chiffres et tirets
+// Ne pas commencer ni finir par un tiret
+// Avoir une longueur entre 1 et 63 caractères
+// Longueur totale du nom ≤ 255 caractères.
+
+// >> ?? 

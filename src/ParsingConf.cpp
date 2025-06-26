@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/25 19:21:30 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:32:45 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ ParsingConf::ParsingConf() {}
 
 ParsingConf::~ParsingConf() {}
 
-void	ParsingConf::print_tokens(std::vector<std::string> buffer) const
+void	ParsingConf::print_tokens(std::vector<std::string>& buffer)
 {
 	for (size_t i = 0; i < buffer.size(); i++)
 		std::cout << BLUE << buffer[i] << std::endl;
@@ -106,7 +106,7 @@ void	ParsingConf::doParsing(std::string line, std::vector<std::string>& buffer)
 	line.erase(std::remove_if(line.begin(), line.end(), cleaning),line.end());
 	for (size_t i = 0; i < line.length(); i++)
 	{
-		if (line[i] == '#' || (line[i] == '/' && line[i + 1] && line[i + 1] == '/'))
+		if (line[i] == '#')
 		{
 			line = line.substr(0, i); //enlever les commentaires
 			break;
@@ -140,7 +140,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 	std::vector<ServerConf>::iterator itServer;
 	itServer = servers.begin();
 	
-	while(i < buffer.size())
+	while(i < buffer.size()) //do a switch case ou un array(bonusCPP) pour que ce soit plus clean
 	{
 		if (buffer[i] == "listen") // NO IN LOCATION
 		{
@@ -152,7 +152,11 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			i = itServer->fillServerName(buffer, i + 1);
 			continue;
 		}	
-		// else if (buffer[i] == "autoindex")
+		else if (buffer[i] == "autoindex")
+		{
+			i = itServer->fillAutoIndex(buffer, i + 1);
+			continue;
+		}
 
 		// else if (buffer[i] == "root")
 

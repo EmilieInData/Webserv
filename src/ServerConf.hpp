@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/25 19:18:08 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/26 18:30:51 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class ServerConf
 		
 		size_t	fillListens(std::vector<std::string>& buffer, size_t i);
 		size_t	fillServerName(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
+		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
