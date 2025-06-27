@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/25 13:09:01 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/27 19:41:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ class ServerConf;
 class LocationConf
 {
 	public:
+		LocationConf();
 		LocationConf(ServerConf const& S);
 		~LocationConf();
 		LocationConf(LocationConf const& other);

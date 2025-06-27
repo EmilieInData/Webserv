@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/26 18:13:10 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/27 13:39:14 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,13 +211,4 @@ bool	checkLabel(std::string const& str)
 	return true;
 }
 
-// www.example.com
-// www est un label, example est un autre label, com est un autre label
-
-// Chaque label doit respecter les règles DNS:
-// Ne contenir que des lettres, chiffres et tirets
-// Ne pas commencer ni finir par un tiret
-// Avoir une longueur entre 1 et 63 caractères
-// Longueur totale du nom ≤ 255 caractères.
-
-// >> ?? 
+ 

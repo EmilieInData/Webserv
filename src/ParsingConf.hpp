@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/26 15:12:28 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/27 19:02:31 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ class ParsingConf
 		
 		static bool     cleaning(char c);
 		void    	    checkLocation(std::string& line);
-		std::string&	checkSemicolon(std::string& line);
+		void			checkSemicolon(std::string& line);
+		void			checkParenthesis(std::string& line);
 		static void	    print_tokens(std::vector<std::string>& buffer);
 		void	        checkStructure(std::vector<std::string>& buffer);
 		void	        doParsing(std::string line, std::vector<std::string>& buffer);

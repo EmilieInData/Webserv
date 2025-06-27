@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/26 18:30:51 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:18:36 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,21 @@ class ServerConf
 		ServerConf(ServerConf const& other);
 		ServerConf&	operator=(ServerConf const& other);
 
-		bool								getAutoindex() const;
-		std::string							getRoot() const;
-		std::string							getIndex() const;
-		unsigned int						getBodySize() const;
-		std::string							getReturnDirective() const;
-		std::map<unsigned int, std::string>	getErrorPage() const;
+		bool									getAutoindex() const;
+		std::string								getRoot() const;
+		std::string								getIndex() const;
+		unsigned int							getBodySize() const;
+		std::string								getReturnDirective() const;
+		std::map<unsigned int, std::string>		getErrorPage() const;
+		//std::map<std::string, LocationConf>		getLocations()const;
+		std::map<std::string, LocationConf>&	getLocations();
 
 		bool	checkFlag(std::string const& value);
 		
 		size_t	fillListens(std::vector<std::string>& buffer, size_t i);
 		size_t	fillServerName(std::vector<std::string>& buffer, size_t i);
 		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
+		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);

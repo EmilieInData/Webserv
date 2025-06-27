@@ -10,6 +10,63 @@
 //gerer les changements de bloc server et location en changeant leur iterateurs aussi
 
 
+// --> listen <--
+
+//quel port et ip address ecouter pour la connexion
+
+// default ip address: 0.0.0.0
+// default port : 80
+// socket address : 0.0.0.0:80
+//possible many listen on server block only (no location)
+//not possible same ip & port address two times
+//default one 80 & 0.0.0.0
+
+
+// --> serverName <--
+
+//associer une configuration a un nom de domaine
+//ce serveur répondra à telle ou telle URL ou nom de domaine, cela signifie
+// que cette config s’appliquera uniquement aux requêtes faites aux args passes
+
+// www.example.com
+// www est un label, example est un autre label, com est un autre label
+
+// Chaque label doit respecter les règles DNS:
+// Ne contenir que des lettres, chiffres et tirets
+// Ne pas commencer ni finir par un tiret
+// Avoir une longueur entre 1 et 63 caractères
+// Longueur totale du nom ≤ 255 caractères.
+//possible many args, check with the DNS standart all 'label' from all args
+//can be only one time by server block only (no location)
+
+
+// --> autoindex <--
+
+//contrôle si le serveur doit afficher automatiquement la liste des fichiers
+//d’un dossier, quand aucun fichier index (comme index.html) n’est trouvé
+//De naviguer visuellement dans les dossiers (comme un explorateur de fichiers).
+
+// 'on'  ->affiche les fichiers du dossier si aucun index trouvé
+// 'off' ->	(Défaut) masque les fichiers, renvoie une erreur à la place (403)
+
+//only one by block, only 'on' or 'off' authorized, only one arg
+
+
+// --> root <--
+
+//le chemin de base (dans le système de fichiers) où Nginx va chercher
+//les fichiers statics (HTML, CSS, images, JS...) à servir au client
+
+//un seul arg qui commence par "/"
+//une seule directive par bloc
+
+
 //--> TO DO
 
 //gerer les accolades colles {}
+
+
+//--> TO ASK
+//est ce que je dois mettre localhost en arg valide pour listen ?
+//mettre les numeros de lignes et les args ?
+

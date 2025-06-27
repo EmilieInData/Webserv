@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/26 19:03:01 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:19:28 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,11 @@ std::map<unsigned int, std::string> ServerConf::getErrorPage() const
 	return errorPage;
 }
 
+std::map<std::string, LocationConf>&	ServerConf::getLocations()
+{
+	return locations;
+}		
+
 bool	ServerConf::checkFlag(std::string const& value)
 {
 	for(size_t i = 0; i < flag.size(); i++)
@@ -90,16 +95,15 @@ bool	ServerConf::checkFlag(std::string const& value)
 	return false;
 }
 
-//possible many listen on server block only (no location)
-//not possible same ip & port address two times
-//default one 80 & 0.0.0.0 	
 size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 {
 	int port = 0;
 	std::string ip = "";
 	
-	if (buffer[i].empty() || buffer[i + 1].empty() || buffer[i + 1] != ";")
-		throw std::invalid_argument(" Parsing error with 'listen' arguments\n"); 
+	if (i >= buffer.size() || buffer[i].empty() || i + 1 >= buffer.size()
+		|| buffer[i + 1].empty() || buffer[i + 1] != ";")
+		throw std::invalid_argument(" Parsing error with 'listen' argument,"
+		" need one argument followed by a semicolon\n"); 
 	if (isInt(buffer[i])) //is an int
 	{
 		//std::cout << PURPLE << "enter to int\n";
@@ -142,18 +146,18 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 	return (i + 2);   
 }
 
-//possible many args, check with the DNS standart all 'label' from all args
-//can be only one time by server block only (no location)
 size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 {
 	if (checkFlag("server_name"))
 		throw std::invalid_argument(" Parsing error, only one 'server_name'"
 			" directive allowed by server block\n"); 
+	if (i >= buffer.size() || buffer[i].empty() || i + 1 >= buffer.size() || buffer[i + 1] == ";")
+		throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
 	while (i < buffer.size())
 	{
 		if (buffer[i] == ";")
 			break;
-		if (buffer[i] == "{" || buffer[i] == "}")
+		if (buffer[i] == "{" || buffer[i] == "}" || buffer[i] == "{}")
 			throw std::invalid_argument(" Parsing error, miss semicolon after"
 				" 'server_name' directive\n");
 		if (serverName[0] == "default")
@@ -162,6 +166,8 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 			serverName.push_back(buffer[i]);
 		i++;
 	}
+	// if (serverName[0] == "default")
+	//  	throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
 	// for (size_t i = 0; i < serverName.size(); i++)
 	// 	std::cout << PURPLE << serverName[i] << std::endl;
 	if (!checkDns(serverName))
@@ -170,9 +176,10 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
     return (i + 1);   
 }
 
-//only one by block, only 'on' or 'off' authorized, only one arg
 size_t	ServerConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 {
+	if ( i >= buffer.size() || buffer[i].empty())
+		throw std::invalid_argument(" Parsing error, miss 'autoindex' argument\n");
 	if (buffer[i] != "on" && buffer[i] != "off")
 		throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
 			" 'on' or 'off' arguments\n");
@@ -188,3 +195,9 @@ size_t	ServerConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 		autoindex = false;
 	return (i + 2);
 }
+
+// size_t	fillRoot(std::vector<std::string>& buffer, size_t i)
+// {
+			
+// 	return (i + 2);
+// }
