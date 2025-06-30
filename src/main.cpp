@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 20:34:31 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/26 15:34:50 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 19:55:44 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int main(int ac, char** av)
 	catch(const std::exception& e)
 	{
 		std::cerr << ERROR << PINK << e.what() << '\n';
-	}
+		return (1);
+;	}
 	return 0;
 }
 

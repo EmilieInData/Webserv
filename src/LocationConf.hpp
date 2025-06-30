@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/27 19:41:50 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 19:09:33 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ class LocationConf
 		~LocationConf();
 		LocationConf(LocationConf const& other);
 		LocationConf&	operator=(LocationConf const& other);
+
+		bool	checkFlag(std::string const& value);
+		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
 
 	protected:
 		bool    							autoindex;
@@ -50,19 +53,3 @@ class LocationConf
 // clientMaxBodySize->	taille max acceptée du corps HTTP en octets
 // returnDirective->	Pour return 301 URL; ou autre directive de retour
 
-
-
-// class LocationConf
-// {
-// 	public:
-// 		virtual ~ILocationConfig() = 0;
-
-// 		void	fillLocationInstructions();
-
-// 	protected://copier de server et redefini si info dans le bloc location
-// 		ILocationConfig();
-// 		ILocationConfig(ILocationConfig& other);
-// 		ILocationConfig&  								operator=(ILocationConfig& other);
-		
-// 		std::map<std::string, std::vector<std::string>>	locationInstructions;
-// };

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 16:27:07 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 20:31:55 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 
 ServerConf::ServerConf()
 {
-	autoindex = false;
-	root = "/var/www/html";
-	index = "index.html";
-	bodySize = 1048576;
-	returnDirective = ""; //I don't KNOW ??
-	errorPage[404] = "/404.html";
-	serverName.push_back("default");
-	listens.push_back(listen{80, "0.0.0.0"});
+	_autoindex = false;
+	_root = "/var/www/html";
+	_index = "index.html";
+	_bodySize = 1048576;
+	_returnDirective = ""; //I don't KNOW ??
+	_errorPage[404] = "/404.html";
+	_serverName.push_back("default");
+	_listens.push_back(listen{80, "0.0.0.0"});
 }
   
 ServerConf::~ServerConf() {} 
@@ -36,15 +36,15 @@ ServerConf&	ServerConf::operator=(ServerConf const& other)
 {
 	if (this != &other)
 	{
-		this->autoindex = other.autoindex;
-		this->root = other.root;
-		this->index = other.index;
-		this->bodySize = other.bodySize;
-		this->returnDirective = other.returnDirective;
-		this->errorPage = other.errorPage;
-		this->listens = other.listens;
-		this->serverName = other.serverName;
-		this->locations = other.locations;     
+		this->_autoindex = other._autoindex;
+		this->_root = other._root;
+		this->_index = other._index;
+		this->_bodySize = other._bodySize;
+		this->_returnDirective = other._returnDirective;
+		this->_errorPage = other._errorPage;
+		this->_listens = other._listens;
+		this->_serverName = other._serverName;
+		this->_locations = other._locations;     
 	}
 	return *this;
 }
@@ -52,51 +52,51 @@ ServerConf&	ServerConf::operator=(ServerConf const& other)
 
 bool    ServerConf::getAutoindex() const
 {
-	return autoindex;
+	return _autoindex;
 }
 
 std::string ServerConf::getRoot() const
 {
-	return root;
+	return _root;
 }
 std::string ServerConf::getIndex() const
 {
-	return index;
+	return _index;
 }
 		
 unsigned int ServerConf::getBodySize() const
 {
-	return bodySize;
+	return _bodySize;
 }
 		
 std::string ServerConf::getReturnDirective() const
 {
-	return returnDirective;
+	return _returnDirective;
 }
 
 std::map<unsigned int, std::string> ServerConf::getErrorPage() const
 {
-	return errorPage;
+	return _errorPage;
 }
 
 std::map<std::string, LocationConf>&	ServerConf::getLocations()
 {
-	return locations;
+	return _locations;
 }
 
 std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::string const& key)
 {
-	return locations.find(key);
+	return _locations.find(key);
 }	
 
 bool	ServerConf::checkFlag(std::string const& value)
 {
-	for(size_t i = 0; i < flag.size(); i++)
+	for(size_t i = 0; i < _flag.size(); i++)
 	{
-		if (flag[i] == value)
+		if (_flag[i] == value)
 			return true;
 	}
-	flag.push_back(value); //mettre le flag de la directive
+	_flag.push_back(value); //mettre le flag de la directive
 	return false;
 }
 
@@ -138,15 +138,15 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 	//std::cout << BLUE << "ip: " << ip << " port = " << port << std::endl;
 	if (checkFlag("listen"))
 	{
-		for (size_t i = 0; i < listens.size(); i++)
+		for (size_t i = 0; i < _listens.size(); i++)
 		{
-			if (listens[i].ip == ip && listens[i].port == port)
+			if (_listens[i].ip == ip && _listens[i].port == port)
 				throw std::invalid_argument(" Parsing error, duplicate 'listen' arguments\n");
 		}	
-		listens.push_back(listen{port, ip});
+		_listens.push_back(listen{port, ip});
 	}
 	else
-		listens[0] = listen{port, ip};
+		_listens[0] = listen{port, ip};
 	//checker si le port et l'adresse ip sont libres ici ???
 	return (i + 2);   
 }
@@ -165,17 +165,17 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 		if (buffer[i] == "{" || buffer[i] == "}" || buffer[i] == "{}")
 			throw std::invalid_argument(" Parsing error, miss semicolon after"
 				" 'server_name' directive\n");
-		if (serverName[0] == "default")
-			serverName[0] = buffer[i];
+		if (_serverName[0] == "default")
+			_serverName[0] = buffer[i];
 		else
-			serverName.push_back(buffer[i]);
+			_serverName.push_back(buffer[i]);
 		i++;
 	}
 	// if (serverName[0] == "default")
 	//  	throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
 	// for (size_t i = 0; i < serverName.size(); i++)
 	// 	std::cout << PURPLE << serverName[i] << std::endl;
-	if (!checkDns(serverName))
+	if (!checkDns(_serverName))
 		throw std::invalid_argument(" Parsing error, 'server_name' arguments"
 			" need to follow DNS's rules\n");
     return (i + 1);   
@@ -188,21 +188,37 @@ size_t	ServerConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 	if (buffer[i] != "on" && buffer[i] != "off")
 		throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
 			" 'on' or 'off' arguments\n");
-	if (buffer[i + 1].empty() || buffer[i + 1] != ";")
+	if (i + 1 >= buffer.size())
+		throw std::invalid_argument(" Parsing error, miss semicolon after"
+			" 'autoindex' argument\n");
+	if (i + 1 < buffer.size() && buffer[i + 1] != ";")
 		throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
 			" one argument\n");
 	if (checkFlag("autoindex"))
 		throw std::invalid_argument(" Parsing error, only one 'autoindex'"
 			" directive allowed by server block\n"); 
 	if (buffer[i] == "on")
-		autoindex = true;
+		_autoindex = true;
 	else
-		autoindex = false;
+		_autoindex = false;
 	return (i + 2);
 }
 
-// size_t	fillRoot(std::vector<std::string>& buffer, size_t i)
-// {
-			
-// 	return (i + 2);
-// }
+size_t	ServerConf::fillRoot(std::vector<std::string>& buffer, size_t i)
+{
+	if ( i >= buffer.size() || buffer[i].empty()) //a voir si utile pour chaque directive ?
+		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
+	if (buffer[i][0] != '/')
+		throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
+	if (i + 1 >= buffer.size())
+		throw std::invalid_argument(" Parsing error, miss semicolon after"
+			" 'root' argument\n");
+	if (i + 1 < buffer.size() && buffer[i + 1] != ";")
+		throw std::invalid_argument(" Parsing error, 'root' allows only"
+			" one argument\n");
+	if (checkFlag("root"))
+		throw std::invalid_argument(" Parsing error, only one 'root'"
+			" directive allowed by server block\n"); 
+	_root = buffer[i];
+	return (i + 2);
+}

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 16:37:17 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 20:11:03 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,12 @@ void	ParsingConf::doParsing(std::string line, std::vector<std::string>& buffer)
 			buffer.push_back (line.substr(j, i - j)); //transformer en token
 		}
 	}
+	for (size_t i = 0; i + 1 < buffer.size(); i++)
+	{
+		if (buffer[i] == "{" && !buffer[i + 1].empty() && buffer[i + 1] == "}")
+			throw std::invalid_argument("Parsing error, server & locations's"
+				" blocks cannot be empty\n");
+	}
 }
 
 void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
@@ -191,17 +197,20 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			if (blocks.back() == "server")
 				i = itServer->fillAutoIndex(buffer, i + 1);
 			else
-				//i = itServer->itLocation->fillAutoIndex(buffer, i + 1);
+				i = itLocation->second.fillAutoIndex(buffer, i + 1);
 			continue;
 		}
-		// else if (buffer[i] == "root") //checker si dans loc ou server
-		// {
-		// 	if (blocks.empty())
-		// 		throw std::invalid_argument(" Parsing error, 'root' directive"
-		// 			" allowed only in server or location block\n");	 
-		// 	i = itServer->fillRoot(buffer, i + 1);
-		// 	continue;
-		// }
+		else if (buffer[i] == "root") //checker si dans loc ou server
+		{
+			if (blocks.empty())
+				throw std::invalid_argument(" Parsing error, 'root' directive"
+					" allowed only in server or location block\n");
+			if (blocks.back() == "server")
+				i = itServer->fillRoot(buffer, i + 1);
+			else
+				i = itLocation->second.fillRoot(buffer, i + 1);
+			continue;
+		}
 		// else if (buffer[i] == "index")
 
 		// else if (buffer[i] == "client_max_body_size")
@@ -218,7 +227,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
 			blocks.push_back("location");
 			itLocation = itServer->getItLocations(buffer[i + 1]);
-			i = i + 2;
+			i = i + 3;
 			continue;
 		}
 		// else if (buffer[i] == "server")
@@ -268,7 +277,8 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 		{
 			if ((!buffer[i - 1].empty() && buffer[i - 1] != "server")
 				&& (buffer[i - 2].empty() || buffer[i - 2] != "location"))
-				throw std::invalid_argument(" Parsing error, wrong block's name\n");
+				throw std::invalid_argument(" Parsing error, wrong block's"
+					" name before parenthesis\n");
 		}
 		else if (buffer[i] == "}")
 		{
@@ -283,5 +293,7 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 	return;
 }
 
-//comparer avec nginx pour les messages d'erreurs
 //checker si une ligne est si grande que la fonction me la retourne en deux fois ? 
+
+//voir si ja garde les mm fonctions definis deux fois ou si je fais
+//un template ou je passe un type indefini de class (mais je dois rajouter des getters)

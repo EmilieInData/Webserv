@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 16:27:37 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 20:28:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,19 +55,19 @@ class ServerConf
 		// size_t	fillLocations(std::vector<std::string>& buffer, size_t i);
 
 	protected:
-		bool    							autoindex;
-		std::string							root;
-		std::string							index;
-		unsigned int						bodySize;
-		std::string							returnDirective;
-		std::map<unsigned int, std::string>	errorPage;
+		bool    							_autoindex;
+		std::string							_root;
+		std::string							_index;
+		unsigned int						_bodySize;
+		std::string							_returnDirective;
+		std::map<unsigned int, std::string>	_errorPage;
 		
 		//no in location
-		std::vector<listen>					listens;
-		std::vector<std::string>			serverName;
-		std::map<std::string, LocationConf>	locations;
+		std::vector<listen>					_listens;
+		std::vector<std::string>			_serverName;
+		std::map<std::string, LocationConf>	_locations;
 
-		std::vector<std::string>			flag;
+		std::vector<std::string>			_flag;
 };
 
 #endif

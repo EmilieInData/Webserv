@@ -57,9 +57,8 @@
 //le chemin de base (dans le système de fichiers) où Nginx va chercher
 //les fichiers statics (HTML, CSS, images, JS...) à servir au client
 
-//un seul arg qui commence par "/"
+//un seul arg qui commence par "/" (chemin absolu)
 //une seule directive par bloc
-
 
 //--> TO DO
 
@@ -70,3 +69,6 @@
 //est ce que je dois mettre localhost en arg valide pour listen ?
 //mettre les numeros de lignes et les args ?
 
+
+//chemin absolu = /blabla
+//chemin relatif = ./blabla
