@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/27 20:22:39 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:37:17 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 	checkStructure(buffer); //parenthesis well closed, blocks well positionned
 	
 	servers.push_back(ServerConf());//creer le premier bloc server dans le contener
+	std::map<std::string, LocationConf>::iterator itLocation;
 	std::vector<ServerConf>::iterator itServer;
 	itServer = servers.begin();
 	blocks.push_back("server"); //mettre tout au dessus ds le while ?
@@ -168,7 +169,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		std::cout << GREEN << " --> " << buffer[i] << RESET << std::endl;
 		if (buffer[i] == "listen") // NO IN LOCATION
 		{
-			if (blocks.back() != "server")
+			if (!blocks.empty() && blocks.back() != "server")
 				throw std::invalid_argument(" Parsing error, 'listen' directive"
 					" allowed only in server block\n");	 
 			i = itServer->fillListens(buffer, i + 1); //I quit args & ';' here
@@ -176,7 +177,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		}
 		else if (buffer[i] == "server_name") //NO IN LOCATION
 		{
-			if (blocks.back() != "server")
+			if (!blocks.empty() && blocks.back() != "server")
 				throw std::invalid_argument(" Parsing error, 'server_name' directive"
 					" allowed only in server block\n");	 
 			i = itServer->fillServerName(buffer, i + 1);
@@ -187,8 +188,10 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			if (blocks.empty())
 				throw std::invalid_argument(" Parsing error, 'autoindex' directive"
 					" allowed only in server or location block\n");	 
-			//--> checker avec blocks si on est dans server ou location?
-			i = itServer->fillAutoIndex(buffer, i + 1);
+			if (blocks.back() == "server")
+				i = itServer->fillAutoIndex(buffer, i + 1);
+			else
+				//i = itServer->itLocation->fillAutoIndex(buffer, i + 1);
 			continue;
 		}
 		// else if (buffer[i] == "root") //checker si dans loc ou server
@@ -214,6 +217,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 					" directive already exist\n");
 			itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
 			blocks.push_back("location");
+			itLocation = itServer->getItLocations(buffer[i + 1]);
 			i = i + 2;
 			continue;
 		}
@@ -221,10 +225,12 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		//l'ajouter au vector blocks
 		// 	//creer un nouveau server dans le vector et changer l'it de position
 		//if (buffer[i] == ";" || buffer[i] == "{" || buffer[i] == "}")
-		else if (buffer[i] == "{")
-			i++;
+		// else if (buffer[i] == "{") //inutile?
+		// 	i++;
 		else if (buffer[i] == "}")
 		{
+			if (blocks.empty())
+					throw std::invalid_argument(" Parsing error, '}' badly positioned\n");
 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
 			i++;
 		}

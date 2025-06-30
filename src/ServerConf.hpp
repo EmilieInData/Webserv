@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/27 20:18:36 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:27:37 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ class ServerConf
 		unsigned int							getBodySize() const;
 		std::string								getReturnDirective() const;
 		std::map<unsigned int, std::string>		getErrorPage() const;
-		//std::map<std::string, LocationConf>		getLocations()const;
 		std::map<std::string, LocationConf>&	getLocations();
+		std::map<std::string, LocationConf>:: iterator	getItLocations(std::string const& key);
+
 
 		bool	checkFlag(std::string const& value);
 		

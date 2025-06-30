@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/27 20:19:28 by esellier         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:27:07 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,12 @@ std::map<unsigned int, std::string> ServerConf::getErrorPage() const
 std::map<std::string, LocationConf>&	ServerConf::getLocations()
 {
 	return locations;
-}		
+}
+
+std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::string const& key)
+{
+	return locations.find(key);
+}	
 
 bool	ServerConf::checkFlag(std::string const& value)
 {
