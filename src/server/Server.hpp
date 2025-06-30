@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:54 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/06/30 11:22:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/06/30 11:37:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@
 #include <iostream>
 #include <ctime>
 
+
+
 class Server
 {
 	private:
-		// time_t _startTime;
+		time_t _startTime;
 	
 	public:
 		Server();
@@ -28,11 +30,7 @@ class Server
 		Server &operator=(Server const &copy);
 		~Server();
 
-		//void serverRun();
-
-	//server run ft
-
-	 
+		void serverRun();	 
 };
 
 #endif
