@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 12:56:45 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:30:46 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,53 @@ void Server::servRun()
 			;
 		
 		std::cout << utilsTimestamp() <<  "Server running" << std::endl;
-		std::cout << "Socket fd: " << this->_testSocket.getSocketFd() << std::endl;
+		// std::cout << "Socket fd: " << this->_testSocket.getSocketFd() << std::endl;
 	}
 }
 
-//server run functions
+void Server::servSetup()
+{
+	/* creating socket */
+	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->_socketFd < 0)
+	{
+		std::cerr << "Socket creation error" << std::endl;
+		exit(1);
+	}
+
+	/* setting socket to non blocking as by subject 
+	using fcntl() first to get the flags (F_GETFL)
+	and then setting them (F_SETFL)*/
+	int flags = fcntl(_socketFd, F_GETFL, 0);
+	if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) < 0)
+	{
+		std::cerr << "Nonblocking setup error" << std::endl;
+		exit(1);
+	}
+	
+	/* using the sockaddr_in structure to store the
+	socket address information */
+	struct sockaddr_in address; // move this to Server class
+	std::memset(&address, 0, sizeof(address));	
+	address.sin_family = AF_INET;
+	address.sin_port = htons(8080);
+	address.sin_addr.s_addr = inet_addr("127.0.0.1"); // for now set to localhost
+
+	/* binding the socket we created to the address we
+	have set above */
+	if (bind(_socketFd, (struct sockaddr*)&address, sizeof(address)) < 0)
+	{
+		std::cerr << "Socket binding error" << std::endl;
+		close(_socketFd);
+		exit(1);
+	}
+	
+	/* setup the socket to listen */
+	if (listen(_socketFd, SOMAXCONN) < 0)
+	{
+		std::cerr << "Listen socket setup error" << std::endl;
+		close(_socketFd);
+		exit(1);
+	}
+}
 
