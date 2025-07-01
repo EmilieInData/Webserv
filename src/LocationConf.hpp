@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 19:09:33 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/01 18:42:21 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,21 @@ class LocationConf
 
 		bool	checkFlag(std::string const& value);
 		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
-
+		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
+		size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
+		
 	protected:
-		bool    							autoindex;
-		std::string							root;
-		std::string							index;
-		std::string							bodySize;
-		std::string							returnDirective;
-		std::map<unsigned int, std::string>	errorPage;
+		bool    							_autoindex;
+		std::string							_root;
+		std::string							_bodySize;
+		std::string							_returnDirective;
+		std::vector<std::string>			_index;
+		std::map<unsigned int, std::string>	_errorPage;
 
-		std::string               			cgiPass; // tjr ds un bloc location
-		std::vector<std::string>    		allowedMethods; // default= GET POST
+		std::string               			_cgiPass; // tjr ds un bloc location
+		std::vector<std::string>    		_allowedMethods; // default= GET POST
 
-		std::vector<std::string>			flag;
+		std::vector<std::string>			_flag;
 };
 
 #endif

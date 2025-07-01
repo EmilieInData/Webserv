@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 20:28:30 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/01 18:30:19 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class ServerConf
 
 		bool									getAutoindex() const;
 		std::string								getRoot() const;
-		std::string								getIndex() const;
+		std::vector<std::string>				getIndex() const;
 		unsigned int							getBodySize() const;
 		std::string								getReturnDirective() const;
 		std::map<unsigned int, std::string>		getErrorPage() const;
@@ -48,7 +48,7 @@ class ServerConf
 		size_t	fillServerName(std::vector<std::string>& buffer, size_t i);
 		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
 		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
+		size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillErrorPage(std::vector<std::string>& buffer, size_t i);
@@ -57,9 +57,9 @@ class ServerConf
 	protected:
 		bool    							_autoindex;
 		std::string							_root;
-		std::string							_index;
 		unsigned int						_bodySize;
 		std::string							_returnDirective;
+		std::vector<std::string>			_index;
 		std::map<unsigned int, std::string>	_errorPage;
 		
 		//no in location

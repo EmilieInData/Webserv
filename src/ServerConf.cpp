@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/30 20:31:55 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/01 19:50:33 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ ServerConf::ServerConf()
 {
 	_autoindex = false;
 	_root = "/var/www/html";
-	_index = "index.html";
+	_index.push_back("index.html");
 	_bodySize = 1048576;
 	_returnDirective = ""; //I don't KNOW ??
 	_errorPage[404] = "/404.html";
@@ -59,7 +59,7 @@ std::string ServerConf::getRoot() const
 {
 	return _root;
 }
-std::string ServerConf::getIndex() const
+std::vector<std::string> ServerConf::getIndex() const
 {
 	return _index;
 }
@@ -156,25 +156,22 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 	if (checkFlag("server_name"))
 		throw std::invalid_argument(" Parsing error, only one 'server_name'"
 			" directive allowed by server block\n"); 
-	if (i >= buffer.size() || buffer[i].empty() || i + 1 >= buffer.size() || buffer[i + 1] == ";")
+	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
 		throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
+	if (!_serverName.empty())
+		_serverName.clear(); //supprimer l'arg par defaut (vide tout le vector)
 	while (i < buffer.size())
 	{
 		if (buffer[i] == ";")
 			break;
-		if (buffer[i] == "{" || buffer[i] == "}" || buffer[i] == "{}")
+		if (buffer[i] == "{" || buffer[i] == "}")
 			throw std::invalid_argument(" Parsing error, miss semicolon after"
 				" 'server_name' directive\n");
-		if (_serverName[0] == "default")
-			_serverName[0] = buffer[i];
-		else
-			_serverName.push_back(buffer[i]);
+		_serverName.push_back(buffer[i]);
 		i++;
 	}
-	// if (serverName[0] == "default")
-	//  	throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
-	// for (size_t i = 0; i < serverName.size(); i++)
-	// 	std::cout << PURPLE << serverName[i] << std::endl;
+	// for (size_t i = 0; i < _serverName.size(); i++)
+	// 	std::cout << PURPLE << _serverName[i] << std::endl;
 	if (!checkDns(_serverName))
 		throw std::invalid_argument(" Parsing error, 'server_name' arguments"
 			" need to follow DNS's rules\n");
@@ -221,4 +218,27 @@ size_t	ServerConf::fillRoot(std::vector<std::string>& buffer, size_t i)
 			" directive allowed by server block\n"); 
 	_root = buffer[i];
 	return (i + 2);
+}
+size_t	ServerConf::fillIndex(std::vector<std::string>& buffer, size_t i)
+{
+	if (checkFlag("index"))
+		throw std::invalid_argument(" Parsing error, only one 'index'"
+			" directive allowed by server blocks\n"); 
+	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
+		throw std::invalid_argument(" Parsing error, miss 'index' arguments\n");
+	if (!_index.empty())
+		_index.clear(); //supprimer l'arg par defaut
+	while (i < buffer.size())
+	{
+		if (buffer[i] == ";")
+			break;
+		if (buffer[i] == "{" || buffer[i] == "}")
+			throw std::invalid_argument(" Parsing error, miss semicolon after"
+				" 'index' directive\n");
+		_index.push_back(buffer[i]);
+		i++;
+	}
+	// for (size_t i = 0; i < _index.size(); i++)
+	// 	std::cout << PURPLE << _index[i] << std::endl;
+    return (i + 1);   
 }

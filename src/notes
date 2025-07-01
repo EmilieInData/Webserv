@@ -10,7 +10,7 @@
 //gerer les changements de bloc server et location en changeant leur iterateurs aussi
 
 
-// --> listen <--
+--> listen <--
 
 //quel port et ip address ecouter pour la connexion
 
@@ -22,7 +22,7 @@
 //default one 80 & 0.0.0.0
 
 
-// --> serverName <--
+--> serverName <--
 
 //associer une configuration a un nom de domaine
 //ce serveur répondra à telle ou telle URL ou nom de domaine, cela signifie
@@ -40,7 +40,7 @@
 //can be only one time by server block only (no location)
 
 
-// --> autoindex <--
+--> autoindex <--
 
 //contrôle si le serveur doit afficher automatiquement la liste des fichiers
 //d’un dossier, quand aucun fichier index (comme index.html) n’est trouvé
@@ -52,7 +52,7 @@
 //only one by block, only 'on' or 'off' authorized, only one arg
 
 
-// --> root <--
+--> root <--
 
 //le chemin de base (dans le système de fichiers) où Nginx va chercher
 //les fichiers statics (HTML, CSS, images, JS...) à servir au client
@@ -60,12 +60,23 @@
 //un seul arg qui commence par "/" (chemin absolu)
 //une seule directive par bloc
 
-//--> TO DO
 
-//gerer les accolades colles {}
+--> index <--
+
+//sert à définir les fichiers à servir par défaut lorsqu’un client
+//accède à un répertoire.
+
+//un ou plusieurs arg
+//une seule directive par bloc
 
 
-//--> TO ASK
+--> TO DO
+
+//-> changer ma politique d'erreurs pour les caracteres non imprimables 
+//(code ASCII < 32), erreur à l’exception de :
+// \t (tab), \n (saut de ligne)
+
+--> TO ASK
 //est ce que je dois mettre localhost en arg valide pour listen ?
 //mettre les numeros de lignes et les args ?
 
