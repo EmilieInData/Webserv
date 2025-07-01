@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 16:39:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:45:36 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,3 +100,8 @@ void Server::servSetup()
 	}
 }
 
+/* listening testing methods:
+netstat -an | grep 8080
+ss -ltn
+telnet 127.0.0.1 8080
+*/
