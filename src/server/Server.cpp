@@ -6,12 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 11:40:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 11:49:21 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "../utils/Utils.hpp"
 
 Server::Server(): _createdTime(time(NULL))
 { 
@@ -47,10 +46,11 @@ void Server::servRun()
 	{
 		time_t loop = time(NULL);
 
-		while ((difftime(time(NULL), loop)) <= 10)
+		while ((difftime(time(NULL), loop)) <= 3)
 			;
 		
 		std::cout << utilsTimestamp() <<  "Server running" << std::endl;
+		std::cout << "Socket fd: " << this->_testSocket.getSocketFd() << std::endl;
 	}
 }
 
