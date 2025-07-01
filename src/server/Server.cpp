@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 16:30:46 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:39:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Server::servRun()
 		while ((difftime(time(NULL), loop)) <= 3)
 			;
 		
-		std::cout << utilsTimestamp() <<  "Server running" << std::endl;
+		std::cout << utilsTimestamp() <<  "\nServer running\n";
 		// std::cout << "Socket fd: " << this->_testSocket.getSocketFd() << std::endl;
 	}
 }

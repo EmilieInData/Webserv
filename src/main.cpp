@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/30 15:14:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 16:37:36 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	main() {
 	std::cout << "query: " << req.getQuery() << std::endl;
 	std::cout << "version: " << req.getHttpVersion() << std::endl;
 
+	testserv.servSetup();
 	testserv.servRun();
 	return 0;
 }
