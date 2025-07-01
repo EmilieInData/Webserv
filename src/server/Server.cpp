@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 16:45:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 17:06:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,20 +59,16 @@ void Server::servSetup()
 	/* creating socket */
 	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socketFd < 0)
-	{
 		std::cerr << "Socket creation error" << std::endl;
-		exit(1);
-	}
+
 
 	/* setting socket to non blocking as by subject 
 	using fcntl() first to get the flags (F_GETFL)
 	and then setting them (F_SETFL)*/
 	int flags = fcntl(_socketFd, F_GETFL, 0);
 	if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) < 0)
-	{
 		std::cerr << "Nonblocking setup error" << std::endl;
-		exit(1);
-	}
+
 	
 	/* using the sockaddr_in structure to store the
 	socket address information */
@@ -88,7 +84,6 @@ void Server::servSetup()
 	{
 		std::cerr << "Socket binding error" << std::endl;
 		close(_socketFd);
-		exit(1);
 	}
 	
 	/* setup the socket to listen */
@@ -96,7 +91,6 @@ void Server::servSetup()
 	{
 		std::cerr << "Listen socket setup error" << std::endl;
 		close(_socketFd);
-		exit(1);
 	}
 }
 
