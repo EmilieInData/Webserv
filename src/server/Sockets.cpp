@@ -6,12 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:33:05 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 11:43:05 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 12:56:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Sockets.hpp"
-#include "../utils/Utils.hpp"
+#include "../../inc/server/Sockets.hpp"
+#include "../../inc/utils/Utils.hpp"
 
 Socket::Socket(): _socketFd(666)
 { 

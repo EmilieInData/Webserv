@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 16:55:07 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/30 16:29:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/01 12:55:36 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
+#include "../../inc/utils/Utils.hpp"
 
-std::string utilsTimestamp()
+const std::string utilsTimestamp()
 {
 	std::string timeStamp;
 	char buffer[64];
