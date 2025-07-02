@@ -96,6 +96,6 @@ void Server::servSetup()
 
 /* listening testing methods:
 netstat -an | grep 8080
-ss -ltn
+ss -ltn // Linux Only
 telnet 127.0.0.1 8080
 */

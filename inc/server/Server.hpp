@@ -24,14 +24,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-//#include "Sockets.hpp"
 #include "../utils/Utils.hpp"
 
 class Server
 {
 	private:
 		time_t _createdTime;
-		// Socket _testSocket;
 		int _socketFd;
 		
 	public:
