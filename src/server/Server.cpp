@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 12:20:58 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 13:49:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void Server::servSetup()
 	}
 	
 	/* setup the socket to listen */
-	if (listen(_socketFd, SOMAXCONN) < 0)
+	if (listen(_socketFd, 10) < 0) // change back to SOMAXCONN?
 	{
 		std::cerr << "Listen socket setup error" << std::endl;
 		close(_socketFd);
@@ -81,42 +81,54 @@ void Server::servRun()
 {	
 	std::cout << utilsTimestamp() << "Server started" << std::endl;
 	
+	_pollFd[0].fd = _socketFd;
+	_pollFd[0].events = POLLIN;
+	
+	std::cout << utilsTimestamp() << "Waiting for connection on port 8080" << std::endl;
+	
 	while (true)
 	{
-		
-		socklen_t addrLen = sizeof(_servAddr);
-		if ((_clientFd = accept(_socketFd, (struct sockaddr*)&_servAddr, &addrLen)) < 0)
-			std::cerr << "Accept Error. fd = " << _clientFd << std::endl;
-		
-		_pollFd.fd = _clientFd;
-		_pollFd.events = POLLIN;
-		poll(&_pollFd, 1, 1000);
-
-		if (_pollFd.revents & POLLIN)
+		int check = poll(_pollFd, 1, 5000);
+		if (check < 0)
 		{
-			char buffer[4096];
-			ssize_t received = recv(_clientFd, buffer, sizeof(buffer), 0);
-			std::cout << utilsTimestamp() << " Request received" << std::endl;
-			std::cout << received << std::endl;
+			std::cerr << "Poll error" << std::endl;
+			break ;
 		}
-
-		std::string response = 
-					"HTTP/1.1 200 OK\r\n"
-					"Content-Type: text/plain\r\n"
-					"Content-Length: 13\r\n"
-					"\r\n"
-					"Hello, world!";
-		
-		_pollFd.events = POLLOUT;
-		poll(&_pollFd, 1, 1000);
-
-		if (_pollFd.revents & POLLOUT)
+		else if (check == 0)
 		{
-			send(_clientFd, response.c_str(), response.size(), 0);
+			std::cout << utilsTimestamp() << "Still waiting for connection" << std::endl;
+			continue ;
 		}
-
-		close(_clientFd);
+		
 	}
+	std::cout << "Outside poll loop" << std::endl;	
+	if (_pollFd[0].revents & POLLIN)
+	{
+		char buffer[4096];
+		ssize_t received = recv(_clientFd, buffer, sizeof(buffer), 0);
+		std::cout << utilsTimestamp() << " Request received" << std::endl;
+		std::cout << received << std::endl;
+	}
+	// std::string response = 
+	// "HTTP/1.1 200 OK\r\n"
+	// 	"Content-Type: text/plain\r\n"
+	// 	"Content-Length: 13\r\n"
+	// 	"\r\n"
+	// 	"Hello, world!";
+		
+	// 	_pollFd.events = POLLOUT;
+	// 	poll(&_pollFd, 1, 1000);
+		
+	// 	if (_pollFd.revents & POLLOUT)
+	// 	{
+	// 		send(_clientFd, response.c_str(), response.size(), 0);
+	// 	}
+		
+		close(_clientFd);
+		// socklen_t addrLen = sizeof(_servAddr);
+		// if ((_clientFd = accept(_socketFd, (struct sockaddr*)&_servAddr, &addrLen)) < 0)
+		// 	std::cerr << "Accept Error. fd = " << _clientFd << std::endl;
+	
 }
 
 

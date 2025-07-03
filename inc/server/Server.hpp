@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:54 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 10:35:15 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 12:57:12 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Server
 		int _socketFd;
 		int _clientFd;
 		struct sockaddr_in _servAddr;
-		struct pollfd _pollFd;
+		struct pollfd _pollFd[1];
 		
 	public:
 		Server();
