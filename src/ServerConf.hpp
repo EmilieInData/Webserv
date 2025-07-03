@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/01 18:30:19 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/03 16:44:46 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "Utils.hpp"
 #include "LocationConf.hpp"
+#include "BlockBase.hpp"
 
 struct listen
 {
@@ -24,7 +25,7 @@ struct listen
 
 class LocationConf;
 
-class ServerConf
+class ServerConf : public BlockBase
 {
 	public:
 		ServerConf();
@@ -32,65 +33,26 @@ class ServerConf
 		ServerConf(ServerConf const& other);
 		ServerConf&	operator=(ServerConf const& other);
 
-		bool									getAutoindex() const;
-		std::string								getRoot() const;
-		std::vector<std::string>				getIndex() const;
-		unsigned int							getBodySize() const;
-		std::string								getReturnDirective() const;
-		std::map<unsigned int, std::string>		getErrorPage() const;
-		std::map<std::string, LocationConf>&	getLocations();
+		std::map<std::string, LocationConf>&			getLocations();
 		std::map<std::string, LocationConf>:: iterator	getItLocations(std::string const& key);
+		size_t											fillListens(std::vector<std::string>& buffer, size_t i);
+		size_t											fillServerName(std::vector<std::string>& buffer, size_t i);
 
-
-		bool	checkFlag(std::string const& value);
-		
-		size_t	fillListens(std::vector<std::string>& buffer, size_t i);
-		size_t	fillServerName(std::vector<std::string>& buffer, size_t i);
-		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
-		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
-		size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillErrorPage(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillLocations(std::vector<std::string>& buffer, size_t i);
-
-	protected:
-		bool    							_autoindex;
-		std::string							_root;
-		unsigned int						_bodySize;
-		std::string							_returnDirective;
-		std::vector<std::string>			_index;
-		std::map<unsigned int, std::string>	_errorPage;
-		
-		//no in location
+	private:
 		std::vector<listen>					_listens;
 		std::vector<std::string>			_serverName;
 		std::map<std::string, LocationConf>	_locations;
 
-		std::vector<std::string>			_flag;
+		// bool    							_autoindex;
+		// std::string							_root;
+		// unsigned int						_bodySize;
+		// std::string							_returnDirective;
+		// std::vector<std::string>			_index;
+		// std::map<unsigned int, std::string>	_errorPage;
+		// std::vector<std::string>    		_allowedMethods; // default= GET POST
 };
 
 #endif
-
-// class AServerConfig
-// {
-// 	public:
-// 		virtual ~IServerConfig() = 0;
-
-// 		void	fillListens();
-// 		void	fillLocations();
-// 		void	fillServerInstructions();
-	
-// 	protected:
-// 		IServerConfig();
-// 		IServerConfig(IServerConfig& other);
-// 		IServerConfig&  						    	operator=(IServerConfig& other);
-
-// 		std::vector<listen>								listens;
-// 		std::string										serverName; //pas obligatoire
-// 		std::map<std::string, ILocationConfig>			locations;
-// 		std::map<std::string, std::vector<std::string>>	serverInstructions;
-// };
 
 //je decide que tous les infos server seront avant les blocs locations
 //sinon ce sont des erreurs, plus simple pour le parsing

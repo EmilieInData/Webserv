@@ -72,9 +72,8 @@
 
 --> TO DO
 
-//-> changer ma politique d'erreurs pour les caracteres non imprimables 
-//(code ASCII < 32), erreur à l’exception de :
-// \t (tab), \n (saut de ligne)
+//passer tout en dynamique
+
 
 --> TO ASK
 //est ce que je dois mettre localhost en arg valide pour listen ?
@@ -83,3 +82,6 @@
 
 //chemin absolu = /blabla
 //chemin relatif = ./blabla
+
+//test char no printable 
+// printf "server\x01{}\n" > ../conf/test.conf

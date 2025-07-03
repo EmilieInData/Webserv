@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/01 18:42:21 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/03 16:48:07 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 #define LOCATIONCONF_HPP
 
 #include "Utils.hpp"
+#include "BlockBase.hpp"
 
 class ServerConf;
 
-class LocationConf
+class LocationConf : public BlockBase
 {
 	public:
 		LocationConf();
@@ -26,32 +27,19 @@ class LocationConf
 		LocationConf(LocationConf const& other);
 		LocationConf&	operator=(LocationConf const& other);
 
-		bool	checkFlag(std::string const& value);
-		size_t	fillAutoIndex(std::vector<std::string>& buffer, size_t i);
-		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
-		size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
-		
-	protected:
-		bool    							_autoindex;
-		std::string							_root;
-		std::string							_bodySize;
-		std::string							_returnDirective;
-		std::vector<std::string>			_index;
-		std::map<unsigned int, std::string>	_errorPage;
+		//get cgi pass
+		// fill cgi_pass
 
-		std::string               			_cgiPass; // tjr ds un bloc location
-		std::vector<std::string>    		_allowedMethods; // default= GET POST
-
-		std::vector<std::string>			_flag;
+	private:
+			std::string		_cgiPass; // tjr ds un bloc location
+			
+		// bool    							_autoindex;
+		// std::string							_root;
+		// std::string							_bodySize;
+		// std::string							_returnDirective;
+		// std::vector<std::string>			_index;
+		// std::map<unsigned int, std::string>	_errorPage;
+		// std::vector<std::string>    		_allowedMethods; // default= GET POST
 };
 
 #endif
-
-
-// root->	            dossier racine pour cette location
-// allowedMethods->     méthodes HTTP autorisées (GET, POST…)
-// autoindex->	        booléen activant/désactivant l’autoindex
-// cgiPass->	        chemin vers l’exécutable CGI
-// clientMaxBodySize->	taille max acceptée du corps HTTP en octets
-// returnDirective->	Pour return 301 URL; ou autre directive de retour
-

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/01 19:34:07 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/03 12:22:02 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ class ParsingConf
 
 		std::vector<ServerConf>	servers;
 		
-		static bool     cleaning(char c);
 		void    	    checkLocation(std::string& line);
 		void			checkSemicolon(std::string& line);
 		void			checkParenthesis(std::string& line);

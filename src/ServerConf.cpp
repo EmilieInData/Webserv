@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/01 19:50:33 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/03 16:50:46 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,68 +15,28 @@
 
 ServerConf::ServerConf()
 {
-	_autoindex = false;
-	_root = "/var/www/html";
-	_index.push_back("index.html");
-	_bodySize = 1048576;
-	_returnDirective = ""; //I don't KNOW ??
-	_errorPage[404] = "/404.html";
-	_serverName.push_back("default");
 	_listens.push_back(listen{80, "0.0.0.0"});
+	_serverName.push_back("default");
 }
   
 ServerConf::~ServerConf() {} 
 //detruire des trucs ici?
 
-ServerConf::ServerConf(ServerConf const& other)
+ServerConf::ServerConf(ServerConf const& other) : BlockBase(other)
 {
 	*this = other;
 }
+
 ServerConf&	ServerConf::operator=(ServerConf const& other)
 {
 	if (this != &other)
 	{
-		this->_autoindex = other._autoindex;
-		this->_root = other._root;
-		this->_index = other._index;
-		this->_bodySize = other._bodySize;
-		this->_returnDirective = other._returnDirective;
-		this->_errorPage = other._errorPage;
+  		BlockBase::operator=(other);
 		this->_listens = other._listens;
 		this->_serverName = other._serverName;
 		this->_locations = other._locations;     
 	}
 	return *this;
-}
-
-
-bool    ServerConf::getAutoindex() const
-{
-	return _autoindex;
-}
-
-std::string ServerConf::getRoot() const
-{
-	return _root;
-}
-std::vector<std::string> ServerConf::getIndex() const
-{
-	return _index;
-}
-		
-unsigned int ServerConf::getBodySize() const
-{
-	return _bodySize;
-}
-		
-std::string ServerConf::getReturnDirective() const
-{
-	return _returnDirective;
-}
-
-std::map<unsigned int, std::string> ServerConf::getErrorPage() const
-{
-	return _errorPage;
 }
 
 std::map<std::string, LocationConf>&	ServerConf::getLocations()
@@ -88,17 +48,6 @@ std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::st
 {
 	return _locations.find(key);
 }	
-
-bool	ServerConf::checkFlag(std::string const& value)
-{
-	for(size_t i = 0; i < _flag.size(); i++)
-	{
-		if (_flag[i] == value)
-			return true;
-	}
-	_flag.push_back(value); //mettre le flag de la directive
-	return false;
-}
 
 size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 {
@@ -175,70 +124,5 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 	if (!checkDns(_serverName))
 		throw std::invalid_argument(" Parsing error, 'server_name' arguments"
 			" need to follow DNS's rules\n");
-    return (i + 1);   
-}
-
-size_t	ServerConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
-{
-	if ( i >= buffer.size() || buffer[i].empty())
-		throw std::invalid_argument(" Parsing error, miss 'autoindex' argument\n");
-	if (buffer[i] != "on" && buffer[i] != "off")
-		throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
-			" 'on' or 'off' arguments\n");
-	if (i + 1 >= buffer.size())
-		throw std::invalid_argument(" Parsing error, miss semicolon after"
-			" 'autoindex' argument\n");
-	if (i + 1 < buffer.size() && buffer[i + 1] != ";")
-		throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
-			" one argument\n");
-	if (checkFlag("autoindex"))
-		throw std::invalid_argument(" Parsing error, only one 'autoindex'"
-			" directive allowed by server block\n"); 
-	if (buffer[i] == "on")
-		_autoindex = true;
-	else
-		_autoindex = false;
-	return (i + 2);
-}
-
-size_t	ServerConf::fillRoot(std::vector<std::string>& buffer, size_t i)
-{
-	if ( i >= buffer.size() || buffer[i].empty()) //a voir si utile pour chaque directive ?
-		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
-	if (buffer[i][0] != '/')
-		throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
-	if (i + 1 >= buffer.size())
-		throw std::invalid_argument(" Parsing error, miss semicolon after"
-			" 'root' argument\n");
-	if (i + 1 < buffer.size() && buffer[i + 1] != ";")
-		throw std::invalid_argument(" Parsing error, 'root' allows only"
-			" one argument\n");
-	if (checkFlag("root"))
-		throw std::invalid_argument(" Parsing error, only one 'root'"
-			" directive allowed by server block\n"); 
-	_root = buffer[i];
-	return (i + 2);
-}
-size_t	ServerConf::fillIndex(std::vector<std::string>& buffer, size_t i)
-{
-	if (checkFlag("index"))
-		throw std::invalid_argument(" Parsing error, only one 'index'"
-			" directive allowed by server blocks\n"); 
-	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
-		throw std::invalid_argument(" Parsing error, miss 'index' arguments\n");
-	if (!_index.empty())
-		_index.clear(); //supprimer l'arg par defaut
-	while (i < buffer.size())
-	{
-		if (buffer[i] == ";")
-			break;
-		if (buffer[i] == "{" || buffer[i] == "}")
-			throw std::invalid_argument(" Parsing error, miss semicolon after"
-				" 'index' directive\n");
-		_index.push_back(buffer[i]);
-		i++;
-	}
-	// for (size_t i = 0; i < _index.size(); i++)
-	// 	std::cout << PURPLE << _index[i] << std::endl;
     return (i + 1);   
 }
