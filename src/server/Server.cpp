@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 15:55:39 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 16:16:40 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,13 +116,12 @@ void Server::servRun()
 				std::cout << "*****" << std::endl;
 			
 				std::string response = 
-				"HTTP/1.1 200 OK\r\n"
-				"Content-Type: text/html\r\n"
-				"Content-Length: 85\r\n"
-				"\r\n"
+				"HTTP/1.1 200 OK\n"
+				"Content-Type: text/html\n"
+				"Content-Length: 85\n"
+				"\n"
 				"<html><body><h1>Bonjour!</h1></body></html>";
 			
-	
 				send(_clientFd, response.c_str(), response.size(), 0);
 			
 				close(_clientFd);
