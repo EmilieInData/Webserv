@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 13:55:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 15:55:39 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,35 +99,37 @@ void Server::servRun()
 			std::cout << utilsTimestamp() << "Still waiting for connection" << std::endl;
 			continue ;
 		}
-	}
-	std::cout << "Outside poll loop" << std::endl;	
-	if (_pollFd[0].revents & POLLIN)
-	{
-		char buffer[4096];
-		ssize_t received = recv(_clientFd, buffer, sizeof(buffer), 0);
-		std::cout << utilsTimestamp() << " Request received" << std::endl;
-		std::cout << received << std::endl;
-	}
-	// std::string response = 
-	// "HTTP/1.1 200 OK\r\n"
-	// 	"Content-Type: text/plain\r\n"
-	// 	"Content-Length: 13\r\n"
-	// 	"\r\n"
-	// 	"Hello, world!";
 		
-	// 	_pollFd.events = POLLOUT;
-	// 	poll(&_pollFd, 1, 1000);
-		
-	// 	if (_pollFd.revents & POLLOUT)
-	// 	{
-	// 		send(_clientFd, response.c_str(), response.size(), 0);
-	// 	}
-		
-		close(_clientFd);
-		// socklen_t addrLen = sizeof(_servAddr);
-		// if ((_clientFd = accept(_socketFd, (struct sockaddr*)&_servAddr, &addrLen)) < 0)
-		// 	std::cerr << "Accept Error. fd = " << _clientFd << std::endl;
+		if (_pollFd[0].revents & POLLIN)
+		{
+			socklen_t clientLen = sizeof(_clientAddr);
+			_clientFd = accept(_socketFd, (struct sockaddr *)&_clientAddr, &clientLen);
+			if (_clientFd >= 0)
+			{
+				std::cout << utilsTimestamp() << "New connection accepted" << std::endl;
+				char buffer[4096];
+				ssize_t bytes = recv(_clientFd, buffer, sizeof(buffer), 0);
+				if (bytes > 0)
+					buffer[bytes] = '\0';
+				std::cout << utilsTimestamp() << "Request content:\n*****\n" << std::endl;
+				std::cout << buffer;
+				std::cout << "*****" << std::endl;
+			
+				std::string response = 
+				"HTTP/1.1 200 OK\r\n"
+				"Content-Type: text/html\r\n"
+				"Content-Length: 85\r\n"
+				"\r\n"
+				"<html><body><h1>Bonjour!</h1></body></html>";
+			
 	
+				send(_clientFd, response.c_str(), response.size(), 0);
+			
+				close(_clientFd);
+			}
+		}
+	}
+	close(_socketFd);
 }
 
 
@@ -135,4 +137,5 @@ void Server::servRun()
 netstat -an | grep 8080
 ss -ltn // Linux Only
 telnet 127.0.0.1 8080
+http://localhost:8080 // via browser
 */
