@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:54 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 16:20:24 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:35:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <poll.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -31,6 +32,9 @@ class Server
 	private:
 		time_t _createdTime;
 		int _socketFd;
+		int _clientFd;
+		struct sockaddr_in _servAddr;
+		struct pollfd _pollFd;
 		
 	public:
 		Server();
@@ -38,8 +42,8 @@ class Server
 		Server &operator=(Server const &copy);
 		~Server();
 
-		void servSetup();
 		void servRun();
+		void servSetup();
 		
 		time_t servTimeGet();
 };

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/01 17:06:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 12:20:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,49 +38,32 @@ time_t Server::servTimeGet() // delete??
 	return this->_createdTime;
 }
 
-void Server::servRun()
-{	
-	std::cout << utilsTimestamp() << "Server started" << std::endl;
-	
-	while (true)
-	{
-		time_t loop = time(NULL);
-
-		while ((difftime(time(NULL), loop)) <= 3)
-			;
-		
-		std::cout << utilsTimestamp() <<  "\nServer running\n";
-		// std::cout << "Socket fd: " << this->_testSocket.getSocketFd() << std::endl;
-	}
-}
-
 void Server::servSetup()
 {
 	/* creating socket */
 	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socketFd < 0)
-		std::cerr << "Socket creation error" << std::endl;
-
-
+	std::cerr << "Socket creation error" << std::endl;
+	
+	
 	/* setting socket to non blocking as by subject 
 	using fcntl() first to get the flags (F_GETFL)
 	and then setting them (F_SETFL)*/
 	int flags = fcntl(_socketFd, F_GETFL, 0);
 	if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) < 0)
-		std::cerr << "Nonblocking setup error" << std::endl;
-
+	std::cerr << "Nonblocking setup error" << std::endl;
+	
 	
 	/* using the sockaddr_in structure to store the
 	socket address information */
-	struct sockaddr_in address; // move this to Server class
-	std::memset(&address, 0, sizeof(address));	
-	address.sin_family = AF_INET;
-	address.sin_port = htons(8080);
-	address.sin_addr.s_addr = inet_addr("127.0.0.1"); // for now set to localhost
-
+	std::memset(&_servAddr, 0, sizeof(_servAddr));	
+	_servAddr.sin_family = AF_INET;
+	_servAddr.sin_port = htons(8080);
+	_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // for now set to localhost
+	
 	/* binding the socket we created to the address we
 	have set above */
-	if (bind(_socketFd, (struct sockaddr*)&address, sizeof(address)) < 0)
+	if (bind(_socketFd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0)
 	{
 		std::cerr << "Socket binding error" << std::endl;
 		close(_socketFd);
@@ -93,6 +76,49 @@ void Server::servSetup()
 		close(_socketFd);
 	}
 }
+
+void Server::servRun()
+{	
+	std::cout << utilsTimestamp() << "Server started" << std::endl;
+	
+	while (true)
+	{
+		
+		socklen_t addrLen = sizeof(_servAddr);
+		if ((_clientFd = accept(_socketFd, (struct sockaddr*)&_servAddr, &addrLen)) < 0)
+			std::cerr << "Accept Error. fd = " << _clientFd << std::endl;
+		
+		_pollFd.fd = _clientFd;
+		_pollFd.events = POLLIN;
+		poll(&_pollFd, 1, 1000);
+
+		if (_pollFd.revents & POLLIN)
+		{
+			char buffer[4096];
+			ssize_t received = recv(_clientFd, buffer, sizeof(buffer), 0);
+			std::cout << utilsTimestamp() << " Request received" << std::endl;
+			std::cout << received << std::endl;
+		}
+
+		std::string response = 
+					"HTTP/1.1 200 OK\r\n"
+					"Content-Type: text/plain\r\n"
+					"Content-Length: 13\r\n"
+					"\r\n"
+					"Hello, world!";
+		
+		_pollFd.events = POLLOUT;
+		poll(&_pollFd, 1, 1000);
+
+		if (_pollFd.revents & POLLOUT)
+		{
+			send(_clientFd, response.c_str(), response.size(), 0);
+		}
+
+		close(_clientFd);
+	}
+}
+
 
 /* listening testing methods:
 netstat -an | grep 8080
