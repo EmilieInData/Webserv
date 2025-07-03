@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 13:49:15 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/03 13:55:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ void Server::servRun()
 			std::cout << utilsTimestamp() << "Still waiting for connection" << std::endl;
 			continue ;
 		}
-		
 	}
 	std::cout << "Outside poll loop" << std::endl;	
 	if (_pollFd[0].revents & POLLIN)
