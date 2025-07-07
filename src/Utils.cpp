@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/06/27 13:39:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:19:33 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,4 +211,25 @@ bool	checkLabel(std::string const& str)
 	return true;
 }
 
- 
+ unsigned int	strToSize(std::string const& value)
+{
+	std::string tmp;
+
+	for(size_t i = 0; i < value.length(); i++)
+	{
+		if (value[i] < '0' || value[i] > '9')
+		{
+			tmp = value.substr(0, i);
+			if (i + 1 != value.length())
+				throw std::invalid_argument(" Parsing error, wrong client_max_body_size' arguments\n");
+		}
+	}
+	unsigned int num = strToInt(tmp);
+	if (value[value.length() - 1] == 'k' || value[value.length() - 1] == 'K')
+		num = num * 1024;
+	else if (value[value.length() - 1] == 'm' || value[value.length() - 1] == 'M')
+		num = num * 1024 * 1024;
+	else
+		throw std::invalid_argument(" Parsing error, wrong client_max_body_size' arguments\n");
+	return (num);
+}

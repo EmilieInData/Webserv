@@ -70,6 +70,20 @@
 //une seule directive par bloc
 
 
+--> client_max_body_size <--
+
+//limiter la taille maximale du body d'une requête HTTP
+//généralement pour des requêtes POST ou PUT
+
+//un seul arg obligatoire
+//une seule directive par bloc
+//autorise seulement m/M & k/k colle au chiffre devant
+
+//1k = 1024 octets/bits
+//1m = 1024 x 1024 = 1048576 bits
+// 1m = 1024k
+
+
 --> TO DO
 
 //passer tout en dynamique

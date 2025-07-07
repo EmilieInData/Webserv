@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 18:22:32 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:34:37 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,18 +262,28 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			i = blocks.back()->fillIndex(buffer, i + 1);
 			continue;
 		}
-		// else if (buffer[i] == "client_max_body_size")
-
+		else if (buffer[i] == "client_max_body_size")
+		{
+			i = blocks.back()->fillBodySize(buffer, i + 1);
+			continue;
+		}
 		// else if (buffer[i] == "return")
-
+		// {
+		// 	i = blocks.back()->fillReturnDirectives(buffer, i + 1);
+		// 	continue;
+		// }
 		// else if (buffer[i] == "error_page")
-
-		//else if (buffer[i] == "allow_methods")
-
+		// {
+		// 	i = blocks.back()->fillErrorPage(buffer, i + 1);
+		// 	continue;
+		// }
+		// else if (buffer[i] == "allow_methods")
+		// {
+		// 	i = blocks.back()->fillAllowedMethods(buffer, i + 1);
+		// 	continue;
+		// }
 		else if (buffer[i] == "}")
 		{
-			// if (blocks.empty()) // no necessary
-			// 		throw std::invalid_argument(" Parsing error, '}' badly positioned\n");
 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
 			i++;
 		}

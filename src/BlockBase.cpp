@@ -20,7 +20,7 @@ BlockBase::BlockBase()
 	_index.push_back("index.html");
 	_bodySize = 1048576;
 	_returnDirective = ""; //I don't KNOW ??
-	_errorPage[404] = "/404.html";
+	_errorPage[404] = "/404.html"; //to fill
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
 }
@@ -153,7 +153,23 @@ size_t	BlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
 		_index.push_back(buffer[i]);
 		i++;
 	}
-	// for (size_t i = 0; i < _index.size(); i++)
-	// 	std::cout << PURPLE << _index[i] << std::endl;
-    return (i + 1);   
+    return (i + 1);
+}
+
+size_t	BlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i)
+{
+	if (checkFlag("bodySize"))
+		throw std::invalid_argument(" Parsing error, only one 'client_max_body_size'"
+			" directive allowed by server blocks\n"); 
+	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
+		|| buffer[i] == "{" || buffer[i] == "}")
+		throw std::invalid_argument(" Parsing error, miss 'client_max_body_size' arguments\n");
+	if (i + 1 >= buffer.size() || buffer[i + 1] != ";")
+		throw std::invalid_argument(" Parsing error, miss semicolon after"
+				" 'client_max_body_size' directive\n");
+	_bodySize = strToSize(buffer[i]);
+	if (_bodySize > 1048576)
+		throw std::invalid_argument(" Parsing error, 'client_max_body_size'"
+			" max allowed is 1 048 576 bits\n");
+	return i + 2;
 }

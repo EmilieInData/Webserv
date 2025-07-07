@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 12:00:05 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:07:00 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,20 @@
 #define PURPLE  "\033[38;5;62m"
 
 //listen
-bool		isInt(std::string const& value);
-bool		isIp(std::string const& value);
-bool		isSocket(std::string const& value);
-int			strToInt(std::string const& value);
-bool		checkIpAddress(std::string const& value);
-bool		checkSocketAddress(std::string const& value);
-std::string	socketToIp(std::string const& value);
-int			socketToPort(std::string const& value);
+bool	    	isInt(std::string const& value);
+bool		    isIp(std::string const& value);
+bool    		isSocket(std::string const& value);
+int		    	strToInt(std::string const& value);
+bool		    checkIpAddress(std::string const& value);
+bool    		checkSocketAddress(std::string const& value);
+std::string 	socketToIp(std::string const& value);
+int			    socketToPort(std::string const& value);
 
 //server_name
-bool	    checkDns(std::vector<std::string>& tmp);
-bool    	checkLabel(std::string const& str);
+bool            checkDns(std::vector<std::string>& tmp);
+bool    	    checkLabel(std::string const& str);
+
+//body_size
+unsigned int    strToSize(std::string const& value);
 
 #endif
