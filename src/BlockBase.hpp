@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/07 19:28:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:52:25 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ class BlockBase
 		bool									getAutoindex() const;
 		std::string								getRoot() const;
 		unsigned int							getBodySize() const;
-		std::string								getReturnDirective() const;
+		std::vector<std::string>				getReturnDirective() const;
 		std::vector<std::string>				getIndex() const;
-		std::map<unsigned int, std::string>		getErrorPage() const;
 		std::vector<std::string>				getAllowedMethods() const;
+		std::map<unsigned int, std::string>		getErrorPage() const;
 		//flags
 
 		bool	checkFlag(std::string const& value);
@@ -37,7 +37,7 @@ class BlockBase
 		size_t	fillRoot(std::vector<std::string>& buffer, size_t i);
 		size_t	fillIndex(std::vector<std::string>& buffer, size_t i);
 		size_t	fillBodySize(std::vector<std::string>& buffer, size_t i);
-		// size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);
+		size_t	fillReturnDirectives(std::vector<std::string>& buffer, size_t i);
 		// size_t	fillErrorPage(std::vector<std::string>& buffer, size_t i);
 		size_t	fillAllowedMethods(std::vector<std::string>& buffer, size_t i);
 
@@ -46,11 +46,11 @@ class BlockBase
 		bool    							_autoindex;
 		std::string							_root;
 		unsigned int						_bodySize;
-		std::string							_returnDirective;
-		std::vector<std::string>			_index;
-		std::map<unsigned int, std::string>	_errorPage;
-		std::vector<std::string>    		_allowedMethods;
 		std::vector<std::string>			_flag;
+		std::vector<std::string>			_index;
+		std::vector<std::string>    		_allowedMethods;
+		std::vector<std::string> 			_returnDirective;
+		std::map<unsigned int, std::string>	_errorPage;
 };
 
 #endif

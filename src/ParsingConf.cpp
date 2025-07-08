@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/08 12:13:59 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:35:22 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,11 +267,11 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			i = blocks.back()->fillBodySize(buffer, i + 1);
 			continue;
 		}
-		// else if (buffer[i] == "return")
-		// {
-		// 	i = blocks.back()->fillReturnDirectives(buffer, i + 1);
-		// 	continue;
-		// }
+		else if (buffer[i] == "return")
+		{
+			i = blocks.back()->fillReturnDirectives(buffer, i + 1);
+			continue;
+		}
 		// else if (buffer[i] == "error_page")
 		// {
 		// 	i = blocks.back()->fillErrorPage(buffer, i + 1);

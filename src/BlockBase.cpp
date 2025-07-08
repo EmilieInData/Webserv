@@ -19,7 +19,7 @@ BlockBase::BlockBase()
 	_root = "/var/www/html";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
-	_returnDirective = ""; //I don't KNOW ??
+	// _returnDirective = ""; //To define ??
 	_errorPage[404] = "/404.html"; //to fill
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
@@ -66,7 +66,7 @@ unsigned int BlockBase::getBodySize() const
 	return _bodySize;
 }
 		
-std::string BlockBase::getReturnDirective() const
+std::vector<std::string> BlockBase::getReturnDirective() const
 {
 	return _returnDirective;
 }
@@ -201,4 +201,33 @@ size_t	BlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i)
 				"'allow_methods' argument is not correct\n");
 	}
 	return i + 1;
+}
+
+size_t	BlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t i)
+{
+	int	num;
+
+	if (checkFlag("return"))
+		throw std::invalid_argument(" Parsing error, only one 'return'"
+			" directive allowed by server blocks\n"); 
+	if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
+		|| buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty()
+		|| buffer[i + 1] == "{" || buffer[i + 1] == "}")
+		throw std::invalid_argument(" Parsing error, miss 'return' directive arguments\n");
+	_returnDirective.clear(); // vider l'arg/les args car redefini
+	if (isInt(buffer[i]))
+		num = strToInt(buffer[i]);
+	if (!isInt(buffer[i]) || num < 100 || num > 599)
+			throw std::invalid_argument(" Parsing error, 'return' directive"
+				" argument is not correct\n");
+	_returnDirective.push_back(buffer[i]);
+	if (buffer[i + 1] != ";")
+	{
+		_returnDirective.push_back(buffer[i + 1]);
+		if (i + 2 >= buffer.size() || buffer[i + 2].empty() || buffer[i + 2] != ";")
+			throw std::invalid_argument(" Parsing error, miss semicolon after"
+				" 'return' directive arguments\n");
+		return i + 3;
+	}
+	return i + 2;
 }
