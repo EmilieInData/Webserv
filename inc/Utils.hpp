@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.cpp                                          :+:      :+:    :+:   */
+/*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/18 16:55:07 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/18 17:31:37 by cle-tron         ###   ########.fr       */
+/*   Created: 2025/06/30 15:21:29 by fdi-cecc          #+#    #+#             */
+/*   Updated: 2025/07/01 12:47:20 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {
-	
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
+#include <ctime>
+#include <string>
+#include <iostream>
 
+const std::string utilsTimestamp();
 
-
-}
-
+#endif

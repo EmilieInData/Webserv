@@ -3,20 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 17:27:53 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:22:03 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include "HttpParserTester.hpp"
+#include "Server.hpp"
 
 #include <iostream>
 
 int	main() {
 
+
+	Server testserv;
+	
 	HttpRequest test = HttpRequest();
 	
 	std::string	http_mess( "POST /form?querysinparseo HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\rido=perez" );
@@ -29,6 +33,7 @@ int	main() {
 	std::cout << "query: " << req.getQuery() << std::endl;
 	std::cout << "version: " << req.getHttpVersion() << std::endl;
 
-
+	testserv.servSetup();
+	testserv.servRun();
 	return 0;
 }
