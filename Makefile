@@ -14,8 +14,7 @@ SRC_DIR		= src/
 OBJ_DIR		= obj/
 TEST_DIR	= tests/
 
-SRC_FILES	= main HttpRequest HttpParser RequestLine server/Server utils/Utils \
-				#server/Sockets
+SRC_FILES	= main HttpRequest HttpParser RequestLine Server Utils \
 
 TEST_FILES	= HttpParserTester
 

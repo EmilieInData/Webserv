@@ -6,11 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 16:55:07 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/01 12:55:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:22:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/utils/Utils.hpp"
+#include "Utils.hpp"
 
 const std::string utilsTimestamp()
 {

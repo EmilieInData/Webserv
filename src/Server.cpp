@@ -6,11 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 16:16:40 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:22:10 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/server/Server.hpp"
+#include "Server.hpp"
 
 Server::Server(): _createdTime(time(NULL))
 { 

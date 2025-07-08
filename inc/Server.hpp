@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:54 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/03 15:04:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:21:33 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../utils/Utils.hpp"
+#include "Utils.hpp"
 
 class Server
 {

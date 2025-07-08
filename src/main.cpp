@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/01 16:37:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/08 15:22:03 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include "HttpParserTester.hpp"
-#include "server/Server.hpp"
+#include "Server.hpp"
 
 #include <iostream>
 
