@@ -84,10 +84,47 @@
 // 1m = 1024k
 
 
+--> allow_methods <--
+
+//mot-clé dans une requête HTTP qui indique l’intention du client 
+//(souvent un navigateur ou un autre programme) envers une ressource
+
+// GET		Récupérer une ressource (lecture)
+// POST		Envoyer des données (ex. formulaire)
+// DELETE	Supprimer une ressource
+// PUT		Remplacer une ressource entière
+// PATCH	Modifier partiellement une ressource
+// HEAD		Même chose que GET sans le corps de réponse
+// OPTIONS	Demander au serveur quelles méthodes sont autorisées
+
+//peut ecrire plusieurs fois la mm methods ds la directive, la methode en doublon est juste ignorer
+//on peut mettre une erreur si on le souhaite mais nginx ne le fait pas
+// une directive par bloc
+
+--> return <--
+
+//redirectionner ou de retourner immédiatement une réponse HTTP simple
+//sans traiter de fichier ou passer par un proxy
+//stop tout, et renvoie immédiatement une réponse au client
+//TOUTES LES AUTRES INFOS DU BLOC NE SONT PAS PRISES EN COMPTE,il faut les garder mais
+// si il y a un return dans un bloc on l'excute TOUT DE SUITE et on oublie tout le reste de ce bloc
+
+//une directive par bloc, 1 ou 2 args, avec un nombre en premier de 100 a 599
+//et possiblement un bloc de texte mais pas plus
+
+// return 404;
+// return 301 https://example.com;
+// return 503 "Service unavailable";
+
+
 --> TO DO
 
 //passer tout en dynamique
 
+//changer pour parser en deux temps et gerer TOUTES les infos server avant les locations
+
+//si il manque des arguments au fichier comme listen par ex,
+//les messages d'erreurs sont au lancement du server pas au parsing
 
 --> TO ASK
 //est ce que je dois mettre localhost en arg valide pour listen ?

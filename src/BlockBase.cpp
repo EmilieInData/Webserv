@@ -173,3 +173,32 @@ size_t	BlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i)
 			" max allowed is 1 048 576 bits\n");
 	return i + 2;
 }
+
+size_t	BlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i)
+{
+	if (checkFlag("allowMethods"))
+		throw std::invalid_argument(" Parsing error, only one 'allow_methods'"
+			" directive allowed by server blocks\n"); 
+	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
+		|| buffer[i] == "{" || buffer[i] == "}")
+		throw std::invalid_argument(" Parsing error, miss 'allow_methods' arguments\n");
+	_allowedMethods.clear(); // vider l'arg/les args car redefini
+	for (; i < buffer.size(); i++)
+	{
+		if (buffer[i] == "GET" || buffer[i] == "POST" || buffer[i] == "DELETE")
+		{
+			for(size_t j = 0; j < _allowedMethods.size(); j++) //checker doublons mm si ok nginx
+			{
+				if (_allowedMethods[j] == buffer[i])
+					throw std::invalid_argument(" Parsing error, 'allow_methods' duplicated\n");
+			}
+			_allowedMethods.push_back(buffer[i]);
+		}
+		else if (buffer[i] == ";")
+			break;
+		else
+			throw std::invalid_argument(" Parsing error 501, not implemented\n"
+				"'allow_methods' argument is not correct\n");
+	}
+	return i + 1;
+}

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 16:48:07 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/08 12:45:01 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ class LocationConf : public BlockBase
 		LocationConf(LocationConf const& other);
 		LocationConf&	operator=(LocationConf const& other);
 
-		//get cgi pass
-		// fill cgi_pass
+		// std::string	getCgiPass() const;
+		// size_t		fillCgiPass(std::vector<std::string>& buffer, size_t i);
 
 	private:
 			std::string		_cgiPass; // tjr ds un bloc location

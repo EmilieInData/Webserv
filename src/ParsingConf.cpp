@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/07 19:34:37 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/08 12:13:59 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,11 +277,11 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		// 	i = blocks.back()->fillErrorPage(buffer, i + 1);
 		// 	continue;
 		// }
-		// else if (buffer[i] == "allow_methods")
-		// {
-		// 	i = blocks.back()->fillAllowedMethods(buffer, i + 1);
-		// 	continue;
-		// }
+		else if (buffer[i] == "allow_methods")
+		{
+			i = blocks.back()->fillAllowedMethods(buffer, i + 1);
+			continue;
+		}
 		else if (buffer[i] == "}")
 		{
 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
