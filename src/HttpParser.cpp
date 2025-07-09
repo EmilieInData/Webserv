@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 17:28:44 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:36:17 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 
 	std::vector<std::string> lines = crlfSplit( message );
 
-	if ( lines.empty() || !lines.back().empty()) throw std::invalid_argument( S_400 );
+	if ( lines.empty() || !lines.back().empty()) throw std::invalid_argument( E_400 );
 
 	std::vector<std::string>::iterator	it;
 	std::vector<std::string>::iterator	ite = lines.end();
@@ -94,15 +94,15 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 	for ( it = lines.begin(); it != ite; ++it ) {
 		if ( header == 0 && (*it).empty()) continue;
 		if ( header > 0 && !(*it).empty()) 
-			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( S_400 );
+			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( E_400 );
 		s_ite = (*it).end();
 		for ( s_it = (*it).begin(); s_it != s_ite; ++s_it )
-			if ( *s_it == '\r' ) throw std::invalid_argument( S_400 );
+			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
 		if ( strncmp( (*it).c_str(), "Host:", 5 ) == 0 )
 			host++;
 		header++;
 	}
-	if ( host != 1 ) throw std::invalid_argument( S_400 );
+	if ( host != 1 ) throw std::invalid_argument( E_400 );
 
 	return lines;
 }
@@ -114,15 +114,15 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 
 	for ( s_it = line.begin(); s_it != s_ite; ++s_it )
 		if ( *s_it == ' ' ) spaces++;
-	if ( spaces != 2 ) throw std::invalid_argument( S_400 );
+	if ( spaces != 2 ) throw std::invalid_argument( E_400 );
 
 	std::vector<std::string>	tokens = split( line, ' ' );
 	
-	if ( tokens.size() != 3 ) throw std::invalid_argument( S_400 );
+	if ( tokens.size() != 3 ) throw std::invalid_argument( E_400 );
 
-	if ( tokens[1].length() > 8000 ) throw std::invalid_argument( S_414 );
+	if ( tokens[1].length() > 8000 ) throw std::invalid_argument( E_414 );
 
-	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( S_400 );
+	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( E_400 );
 
 	return	 RequestLine( tokens );
 }
@@ -147,4 +147,30 @@ std::string	HttpParser::parseQuery( std::string const & uri ) {
 		return "";
 
 }
+
+/*
+void	notImplementedMethod( std::string const & method ) {
+	//buscar en archivo config los metodos implementados // array de metodos implementados 
+
+	if ( encuentra el methodo )
+		return;
+		
+	throw std::invalid_argument( E_501 );
+
+}
+*/
+
+/*	
+void	notAllowedMethod( std::string const & method, std::string const & path ) {
+	buscar en el archivo de config si el /location correspondiente al path, tiene allowed-method
+	
+	if ( el /location tiene allowed method ) 		
+		if (el method esta incluido )
+			return;
+	else 
+		return;
+	
+	throw std::invalid_argument( E_405 );
+}
+*/
 

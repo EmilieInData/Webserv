@@ -6,16 +6,17 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 17:10:21 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:33:16 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef	HTTPARSER_HPP
 #define	HTTPARSER_HPP
 
-#define S_400 "400 Bad Request"
-#define S_414 "414 URI Too Long"
-#define S_501 "501 Not Implemented"
+#define E_400 "400 Bad Request"
+#define E_405 "405 Method Not Allowed"
+#define E_414 "414 URI Too Long"
+#define E_501 "501 Not Implemented"
 
 
 #include <string>
@@ -39,6 +40,8 @@ public:
 	static RequestLine				parseRequestLine( std::string const & line );
 	static std::string				parsePath( std::string const & uri );
 	static std::string				parseQuery( std::string const & uri );
+	static void						notImplementedMethod( std::string const & method );
+	static void						notAllowedMethod( std::string const & method, std::string const & path );
 
 	static std::vector<std::string>	parseHttpMessage( std::string const & str );
 };

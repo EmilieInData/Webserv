@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 17:30:19 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:38:21 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ HttpRequest::HttpRequest() : req_line( NULL ) {
 
 HttpRequest::HttpRequest( std::string const & message ) : req_line( NULL ) {
 	try {
+
+		std::cout << message << std::endl;
+
 		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message );
 		std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
 
@@ -32,7 +35,7 @@ HttpRequest::HttpRequest( std::string const & message ) : req_line( NULL ) {
 
 		req_line = new RequestLine( HttpParser::parseRequestLine( *it ));
 
-
+		//HttpParser::notImplementedMethod( req_line->method, header->find( "path" ) );
 
 	} catch ( std::invalid_argument e ) {
 		std::cout << e.what() << std::endl;

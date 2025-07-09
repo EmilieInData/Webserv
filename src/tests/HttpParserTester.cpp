@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 17:21:37 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/09 12:34:53 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,23 @@
 #include <iostream>
 #include <string>
 
-//Request Message
+/*--------------------------Request Message------------------------------------*/
 
 void	HttpParserTester::crWithoutLf() {
 	try {
 		std::string	http_mess( "POST /for\rm HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    CR without LF accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid message:    CR without LF accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  CR without LF in body don't accepted/ Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  CR without LF in body don't accepted/ Test OK" << std::endl;
 	}
 
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\rido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    CR without LF in body accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid message:    CR without LF in body accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  CR without LF in body don't accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  CR without LF in body don't accepted / Test FAIL" << std::endl;
 	}
 }
 
@@ -40,17 +40,17 @@ void	HttpParserTester::emptyLinesBeforeReqLine() {
 	try {
 		std::string	http_mess( "\r\n\r\n\r\nPOST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    three empty lines (CRLF) before Request-Line accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid message:    three empty lines (CRLF) before Request-Line accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  three CRLF before req-line not accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  three CRLF before req-line not accepted / Test FAIL" << std::endl;
 	}
 
 	try {
 		std::string	http_mess( "\r\nPOST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    one empty line (CRLF) before Request-Line accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid message:    one empty line (CRLF) before Request-Line accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  one CRLF before req-line not accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  one CRLF before req-line not accepted / Test FAIL" << std::endl;
 	}
 }
 
@@ -58,16 +58,16 @@ void	HttpParserTester::isspaceBeforeHeader() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\n\tContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    \\tab before header accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid message:    \\tab before header accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  \\tab (isspace) before header don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  \\tab (isspace) before header don't accepted / Test OK" << std::endl;
 	}
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\n   Host: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    spaces before header accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid message:    spaces before header accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  spaces (isspace) before header don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  spaces (isspace) before header don't accepted / Test OK" << std::endl;
 	}
 }
 
@@ -75,9 +75,9 @@ void	HttpParserTester::sfWithoutCrlf() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    string without CRLF / Test FAIL" << std::endl;
+		std::cout << RED << "Valid message:    string without CRLF / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  string without CRLF / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  string without CRLF / Test OK" << std::endl;
 	}
 }
 
@@ -85,18 +85,149 @@ void	HttpParserTester::shouldHaveOneHost() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nHost: 27\r\n\r\nnombre=juan&apellido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:    two hosts accepted / Test FAIL" << std::endl;
+		std::cout << RED  <<"Valid message:    two hosts accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  two hosts don't accepted/ Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  two hosts don't accepted/ Test OK" << std::endl;
 	}
 
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\rido=perez" );
 		HttpParser::parseHttpMessage( http_mess );
-		std::cout << "Valid message:     message without host accepted / Test FAIL" << std::endl;
+		std::cout << RED <<"Valid message:     message without host accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  message without host don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  message without host don't accepted / Test OK" << std::endl;
 	}
+}
+
+void	HttpParserTester::validHostSyntaxis() {
+	
+	std::string host( "www.example.com" );
+	
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << GREEN << "valid host:	  " << host << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
+	}
+	
+	host = "example.com";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << GREEN << "valid host:	  " << host << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
+	}
+
+	host = "http://example.com";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "example..com";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "exam ple.com";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "127.0.0.1";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << GREEN << "valid host:	  " << host << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
+	}
+
+	host = "127.0.0.256";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "127.0.0";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "domain.com:443";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << GREEN << "valid host:	  " << host << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
+	}
+
+	host = "domain.com:65536";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "domain.com:";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "domain.com:08";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	host = "domain.com:80.0";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+	
+	host = "domain.com:abc";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << RESET << std::endl;
+	}
+
 }
 
 void	HttpParserTester::parseHttpMessageTest() {
@@ -108,34 +239,37 @@ void	HttpParserTester::parseHttpMessageTest() {
 	isspaceBeforeHeader();
 	sfWithoutCrlf();
 	shouldHaveOneHost();
+	validHostSyntaxis();
 
 	std::cout << std::endl;
 
 }
 
-//Request Line
+
+
+/*-----------------------------------Request Line----------------------------------------*/
 
 void	HttpParserTester::shouldHaveTwoSpaces() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid reqline:    two spaces accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid reqline:    two spaces accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  two spaces don't accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  two spaces don't accepted / Test FAIL" << std::endl;
 	}
 	try {
 		std::string	req_line( "POST /form  HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid reqline:    three spaces accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid reqline:    three spaces accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  three spaces don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  three spaces don't accepted / Test OK" << std::endl;
 	}
 	try {
 		std::string	req_line( "POST /formHTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid reqline:    one space accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid reqline:    one space accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  one space don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  one space don't accepted / Test OK" << std::endl;
 	}
 }
 
@@ -143,16 +277,16 @@ void	HttpParserTester::shouldHaveThreeTokens() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid req-line:   three tokens accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid req-line:   three tokens accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  three tokens don't accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  three tokens don't accepted / Test FAIL" << std::endl;
 	}
 	try {
 		std::string	req_line( "POST  /formHTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid req-line:   two tokens accepted / Test FAIL" << std::endl;
+		std::cout << RED <<  "Valid req-line:   two tokens accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  two tokens don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  two tokens don't accepted / Test OK" << std::endl;
 	}
 }
 
@@ -161,17 +295,17 @@ void	HttpParserTester::uriTooLong() {
 		std::string	uri( 8001, 'x' );
 		std::string req_line( "GET " + uri + " HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid req-line:   8001 octects accepted / Test FAIL" << std::endl;
+		std::cout << RED << "Valid req-line:   8001 octects accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ": 8001 octets don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ": 8001 octets don't accepted / Test OK" << std::endl;
 	}
 
 	try {
 		std::string	uri( 8000, 'x' );
 		HttpParser::parseRequestLine( "GET " + uri + " HTTP/1.1" );
-		std::cout << "Valid req-line:   8000 octects accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid req-line:   8000 octects accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ": 8000 octets don't accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ": 8000 octets don't accepted / Test FAIL" << std::endl;
 	}
 }
 
@@ -179,30 +313,42 @@ void	HttpParserTester::httpVersion() {
 	try {
 		std::string	req_line( "POST /form HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid http-vers:  HTTP/1.1 version accepted / Test OK" << std::endl;
+		std::cout << GREEN << "Valid http-vers:  HTTP/1.1 version accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  HTTP/1.1 version don't accepted / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  HTTP/1.1 version don't accepted / Test FAIL" << std::endl;
 	}
 	try {
 		std::string	req_line( "POST  /form HTTP//1.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid http-vers:  HTTP//1.1 accepted / Test FAIL" << std::endl;
+		std::cout << RED <<  "Valid http-vers:  HTTP//1.1 accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  HTTP//1.1 don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  HTTP//1.1 don't accepted / Test OK" << std::endl;
 	}
 	try {
 		std::string	req_line( "POST  /form HTTP/2.1" );
 		HttpParser::parseRequestLine( req_line );
-		std::cout << "Valid http-vers:   HTTP/2.1 accepted / Test FAIL" << std::endl;
+		std::cout << RED <<  "Valid http-vers:   HTTP/2.1 accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << e.what() << ":  HTTP/2.1 don't accepted / Test OK" << std::endl;
+		std::cout << GREEN << e.what() << ":  HTTP/2.1 don't accepted / Test OK" << std::endl;
 	}
 }
 
-
-
-
-
+void	HttpParserTester::implementedMethod() {
+	try {
+		std::string	req_line( "GET /form HTTP/1.1" );
+		HttpParser::parseRequestLine( req_line );
+		std::cout << GREEN << "Implemented method:  GET method accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  GET method don't accepted / Test FAIL" << std::endl;
+	}
+	try {
+		std::string	req_line( "FOOMETHOD /form HTTP/1.1" );
+		HttpParser::parseRequestLine( req_line );
+		std::cout << RED << "Implemented method:  FOOMETHOD accepted / Test FAIL" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  FOOMETHOD don't accepted / Test OK" << RESET << std::endl;
+	}
+}
 
 void	HttpParserTester::parseRequestLineTest() {
 
@@ -212,6 +358,7 @@ void	HttpParserTester::parseRequestLineTest() {
 	shouldHaveThreeTokens();
 	uriTooLong();
 	httpVersion();
+	implementedMethod();
  
 	std::cout << std::endl << "_____________End tests_____________" << std::endl << std::endl;
 

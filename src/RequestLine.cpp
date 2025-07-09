@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 13:38:24 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 16:40:03 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:36:17 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <string>
 
 RequestLine::RequestLine( std::vector<std::string> const & line ) : method( line[0] ), uri( line[1] ), version( line[2] ) {
+	
+//	HttpParser::notImplementedMethod( method );
 	path = HttpParser::parsePath( uri );
 	query = HttpParser::parseQuery( uri );
 }
