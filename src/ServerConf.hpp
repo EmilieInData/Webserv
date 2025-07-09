@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 16:44:46 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:33:20 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include "Utils.hpp"
 #include "LocationConf.hpp"
-#include "BlockBase.hpp"
+#include "ABlockBase.hpp"
 
 struct listen
 {
@@ -25,7 +25,7 @@ struct listen
 
 class LocationConf;
 
-class ServerConf : public BlockBase
+class ServerConf : public ABlockBase
 {
 	public:
 		ServerConf();
@@ -33,6 +33,7 @@ class ServerConf : public BlockBase
 		ServerConf(ServerConf const& other);
 		ServerConf&	operator=(ServerConf const& other);
 
+		bool											getAutoindex() const;
 		std::map<std::string, LocationConf>&			getLocations();
 		std::map<std::string, LocationConf>:: iterator	getItLocations(std::string const& key);
 		size_t											fillListens(std::vector<std::string>& buffer, size_t i);
@@ -42,17 +43,6 @@ class ServerConf : public BlockBase
 		std::vector<listen>					_listens;
 		std::vector<std::string>			_serverName;
 		std::map<std::string, LocationConf>	_locations;
-
-		// bool    							_autoindex;
-		// std::string							_root;
-		// unsigned int						_bodySize;
-		// std::string							_returnDirective;
-		// std::vector<std::string>			_index;
-		// std::map<unsigned int, std::string>	_errorPage;
-		// std::vector<std::string>    		_allowedMethods; // default= GET POST
 };
 
 #endif
-
-//je decide que tous les infos server seront avant les blocs locations
-//sinon ce sont des erreurs, plus simple pour le parsing

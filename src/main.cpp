@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 20:34:31 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 18:02:33 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:33:45 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int main(int ac, char** av)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << ERROR << PINK << e.what() << '\n';
+		std::cerr << ERROR << PINK << e.what() << '\n' << RESET;
 		return (1);
 ;	}
 	//std::cout << PINK << P.servers[0].getLocations()["/"].getAutoindex() << std::endl;

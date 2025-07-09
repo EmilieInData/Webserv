@@ -116,6 +116,21 @@
 // return 301 https://example.com;
 // return 503 "Service unavailable";
 
+--> error_page <--
+
+//-> client error <-
+//400 bad request -> Cleo
+//401 unauthorized
+//403 forbidden
+//404 not found
+//405 Method Not Allowed -> Cleo
+//410 gone
+//413 Request Entity Too Large
+//414 URI Too Long -> CLeo
+
+// -> Server error <-
+//500 internal server error
+//501 Not Implemented -> Cleo
 
 --> TO DO
 
@@ -125,6 +140,9 @@
 
 //si il manque des arguments au fichier comme listen par ex,
 //les messages d'erreurs sont au lancement du server pas au parsing
+
+//checker avec Cleo comment garder les errors pages generiques
+//juste message ou aussi adresse dans une struct ?
 
 --> TO ASK
 //est ce que je dois mettre localhost en arg valide pour listen ?

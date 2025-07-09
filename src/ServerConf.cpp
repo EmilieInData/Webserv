@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/03 16:50:46 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:35:09 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ ServerConf::ServerConf()
 ServerConf::~ServerConf() {} 
 //detruire des trucs ici?
 
-ServerConf::ServerConf(ServerConf const& other) : BlockBase(other)
+ServerConf::ServerConf(ServerConf const& other) : ABlockBase(other)
 {
 	*this = other;
 }
@@ -31,12 +31,17 @@ ServerConf&	ServerConf::operator=(ServerConf const& other)
 {
 	if (this != &other)
 	{
-  		BlockBase::operator=(other);
+  		ABlockBase::operator=(other);
 		this->_listens = other._listens;
 		this->_serverName = other._serverName;
 		this->_locations = other._locations;     
 	}
 	return *this;
+}
+
+bool    ServerConf::getAutoindex() const
+{
+	return _autoindex;
 }
 
 std::map<std::string, LocationConf>&	ServerConf::getLocations()

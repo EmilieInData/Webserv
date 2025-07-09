@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/08 12:45:01 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:33:04 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 #define LOCATIONCONF_HPP
 
 #include "Utils.hpp"
-#include "BlockBase.hpp"
+#include "ABlockBase.hpp"
 
 class ServerConf;
 
-class LocationConf : public BlockBase
+class LocationConf : public ABlockBase
 {
 	public:
 		LocationConf();
@@ -27,19 +27,12 @@ class LocationConf : public BlockBase
 		LocationConf(LocationConf const& other);
 		LocationConf&	operator=(LocationConf const& other);
 
+		bool			getAutoindex() const;
 		// std::string	getCgiPass() const;
 		// size_t		fillCgiPass(std::vector<std::string>& buffer, size_t i);
 
 	private:
-			std::string		_cgiPass; // tjr ds un bloc location
-			
-		// bool    							_autoindex;
-		// std::string							_root;
-		// std::string							_bodySize;
-		// std::string							_returnDirective;
-		// std::vector<std::string>			_index;
-		// std::map<unsigned int, std::string>	_errorPage;
-		// std::vector<std::string>    		_allowedMethods; // default= GET POST
+		std::string		_cgiPass; // tjr ds un bloc location
 };
 
 #endif

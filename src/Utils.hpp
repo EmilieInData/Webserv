@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/07 19:07:00 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 20:08:09 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <utility>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -31,20 +32,26 @@
 #define PURPLE  "\033[38;5;62m"
 
 //listen
-bool	    	isInt(std::string const& value);
-bool		    isIp(std::string const& value);
-bool    		isSocket(std::string const& value);
-int		    	strToInt(std::string const& value);
-bool		    checkIpAddress(std::string const& value);
-bool    		checkSocketAddress(std::string const& value);
-std::string 	socketToIp(std::string const& value);
-int			    socketToPort(std::string const& value);
+bool            isInt(std::string const& value);
+bool            isIp(std::string const& value);
+bool            isSocket(std::string const& value);
+int           	strToInt(std::string const& value);
+bool	        checkIpAddress(std::string const& value);
+bool            checkSocketAddress(std::string const& value);
+std::string     socketToIp(std::string const& value);
+int	            socketToPort(std::string const& value);
 
 //server_name
 bool            checkDns(std::vector<std::string>& tmp);
-bool    	    checkLabel(std::string const& str);
+bool       	    checkLabel(std::string const& str);
 
 //body_size
 unsigned int    strToSize(std::string const& value);
+
+//error_page
+std::map<int, std::pair<std::string, std::string>>  defaultErrorPages();
+bool                                                isErrorPage(std::string const& value);
+bool                                                isHtmlAddress(std::string const& value);
+void                                                checkErrorPage(std::map<int, std::string> const& value);
 
 #endif

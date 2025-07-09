@@ -1,38 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BlockBase.cpp                                     :+:      :+:    :+:   */
+/*   ABlockBase.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/01 19:50:33 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:57:44 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
-#include "BlockBase.hpp"
+#include "ABlockBase.hpp"
 
-BlockBase::BlockBase()
+ABlockBase::ABlockBase()
 {
 	_autoindex = false;
 	_root = "/var/www/html";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
 	// _returnDirective = ""; //To define ??
-	_errorPage[404] = "/404.html"; //to fill
+
+	_errorPage[404] = "/404.html";
+	_errorPage[500] = "/50x.html";
+	_errorPage[501] = "/50x.html";
+	_errorPage[400] = "/4xx.html";
+	_errorPage[401] = "/4xx.html";
+	_errorPage[403] = "/4xx.html";
+	_errorPage[405] = "/4xx.html";
+	_errorPage[410] = "/4xx.html";
+	_errorPage[413] = "/4xx.html";
+	_errorPage[414] = "/4xx.html";
+
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
 }
   
-BlockBase::~BlockBase() {} 
-//detruire des trucs ici?
+ABlockBase::~ABlockBase() {} 
 
-BlockBase::BlockBase(BlockBase const& other)
+ABlockBase::ABlockBase(ABlockBase const& other)
 {
 	*this = other;
 }
-BlockBase&	BlockBase::operator=(BlockBase const& other)
+ABlockBase&	ABlockBase::operator=(ABlockBase const& other)
 {
 	if (this != &other)
 	{
@@ -47,41 +57,36 @@ BlockBase&	BlockBase::operator=(BlockBase const& other)
 	return *this;
 }
 
-bool    BlockBase::getAutoindex() const
-{
-	return _autoindex;
-}
-
-std::string BlockBase::getRoot() const
+std::string ABlockBase::getRoot() const
 {
 	return _root;
 }
-std::vector<std::string> BlockBase::getIndex() const
+std::vector<std::string> ABlockBase::getIndex() const
 {
 	return _index;
 }
 		
-unsigned int BlockBase::getBodySize() const
+unsigned int ABlockBase::getBodySize() const
 {
 	return _bodySize;
 }
 		
-std::vector<std::string> BlockBase::getReturnDirective() const
+std::vector<std::string> ABlockBase::getReturnDirective() const
 {
 	return _returnDirective;
 }
 
-std::map<unsigned int, std::string> BlockBase::getErrorPage() const
+std::map<int, std::string> ABlockBase::getErrorPage() const
 {
 	return _errorPage;
 }
 
-std::vector<std::string>	BlockBase::getAllowedMethods() const
+std::vector<std::string>	ABlockBase::getAllowedMethods() const
 {
 	return _allowedMethods;
 }
 
-bool	BlockBase::checkFlag(std::string const& value)
+bool	ABlockBase::checkFlag(std::string const& value)
 {
 	for(size_t i = 0; i < _flag.size(); i++)
 	{
@@ -92,7 +97,7 @@ bool	BlockBase::checkFlag(std::string const& value)
 	return false;
 }
 
-size_t	BlockBase::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 {
 	if ( i >= buffer.size() || buffer[i].empty())
 		throw std::invalid_argument(" Parsing error, miss 'autoindex' argument\n");
@@ -115,7 +120,7 @@ size_t	BlockBase::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 	return (i + 2);
 }
 
-size_t	BlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
 {
 	if ( i >= buffer.size() || buffer[i].empty()) //a voir si utile pour chaque directive ?
 		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
@@ -134,7 +139,7 @@ size_t	BlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
 	return (i + 2);
 }
 
-size_t	BlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
 {
 	if (checkFlag("index"))
 		throw std::invalid_argument(" Parsing error, only one 'index'"
@@ -156,7 +161,7 @@ size_t	BlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
     return (i + 1);
 }
 
-size_t	BlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i)
 {
 	if (checkFlag("bodySize"))
 		throw std::invalid_argument(" Parsing error, only one 'client_max_body_size'"
@@ -174,7 +179,7 @@ size_t	BlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i)
 	return i + 2;
 }
 
-size_t	BlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i)
 {
 	if (checkFlag("allowMethods"))
 		throw std::invalid_argument(" Parsing error, only one 'allow_methods'"
@@ -203,7 +208,7 @@ size_t	BlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i)
 	return i + 1;
 }
 
-size_t	BlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t i)
+size_t	ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t i)
 {
 	int	num;
 
@@ -230,4 +235,48 @@ size_t	BlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t 
 		return i + 3;
 	}
 	return i + 2;
+}
+
+size_t	ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i)
+{
+	std::vector<int>	num;
+	std::string			path;
+	
+	if (!checkFlag("errorPage"))
+		_errorPage.clear();
+	if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
+		|| buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty()
+		|| buffer[i + 1] == "{" || buffer[i + 1] == "}" || buffer[i] == ";")
+		throw std::invalid_argument(" Parsing error, miss 'error_page' arguments\n");
+	for(; i < buffer.size(); i++)
+	{
+		if (isErrorPage(buffer[i])) //verifier les pages authorisees
+		{
+			for(size_t j = 0; j < num.size(); j++)
+			{
+				if (num[j] == strToInt(buffer[i]))
+					throw std::invalid_argument(" Parsing error, 'error_page' number duplicated\n");
+			}
+			num.push_back(strToInt(buffer[i])); //stocker les pages dans un array de int au cas ou il en a plusieurs
+		}
+		else if (buffer[i] == ";")
+			break;
+		else if (isHtmlAddress(buffer[i]))
+		{
+			path = buffer[i];
+			if (i + 1 >= buffer.size() || buffer[i + 1] != ";")
+				throw std::invalid_argument(" Parsing error, 'error_page' html adress"
+					" must be the last argument\n");
+		}	
+		else
+			throw std::invalid_argument(" Parsing error, 'error_page' argument invalid\n");
+	}
+	if (num.empty())	
+		throw std::invalid_argument(" Parsing error, 'error_page' number is missed\n");
+	if (path.empty())	
+		throw std::invalid_argument(" Parsing error, 'error_page' html adress is missed\n");
+	for (size_t j = 0; j < num.size(); j++)
+		_errorPage[num[j]] = path;
+	checkErrorPage(_errorPage);
+	return i + 1;
 }
