@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/09 20:08:09 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:17:55 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,9 @@
 
 //listen
 bool            isInt(std::string const& value);
-bool            isIp(std::string const& value);
+bool            isLocal(std::string const& value);
 bool            isSocket(std::string const& value);
 int           	strToInt(std::string const& value);
-bool	        checkIpAddress(std::string const& value);
 bool            checkSocketAddress(std::string const& value);
 std::string     socketToIp(std::string const& value);
 int	            socketToPort(std::string const& value);

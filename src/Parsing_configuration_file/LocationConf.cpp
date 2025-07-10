@@ -6,13 +6,13 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 17:12:49 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:48:27 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
-#include "LocationConf.hpp"
-#include "ServerConf.hpp"
+#include "../../inc/Utils.hpp"
+#include "../../inc/LocationConf.hpp"
+#include "../../inc/ServerConf.hpp"
 
 LocationConf::LocationConf() {}
 

@@ -6,12 +6,12 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 17:19:02 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:48:22 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
-#include "ABlockBase.hpp"
+#include "../../inc/Utils.hpp"
+#include "../../inc/ABlockBase.hpp"
 
 ABlockBase::ABlockBase()
 {
@@ -155,6 +155,11 @@ size_t	ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
 		if (buffer[i] == "{" || buffer[i] == "}")
 			throw std::invalid_argument(" Parsing error, miss semicolon after"
 				" 'index' directive\n");
+		for (size_t j = 0; j < _index.size(); j++)
+		{
+			if (buffer[i] == _index[j])
+				throw std::invalid_argument(" Parsing error, 'index' argument duplicated\n");
+		}
 		_index.push_back(buffer[i]);
 		i++;
 	}
@@ -195,7 +200,7 @@ size_t	ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i
 			for(size_t j = 0; j < _allowedMethods.size(); j++) //checker doublons mm si ok nginx
 			{
 				if (_allowedMethods[j] == buffer[i])
-					throw std::invalid_argument(" Parsing error, 'allow_methods' duplicated\n");
+					throw std::invalid_argument(" Parsing error, 'allow_methods' argument duplicated\n");
 			}
 			_allowedMethods.push_back(buffer[i]);
 		}

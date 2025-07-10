@@ -6,14 +6,14 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 17:23:40 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:48:38 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
-#include "ParsingConf.hpp"
-#include "ServerConf.hpp"
-#include "LocationConf.hpp"
+#include "../../inc/Utils.hpp"
+#include "../../inc/ParsingConf.hpp"
+#include "../../inc/ServerConf.hpp"
+#include "../../inc/LocationConf.hpp"
 
 ParsingConf::ParsingConf() {}
 

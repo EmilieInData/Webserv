@@ -6,32 +6,43 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 15:17:46 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:49:35 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
+#include "../inc/Utils.hpp"
 
 bool	isInt(std::string const& value)
 {
+	int	num;
+	
 	for (size_t i = 0; i < value.length(); i++)
 	{
 		if (value[i] > '9' || value[i] < '0' || i > 5 )
 			return false;
 	}
-	
+	num = strToInt(value);
+	if (num < 0 || num > 65535)
+		throw std::invalid_argument(" Parsing error, 'listen' port number is"
+			" not correct, only int between 0 & 65535 accepted\n"); 
 	return true;
 }
 
-bool	isIp(std::string const& value)
+bool	isLocal(std::string const& value)
 {
-	for (size_t i = 0; i < value.length(); i++)
+	int num;
+	
+	if (value.length() < 11 || value.substr(0, 10) != "localhost:")
+		return false;
+	for (size_t i = 10; i < value.length(); i++)
 	{
-		if ((value[i] > '9' || value[i] < '0' ) && value[i] != '.')
+		if (value[i] > '9' || value[i] < '0' )
 			return false;
-		if (value[i] == '.' && (!value[i + 1] || value[i + 1] == '.' || i == 0))
-			throw std::invalid_argument(" Parsing error, 'listen' ip address is not correct\n");
 	}
+	num = strToInt(value.substr(10));
+	if (num < 0 || num > 65535)
+		throw std::invalid_argument(" Parsing error, 'listen' local port number is"
+			" not correct, only int between 0 & 65535 accepted\n"); 
 	return true;
 }
 
@@ -68,34 +79,6 @@ int	strToInt(std::string const& value)
     if (str.fail())
 	    throw std::runtime_error(" error to convert the string argument in int");
 	return num;
-}
-
-bool    checkIpAddress(std::string const& value)
-{
-	int	tmp;
-	size_t	j = 0;
-	std::vector<std::string> nums;
-	
-	for (size_t i = 0; i < value.length(); i++)
-	{
-		if (value[i] > '9' || value[i] < '0')
-		{
-			nums.push_back(value.substr(j, i - j));
-			j = i + 1;
-		}
-	}
-	nums.push_back(value.substr(j));
-	for (size_t i = 0; i < nums.size(); i++)
-	{
- 		if (i > 3)
-			return false;
-		if (nums[i].length() > 3)
-		    return false;
-		tmp = strToInt(nums[i]);
-		if (tmp < 0 || tmp > 255)
-			return false;		
-	}
-	return true;
 }
 
 bool    checkSocketAddress(std::string const& value)
@@ -152,8 +135,6 @@ int			socketToPort(std::string const& value)
 	int num = strToInt(str);
 	return num;
 }
-
-// >> server_name
 
 bool	checkDns(std::vector<std::string>& tmp)
 {

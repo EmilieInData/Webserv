@@ -6,12 +6,12 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 15:21:40 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:48:46 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
-#include "ServerConf.hpp"
+#include "../../inc/Utils.hpp"
+#include "../../inc/ServerConf.hpp"
 
 ServerConf::ServerConf()
 {
@@ -65,31 +65,24 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 		" need one argument followed by a semicolon\n"); 
 	if (isInt(buffer[i])) //is an int
 	{
-		//std::cout << PURPLE << "enter to int\n";
 		port = strToInt(buffer[i]);
-		if (port < 0 || port > 65535)
-			throw std::invalid_argument(" Parsing error, 'listen' port number is not correct, only int between 0 & 65535 accepted\n"); 
 		ip = "127.0.0.1";
 	}
-	else if (isIp(buffer[i])) //is an ip address
+	else if (isLocal(buffer[i])) //is an local address
 	{
-		//std::cout << PURPLE << "enter to ip address\n";
-		if (!checkIpAddress(buffer[i]))
-			throw std::invalid_argument(" Parsing error, 'listen' ip address is not correct\n"); 
-		ip = buffer[i];
-		port = 8080;
+		port = strToInt(buffer[i].substr(10));;
+		ip = "127.0.0.1";
 	}
 	else if (isSocket(buffer[i])) // is a socket address
 	{
-		//std::cout << PURPLE << "enter to socket address\n";
 		if (!checkSocketAddress(buffer[i]))
 			throw std::invalid_argument(" Parsing error, 'listen' socket address is not correct\n"); 
 		ip = socketToIp(buffer[i]);
 		port = socketToPort(buffer[i]);
 	}
 	else
-		throw std::invalid_argument(" Parsing error, 'listen' argument is not correct, wrong port number, ip or socket address\n"); 
-	//std::cout << BLUE << "ip: " << ip << " port = " << port << std::endl;
+		throw std::invalid_argument(" Parsing error, 'listen' argument is not correct\n"); 
+	// std::cout << BLUE << "ip: " << ip << " port = " << port << std::endl;
 	if (checkFlag("listen"))
 	{
 		for (size_t i = 0; i < _listens.size(); i++)
@@ -120,6 +113,11 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 		if (buffer[i] == "{" || buffer[i] == "}")
 			throw std::invalid_argument(" Parsing error, miss semicolon after"
 				" 'server_name' directive\n");
+		for (size_t j = 0; j < _serverName.size(); j++)
+		{
+			if (buffer[i] == _serverName[j])
+				throw std::invalid_argument(" Parsing error, 'server_name' argument duplicated\n");
+		}
 		_serverName.push_back(buffer[i]);
 		i++;
 	}

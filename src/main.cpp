@@ -6,13 +6,12 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 20:34:31 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 17:21:57 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 18:49:40 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
-#include "ParsingConf.hpp"
-#include "ServerConf.hpp"
+#include "../inc/Utils.hpp"
+#include "../inc/ParsingConf.hpp"
 
 int main(int ac, char** av)
 {
@@ -29,7 +28,7 @@ int main(int ac, char** av)
 	{	
 		static std::vector<std::string>	buffer;
 		std::string line;
-		while (std::getline(file, line))//return false when empty (end)
+		while (std::getline(file, line))
 			P.doParsing(line, buffer);
 		P.print_tokens(buffer);
 		P.fillStructs(buffer);
@@ -39,7 +38,6 @@ int main(int ac, char** av)
 		std::cerr << ERROR << PINK << e.what() << '\n' << RESET;
 		return (1);
 ;	}
+	//ici passer la ref de mon vector de server a la struct de fabio (la creer en premier)
 	return 0;
 }
-
-//mettre un compteur de ligne pour preciser d'ou vient l'erreur ?
