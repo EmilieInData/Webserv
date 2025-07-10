@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/09 19:29:12 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 17:23:40 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,7 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 {
 	size_t											i = 0;
-	std::vector<ABlockBase*>							blocks;
+	std::vector<ABlockBase*>						blocks;
 	std::vector<ServerConf>::iterator 				itServer;
 	std::map<std::string, LocationConf>::iterator	itLocation;
 	
@@ -225,6 +225,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 					" directive already exist\n");
 			itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
 			itLocation = itServer->getItLocations(buffer[i + 1]);
+			itLocation->second.setKey(buffer[i + 1]);
 			blocks.push_back(&itLocation->second);
 			i = i + 3;
 			continue;
@@ -248,45 +249,27 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			continue;
 		}	
 		else if (buffer[i] == "autoindex")
-		{
 			i = blocks.back()->fillAutoIndex(buffer, i + 1);
-			continue;
-		}
 		else if (buffer[i] == "root")
-		{
 			i = blocks.back()->fillRoot(buffer, i + 1);
-			continue;
-		}
 		else if (buffer[i] == "index")
-		{
 			i = blocks.back()->fillIndex(buffer, i + 1);
-			continue;
-		}
 		else if (buffer[i] == "client_max_body_size")
-		{
 			i = blocks.back()->fillBodySize(buffer, i + 1);
-			continue;
-		}
 		else if (buffer[i] == "return")
-		{
-			i = blocks.back()->fillReturnDirectives(buffer, i + 1);
-			continue;
-		}
+				i = blocks.back()->fillReturnDirectives(buffer, i + 1);
 		else if (buffer[i] == "error_page")
-		{
 			i = blocks.back()->fillErrorPage(buffer, i + 1);
-			const std::map<int, std::string>& errorPages = blocks.back()->getErrorPage();
-			for (std::map<int, std::string>::const_iterator it = errorPages.begin(); it != errorPages.end(); ++it)
-			    std::cout << PURPLE << it->first << " = " << it->second << std::endl;
-			continue;
-		}
 		else if (buffer[i] == "allow_methods")
-		{
 			i = blocks.back()->fillAllowedMethods(buffer, i + 1);
+		else if (buffer[i] == "cgi_pass")
+		{
+			if (!blocks.empty() && blocks.back() != &(itLocation->second))
+				throw std::invalid_argument(" Parsing error, 'cgi_pass' directive"
+					"  allowed only in a location block\n");
+			i = itLocation->second.fillCgiPass(buffer, i + 1);
 			continue;
 		}
-		//cgi
-		
 		else if (buffer[i] == "}")
 		{
 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
@@ -297,5 +280,3 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 	}
 	return;
 }
-
-///checker si une ligne est si grande que la fonction me la retourne en deux fois ? 

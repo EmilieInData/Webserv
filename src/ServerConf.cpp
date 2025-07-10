@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/09 18:35:09 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:21:40 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 ServerConf::ServerConf()
 {
-	_listens.push_back(listen{80, "0.0.0.0"});
+	_listens.push_back(listen{8080, "127.0.0.1"}); //accepter localhost
 	_serverName.push_back("default");
 }
   
@@ -69,7 +69,7 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 		port = strToInt(buffer[i]);
 		if (port < 0 || port > 65535)
 			throw std::invalid_argument(" Parsing error, 'listen' port number is not correct, only int between 0 & 65535 accepted\n"); 
-		ip = "0.0.0.0";
+		ip = "127.0.0.1";
 	}
 	else if (isIp(buffer[i])) //is an ip address
 	{
@@ -77,7 +77,7 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 		if (!checkIpAddress(buffer[i]))
 			throw std::invalid_argument(" Parsing error, 'listen' ip address is not correct\n"); 
 		ip = buffer[i];
-		port = 80;
+		port = 8080;
 	}
 	else if (isSocket(buffer[i])) // is a socket address
 	{
@@ -101,7 +101,6 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 	}
 	else
 		_listens[0] = listen{port, ip};
-	//checker si le port et l'adresse ip sont libres ici ???
 	return (i + 2);   
 }
 
@@ -124,8 +123,6 @@ size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
 		_serverName.push_back(buffer[i]);
 		i++;
 	}
-	// for (size_t i = 0; i < _serverName.size(); i++)
-	// 	std::cout << PURPLE << _serverName[i] << std::endl;
 	if (!checkDns(_serverName))
 		throw std::invalid_argument(" Parsing error, 'server_name' arguments"
 			" need to follow DNS's rules\n");

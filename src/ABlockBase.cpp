@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/09 19:57:44 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 17:19:02 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,31 +57,31 @@ ABlockBase&	ABlockBase::operator=(ABlockBase const& other)
 	return *this;
 }
 
-std::string ABlockBase::getRoot() const
+std::string const& ABlockBase::getRoot() const
 {
 	return _root;
 }
-std::vector<std::string> ABlockBase::getIndex() const
+std::vector<std::string> const& ABlockBase::getIndex() const
 {
 	return _index;
 }
 		
-unsigned int ABlockBase::getBodySize() const
+unsigned int const& ABlockBase::getBodySize() const
 {
 	return _bodySize;
 }
 		
-std::vector<std::string> ABlockBase::getReturnDirective() const
+std::vector<std::string> const& ABlockBase::getReturnDirective() const
 {
 	return _returnDirective;
 }
 
-std::map<int, std::string> ABlockBase::getErrorPage() const
+std::map<int, std::string> const& ABlockBase::getErrorPage() const
 {
 	return _errorPage;
 }
 
-std::vector<std::string>	ABlockBase::getAllowedMethods() const
+std::vector<std::string> const&	ABlockBase::getAllowedMethods() const
 {
 	return _allowedMethods;
 }

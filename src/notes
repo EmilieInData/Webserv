@@ -94,7 +94,7 @@
 // DELETE	Supprimer une ressource
 // PUT		Remplacer une ressource entière
 // PATCH	Modifier partiellement une ressource
-// HEAD		Même chose que GET sans le corps de réponse
+// HEAD		Même chose que GET sans le corps de réponse // A AJOUTER??
 // OPTIONS	Demander au serveur quelles méthodes sont autorisées
 
 //peut ecrire plusieurs fois la mm methods ds la directive, la methode en doublon est juste ignorer
@@ -138,19 +138,24 @@
 
 //changer pour parser en deux temps et gerer TOUTES les infos server avant les locations
 
-//si il manque des arguments au fichier comme listen par ex,
-//les messages d'erreurs sont au lancement du server pas au parsing
+//BLOQUER les doublons pour chaque directives
 
-//checker avec Cleo comment garder les errors pages generiques
-//juste message ou aussi adresse dans une struct ?
+//gerer localhost ds listen
+//garder l'adresse ip en type ip et non std::string
+
+///checker si une ligne est si grande que la fonction me la retourne en deux fois ? 
 
 --> TO ASK
-//est ce que je dois mettre localhost en arg valide pour listen ?
-//mettre les numeros de lignes et les args ?
 
+
+
+--> TO KNOW
 
 //chemin absolu = /blabla
 //chemin relatif = ./blabla
 
 //test char no printable 
 // printf "server\x01{}\n" > ../conf/test.conf
+
+//si il manque des arguments au fichier comme listen par ex,
+//les messages d'erreurs sont au lancement du server pas au parsing

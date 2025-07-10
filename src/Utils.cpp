@@ -6,13 +6,11 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/09 20:09:24 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:17:46 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
-
-// >> listen
 
 bool	isInt(std::string const& value)
 {
