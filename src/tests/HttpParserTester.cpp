@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/09 12:34:53 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/10 16:59:08 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,28 @@
 #include <string>
 
 /*--------------------------Request Message------------------------------------*/
+
+void	HttpParserTester::onlyASCII() {
+	std::string mess( "GET /こんにちは HTTP/1.1" );
+
+	try {
+		std::string	http_mess( mess + "\r\nHost: www.example.com \r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid message:	  " << mess << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << mess << " host don't accepted/ Test OK" << std::endl;
+	}
+
+	std::string host( "españa" );
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess );
+		std::cout << RED << "valid message:	  " << host << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
+	}
+
+}
 
 void	HttpParserTester::crWithoutLf() {
 	try {
@@ -234,6 +256,7 @@ void	HttpParserTester::parseHttpMessageTest() {
 	
 	std::cout << "_____________Http message tests_____________" << std::endl;
 
+	onlyASCII();
 	crWithoutLf();
 	emptyLinesBeforeReqLine();
 	isspaceBeforeHeader();
@@ -350,6 +373,83 @@ void	HttpParserTester::implementedMethod() {
 	}
 }
 
+void	HttpParserTester::invalidCharUri() {
+
+	std::string uri( "/holi(hola)" );
+	
+	try {
+		std::string	http_mess( "GET " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << GREEN << "valid uri:    	  " << uri << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << uri << " '(' and ')' char don't accepted/ Test FAIL" << std::endl;
+	}
+	
+	uri = "/holi{hola}";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid uri:	          " << uri << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " '{' and '}' char don't accepted/ Test OK" << std::endl;
+	}
+
+/*	uri = "/holi(hola)";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid percent:	  " << uri << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " percent encoded don't accepted/ Test OK" << std::endl;
+	}
+*/
+} 
+
+
+void	HttpParserTester::validPercentEncoded() {
+
+	std::string uri( "/post%20kost" );
+	
+	try {
+		std::string	http_mess( "GET " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << GREEN << "valid percent:	  " << uri << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << uri << " percent encoded don't accepted/ Test FAIL" << std::endl;
+	}
+
+	uri = "/post%A";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid percent:	  " << uri << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " percent encoded don't accepted/ Test OK" << std::endl;
+	}
+	
+	uri = "/post%RTlala";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid percent:	  " << uri << " accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " percent encoded don't accepted/ Test OK" << std::endl;
+	}
+
+	uri = "/post%4E%33%54lala%F5";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << GREEN << "valid percent:	  " << uri << " accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  " << uri << " percent encoded don't accepted/ Test FAIL" << std::endl;
+	}
+}
+
+
+
+
+
 void	HttpParserTester::parseRequestLineTest() {
 
 	std::cout << "_____________Request-line tests_____________" << std::endl;
@@ -359,8 +459,12 @@ void	HttpParserTester::parseRequestLineTest() {
 	uriTooLong();
 	httpVersion();
 	implementedMethod();
+	invalidCharUri();
+	validPercentEncoded();
+
+
  
-	std::cout << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
 
 }
 

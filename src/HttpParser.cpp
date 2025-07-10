@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/08 18:36:17 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/10 16:06:40 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,36 @@ std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 	return tokens;
 }
 
+bool	HttpParser::isAsciiPrintable( std::string const & str ) {
+	std::string::const_iterator	it, ite = str.end();
+
+	for ( it = str.begin(); *it != *ite; ++it ) 
+		if ( *it > 126 || *it < 32 )
+			return false;
+	return true;
+}
+
+bool	HttpParser::isUnreservedForUri( char c ) {
+	if ( c == '-' || c == '_' || c == '.' || c == '~' || isalnum( c ))
+		return true;
+	return false;
+}
+
+bool	HttpParser::isReservedForUri( char c ) {
+	if ( c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' || c == '@' )
+        return true; //gen-delims
+
+    if ( c == '!' || c == '$' || c == '&' || c == '\\' || c == '(' || c == ')' || c == '*' || \
+		c == '+' || c == ',' || c == ';' || c == '=')
+        return true; //sub-delims
+
+    return false;
+}
+
+bool HttpParser::isHexChar( char c ) {
+	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+}
+
 std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message ) {
 
 	std::vector<std::string> lines = crlfSplit( message );
@@ -101,6 +131,7 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 		if ( strncmp( (*it).c_str(), "Host:", 5 ) == 0 )
 			host++;
 		header++;
+		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );
 	}
 	if ( host != 1 ) throw std::invalid_argument( E_400 );
 
@@ -125,6 +156,22 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( E_400 );
 
 	return	 RequestLine( tokens );
+}
+
+void	HttpParser::parseUri( std::string & uri ) {
+	std::string::iterator	it, ite = uri.end();
+
+	for ( it = uri.begin(); it != ite; ++it ) {
+		if ( !isUnreservedForUri( *it ) && !isReservedForUri( *it ) && *it  != '%' )
+			throw std::invalid_argument( E_400 );
+		if ( *it == '%' ) {
+			if ( it + 1 == ite || it + 2 == ite ) throw std::invalid_argument( E_400 );
+			if ( !isHexChar( *( it + 1 )) || !isHexChar( *( it + 2 ))) throw std::invalid_argument( E_400 );
+			it ++;
+		}
+	}
+
+
 }
 
 std::string	HttpParser::parsePath( std::string const & uri ) {

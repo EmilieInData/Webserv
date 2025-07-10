@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/09 12:00:31 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:07:12 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ private:
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
 	/*---------------Http Message-----------------*/
+	static void	onlyASCII();
 	static void	crWithoutLf();
 	static void	emptyLinesBeforeReqLine();
 	static void	isspaceBeforeHeader();
@@ -39,6 +40,8 @@ private:
 	static void	uriTooLong();
 	static void httpVersion();
 	static void	implementedMethod();
+	static void	invalidCharUri();
+	static void	validPercentEncoded();
 
 
 	
