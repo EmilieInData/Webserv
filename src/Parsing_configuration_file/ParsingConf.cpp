@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/11 13:55:03 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:52:53 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,3 +422,35 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 	return;
 }
 
+void	ParsingConf::print_structure()
+{
+	for (size_t i  = 0; i < servers.size(); i++)
+	{
+		std::cout << PURPLE << "Autoindex: " << servers[i].getAutoindex() << "\n"
+		
+		<< "Root: " << servers[i].getRoot() << "\n"
+		
+		<< "Bodysize: " << servers[i].getBodySize() << "\n"
+		
+		<< "Index:\n";
+		for (size_t j = 0; j < servers[i].getIndex().size(); i++)
+			std:: cout << servers[i].getIndex()[j] << "\n";
+		
+		std::cout << "AllowedMethods:\n";
+		for (size_t j = 0; j < servers[i].getAllowedMethods().size(); i++)
+			std:: cout << servers[i].getAllowedMethods()[j] << "\n";
+		
+		std::cout << "ReturnDirective:\n";
+		for (size_t j = 0; j < servers[i].getReturnDirective().size(); i++)
+			std:: cout << servers[i].getReturnDirective()[j] << "\n";
+		
+		std::cout << "ErrorPage:\n";
+		for (std::map<int, std::string>::const_iterator it = servers[i].getErrorPage().begin(); it != servers[i].getErrorPage().end(); it++)
+			std:: cout << it->first << " " << it->second << "\n";
+		
+		// ..
+
+		
+	}
+	
+}
