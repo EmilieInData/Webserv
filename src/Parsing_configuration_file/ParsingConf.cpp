@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 18:48:38 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/11 13:55:03 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,9 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 {
 	std::vector<std::string> stack;
 
+	if (buffer.empty() || buffer[0] != "server")
+		throw std::invalid_argument(" Parsing error, configuration files need"
+			" to begin by a server\n");
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
 		if (buffer[i] == "server")
@@ -195,58 +198,128 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 	return;
 }
 
-void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
-{
-	size_t											i = 0;
-	std::vector<ABlockBase*>						blocks;
-	std::vector<ServerConf>::iterator 				itServer;
-	std::map<std::string, LocationConf>::iterator	itLocation;
+// void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
+// {
+// 	size_t											i = 0;
+// 	std::vector<ABlockBase*>						blocks;
+// 	std::vector<ServerConf>::iterator 				itServer;
+// 	std::map<std::string, LocationConf>::iterator	itLocation;
 	
-	if (buffer.empty() || buffer[0] != "server")
-		throw std::invalid_argument(" Parsing error, configuration files need to begin by a server\n");
-	checkStructure(buffer); //parenthesis well closed, blocks well positionned
-	while(i < buffer.size())
+// 	checkStructure(buffer); //parenthesis well closed, blocks well positionned
+// 	while(i < buffer.size())
+// 	{
+// 		std::cout << GREEN << " --> " << buffer[i] << RESET << std::endl; // to borrow
+// 		if (buffer[i] == "server")
+// 		{
+// 			servers.push_back(ServerConf());//creer les blocs server dans le contener
+// 			itServer = servers.end() - 1;
+// 			blocks.push_back(&(*itServer));
+// 			i = i + 2;
+// 			continue;
+// 		}
+// 		else if (buffer[i] == "location")
+// 		{
+// 			if (itServer->getLocations().find(buffer[i + 1]) != itServer->getLocations().end())
+// 				throw std::invalid_argument(" Parsing error, this 'location'"
+// 					" directive already exist\n");
+// 			itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
+// 			itLocation = itServer->getItLocations(buffer[i + 1]);
+// 			itLocation->second.setKey(buffer[i + 1]);
+// 			blocks.push_back(&itLocation->second);
+// 			i = i + 3;
+// 			continue;
+// 		}
+// 		else if (blocks.empty())
+// 			throw std::invalid_argument(" Parsing error, directives allowed only in a block\n");	
+// 		else if (buffer[i] == "listen") // NO IN LOCATION
+// 		{
+// 			if (!blocks.empty() && blocks.back() != &(*itServer))
+// 				throw std::invalid_argument(" Parsing error, 'listen' directive"
+// 					" allowed only in server block\n");	 
+// 			i = itServer->fillListens(buffer, i + 1);
+// 			continue;
+// 		}
+// 		else if (buffer[i] == "server_name") //NO IN LOCATION
+// 		{
+// 			if (!blocks.empty() && blocks.back() != &(*itServer))
+// 				throw std::invalid_argument(" Parsing error, 'server_name' directive"
+// 					" allowed only in server block\n");	 
+// 			i = itServer->fillServerName(buffer, i + 1);
+// 			continue;
+// 		}	
+// 		else if (buffer[i] == "autoindex")
+// 			i = blocks.back()->fillAutoIndex(buffer, i + 1);
+// 		else if (buffer[i] == "root")
+// 			i = blocks.back()->fillRoot(buffer, i + 1);
+// 		else if (buffer[i] == "index")
+// 			i = blocks.back()->fillIndex(buffer, i + 1);
+// 		else if (buffer[i] == "client_max_body_size")
+// 			i = blocks.back()->fillBodySize(buffer, i + 1);
+// 		else if (buffer[i] == "return")
+// 				i = blocks.back()->fillReturnDirectives(buffer, i + 1);
+// 		else if (buffer[i] == "error_page")
+// 			i = blocks.back()->fillErrorPage(buffer, i + 1);
+// 		else if (buffer[i] == "allow_methods")
+// 			i = blocks.back()->fillAllowedMethods(buffer, i + 1);
+// 		else if (buffer[i] == "cgi_pass")
+// 		{
+// 			if (!blocks.empty() && blocks.back() != &(itLocation->second))
+// 				throw std::invalid_argument(" Parsing error, 'cgi_pass' directive"
+// 					"  allowed only in a location block\n");
+// 			i = itLocation->second.fillCgiPass(buffer, i + 1);
+// 			continue;
+// 		}
+// 		else if (buffer[i] == "}")
+// 		{
+// 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
+// 			i++;
+// 		}
+// 		else
+// 			throw std::invalid_argument(" Parsing error, invalid directives\n");
+// 	}
+// 	return;
+// }
+
+size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
+	std::vector<ABlockBase*>& blocks, std::vector<ServerConf>::iterator& itServer)
+{
+	int	num = i;
+
+	std::cout << GREEN << " --> " << buffer[i] << RESET << std::endl; // to borrow
+	servers.push_back(ServerConf());//creer les blocs server dans le contener
+	itServer = servers.end() - 1;
+	blocks.push_back(&(*itServer));
+	i = i + 2;
+	while (i < buffer.size())
 	{
 		std::cout << GREEN << " --> " << buffer[i] << RESET << std::endl; // to borrow
-		if (buffer[i] == "server")
+		if (buffer[i] == "location")
 		{
-			if ( i + 1 >= buffer.size() || buffer[i + 1] != "{")
-				throw std::invalid_argument(" Parsing error, miss '{' after 'server' to opening the block\n");
-			servers.push_back(ServerConf());//creer les blocs server dans le contener
-			itServer = servers.end() - 1;
-			blocks.push_back(&(*itServer));
-			i = i + 2;
-			continue;
+			if (!blocks.back()->checkFlag("location"))
+				num = i;
+			//checker si i + 1 == "{" ??
+			for(; i < buffer.size(); i++)
+			{
+				if(buffer[i] == "}")
+				{
+					i++;
+					break;
+				}
+			}
 		}
-		else if (buffer[i] == "location")
+		else if (buffer[i] == "listen")
 		{
-			if (itServer->getLocations().find(buffer[i + 1]) != itServer->getLocations().end())
-				throw std::invalid_argument(" Parsing error, this 'location'"
-					" directive already exist\n");
-			itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
-			itLocation = itServer->getItLocations(buffer[i + 1]);
-			itLocation->second.setKey(buffer[i + 1]);
-			blocks.push_back(&itLocation->second);
-			i = i + 3;
-			continue;
-		}
-		else if (blocks.empty())
-			throw std::invalid_argument(" Parsing error, directives allowed only in a block\n");	
-		else if (buffer[i] == "listen") // NO IN LOCATION
-		{
-			if (!blocks.empty() && blocks.back() != &(*itServer))
-				throw std::invalid_argument(" Parsing error, 'listen' directive"
-					" allowed only in server block\n");	 
+			// if (!blocks.empty() && blocks.back() != &(*itServer))
+			// 	throw std::invalid_argument(" Parsing error, 'listen' directive"
+			// 		" allowed only in server block\n"); 
 			i = itServer->fillListens(buffer, i + 1);
-			continue;
 		}
-		else if (buffer[i] == "server_name") //NO IN LOCATION
+		else if (buffer[i] == "server_name")
 		{
-			if (!blocks.empty() && blocks.back() != &(*itServer))
-				throw std::invalid_argument(" Parsing error, 'server_name' directive"
-					" allowed only in server block\n");	 
+			// if (!blocks.empty() && blocks.back() != &(*itServer))
+			// 	throw std::invalid_argument(" Parsing error, 'server_name' directive"
+			// 		" allowed only in server block\n");	 
 			i = itServer->fillServerName(buffer, i + 1);
-			continue;
 		}	
 		else if (buffer[i] == "autoindex")
 			i = blocks.back()->fillAutoIndex(buffer, i + 1);
@@ -263,20 +336,89 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		else if (buffer[i] == "allow_methods")
 			i = blocks.back()->fillAllowedMethods(buffer, i + 1);
 		else if (buffer[i] == "cgi_pass")
-		{
-			if (!blocks.empty() && blocks.back() != &(itLocation->second))
-				throw std::invalid_argument(" Parsing error, 'cgi_pass' directive"
+			throw std::invalid_argument(" Parsing error, 'cgi_pass' directive"
 					"  allowed only in a location block\n");
+		else if (buffer[i] == "}")
+			return num;
+		else
+			throw std::invalid_argument(" Parsing error, invalid directives\n");
+	}
+	return num;
+}
+
+size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
+	std::vector<ABlockBase*>& blocks, std::vector<ServerConf>::iterator& itServer,
+	std::map<std::string, LocationConf>::iterator& itLocation)
+{
+	// std::cout << PURPLE << " --> " << buffer[i] << " " << buffer[i + 1] << RESET << std::endl; // to borrow
+	if (itServer->getLocations().find(buffer[i + 1]) != itServer->getLocations().end())
+		throw std::invalid_argument(" Parsing error, this 'location'"
+			" directive already exist\n");
+	itServer->getLocations()[buffer[i + 1]] = LocationConf(*itServer);
+	itLocation = itServer->getItLocations(buffer[i + 1]);
+	itLocation->second.setKey(buffer[i + 1]);
+	blocks.push_back(&itLocation->second);
+	i = i + 3;
+	// std::map<int, std::string>::const_iterator it;
+	// for (it = itLocation->second.getErrorPage().begin(); it != itLocation->second.getErrorPage().end(); it++)
+	// 	std::cout << PINK << it->first << std::endl;
+	while (i < buffer.size())
+	{
+		std::cout << PURPLE << " --> " << buffer[i] << RESET << std::endl; // to borrow
+		if (buffer[i] == "listen" || buffer[i] == "server_name")
+			throw std::invalid_argument("Parsing error, '" + buffer[i] +
+			"' directive allowed only in server block\n");	
+		else if (buffer[i] == "autoindex")
+			i = blocks.back()->fillAutoIndex(buffer, i + 1);
+		else if (buffer[i] == "root")
+			i = blocks.back()->fillRoot(buffer, i + 1);
+		else if (buffer[i] == "index")
+			i = blocks.back()->fillIndex(buffer, i + 1);
+		else if (buffer[i] == "client_max_body_size")
+			i = blocks.back()->fillBodySize(buffer, i + 1);
+		else if (buffer[i] == "return")
+				i = blocks.back()->fillReturnDirectives(buffer, i + 1);
+		else if (buffer[i] == "error_page")
+			i = blocks.back()->fillErrorPage(buffer, i + 1);
+		else if (buffer[i] == "allow_methods")
+			i = blocks.back()->fillAllowedMethods(buffer, i + 1);
+		else if (buffer[i] == "cgi_pass")
 			i = itLocation->second.fillCgiPass(buffer, i + 1);
-			continue;
-		}
+		else if (buffer[i] == "}")
+			return i;
+		else
+		 	throw std::invalid_argument(" Parsing error, invalid directives\n");
+	}
+	return i;
+}
+
+void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
+{
+	size_t											i = 0;
+	std::vector<ABlockBase*>						blocks;
+	std::vector<ServerConf>::iterator 				itServer;
+	std::map<std::string, LocationConf>::iterator	itLocation;
+	
+	checkStructure(buffer); //parenthesis well closed, blocks well positionned
+	while(i < buffer.size())
+	{
+		if (buffer[i] == "server")
+			i = fillServers(buffer, i, blocks, itServer);
+		else if (buffer[i] == "location")
+			i = fillLocations(buffer, i, blocks, itServer, itLocation);
+		else if (blocks.empty())
+			throw std::invalid_argument(" Parsing error, directives allowed only in a block\n");	
 		else if (buffer[i] == "}")
 		{
 			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
 			i++;
 		}
 		else
-			throw std::invalid_argument(" Parsing error, invalid directives\n");
+			i++;
+		// else
+		// 	throw std::invalid_argument(" Parsing error, invalid directives\n");
 	}
+	//faire fonction pour printed tous les blocs et server pour voir si ok
 	return;
 }
+

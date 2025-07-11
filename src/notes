@@ -94,34 +94,6 @@
 //le chemin de base (dans le système de fichiers) où Nginx va chercher
 //les fichiers statics (HTML, CSS, images, JS...) à servir au client
 
-//un seul arg qui commence par "/" (chemin absolu)
-//une seule directive par bloc
-
-
---> index <--
-
-//sert à définir les fichiers à servir par défaut lorsqu’un client
-//accède à un répertoire.
-
-//un ou plusieurs arg
-//une seule directive par bloc
-
-
---> client_max_body_size <--
-
-//limiter la taille maximale du body d'une requête HTTP
-//généralement pour des requêtes POST ou PUT
-
-//un seul arg obligatoire
-//une seule directive par bloc
-//autorise seulement m/M & k/k colle au chiffre devant
-
-//1k = 1024 octets/bits
-//1m = 1024 x 1024 = 1048576 bits
-// 1m = 1024k
-
-
---> allow_methods <--
 
 //mot-clé dans une requête HTTP qui indique l’intention du client 
 //(souvent un navigateur ou un autre programme) envers une ressource
@@ -139,31 +111,6 @@
 // une directive par bloc
 
 --> return <--
-
-//redirectionner ou de retourner immédiatement une réponse HTTP simple
-//sans traiter de fichier ou passer par un proxy
-//stop tout, et renvoie immédiatement une réponse au client
-//TOUTES LES AUTRES INFOS DU BLOC NE SONT PAS PRISES EN COMPTE,il faut les garder mais
-// si il y a un return dans un bloc on l'excute TOUT DE SUITE et on oublie tout le reste de ce bloc
-
-//une directive par bloc, 1 ou 2 args, avec un nombre en premier de 100 a 599
-//et possiblement un bloc de texte mais pas plus
-
-// return 404;
-// return 301 https://example.com;
-// return 503 "Service unavailable";
-
---> error_page <--
-
-//-> client error <-
-//400 bad request -> Cleo
-//401 unauthorized
-//403 forbidden
-//404 not found
-//405 Method Not Allowed -> Cleo
-//410 gone
-//413 Request Entity Too Large
-//414 URI Too Long -> CLeo
 
 // -> Server error <-
 //500 internal server error
