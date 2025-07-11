@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/10 16:06:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	return	 RequestLine( tokens );
 }
 
-void	HttpParser::parseUri( std::string & uri ) {
+void	HttpParser::parseReqTarget( std::string & uri ) {
 	std::string::iterator	it, ite = uri.end();
 
 	for ( it = uri.begin(); it != ite; ++it ) {

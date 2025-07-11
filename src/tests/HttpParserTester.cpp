@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/10 16:59:08 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,16 +393,6 @@ void	HttpParserTester::invalidCharUri() {
 	} catch( std::invalid_argument e ) {
 		std::cout << GREEN << e.what() << ":  " << uri << " '{' and '}' char don't accepted/ Test OK" << std::endl;
 	}
-
-/*	uri = "/holi(hola)";
-	try {
-		std::string	http_mess( "POST " + uri + " HTTP/1.1");
-		HttpParser::parseRequestLine( http_mess );
-		std::cout << RED << "valid percent:	  " << uri << " accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GREEN << e.what() << ":  " << uri << " percent encoded don't accepted/ Test OK" << std::endl;
-	}
-*/
 } 
 
 

@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/10 12:39:34 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ public:
 	static bool						isHexChar( char c );
 
 	static RequestLine				parseRequestLine( std::string const & line );
-	static void						parseUri( std::string & uri ); 
+	static void						parseReqTarget( std::string & uri ); 
 	static std::string				parsePath( std::string const & uri );
 	static std::string				parseQuery( std::string const & uri );
 	static void						notImplementedMethod( std::string const & method );

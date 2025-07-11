@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/06/22 16:32:35 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:10:43 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,13 @@
 #include <string>
 
 class	RequestLine;
+class	Uri;
 
 class	HttpRequest	{
 private:
 	
 	RequestLine	*	req_line;
+	Uri *			uri;
 //	RequestHeaders	headers;
 //	RequestBody		body;	
 

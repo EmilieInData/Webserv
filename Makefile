@@ -13,13 +13,17 @@ INC_DIR		= inc/
 SRC_DIR		= src/
 OBJ_DIR		= obj/
 TEST_DIR	= tests/
+REQ_DIR		= request/
 
-SRC_FILES	= main HttpRequest HttpParser RequestLine Server Utils \
+SRC_FILES	= main  Server Utils \
 
 TEST_FILES	= HttpParserTester
+REQ_FILES	= HttpRequest HttpParser RequestLine Uri
 
 ALL_FILES	+= $(SRC_FILES)
 ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
+ALL_FILES	+= $(addprefix $(REQ_DIR), $(REQ_FILES))
+
 
 SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(ALL_FILES)))
 OBJS		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(ALL_FILES)))
