@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:45:31 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,24 @@ bool	HttpParser::isReservedForUri( char c ) {
     return false;
 }
 
+
+
+
 bool HttpParser::isHexChar( char c ) {
 	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
 }
+
+std::string	HttpParser::toLower( std::string const & str ) {
+	
+	std::string					result = str;
+	std::string::iterator	it, ite = result.end();
+	
+	for ( it = result.begin(); it != ite; ++it )
+		*it = std::tolower( static_cast<unsigned char>( *it ));
+
+	return result;
+}
+
 
 std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message ) {
 
@@ -128,7 +143,7 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 		s_ite = (*it).end();
 		for ( s_it = (*it).begin(); s_it != s_ite; ++s_it )
 			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
-		if ( strncmp( (*it).c_str(), "Host:", 5 ) == 0 )
+		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 )
 			host++;
 		header++;
 		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );
@@ -161,6 +176,8 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 void	HttpParser::parseReqTarget( std::string & uri ) {
 	std::string::iterator	it, ite = uri.end();
 
+	if ( uri.at( 0 ) && uri.at( 0 ) != '/' ) throw std::invalid_argument( E_400 );
+
 	for ( it = uri.begin(); it != ite; ++it ) {
 		if ( !isUnreservedForUri( *it ) && !isReservedForUri( *it ) && *it  != '%' )
 			throw std::invalid_argument( E_400 );
@@ -175,18 +192,34 @@ void	HttpParser::parseReqTarget( std::string & uri ) {
 }
 
 std::string	HttpParser::parsePath( std::string const & uri ) {
-	
-	std::size_t	found = uri.find( "?" );
+	std::size_t	foundQ = uri.find( "?" );
+	std::size_t	foundF = uri.find( "#" );
 
-	if ( found != std::string::npos )
-		return uri.substr( 0, found );
-	else
-		return uri;
+	if ( foundQ != std::string::npos ) return uri.substr( 0, foundQ );
+	if ( foundF != std::string::npos ) return uri.substr( 0, foundF );
+	return uri;
 }
 
 std::string	HttpParser::parseQuery( std::string const & uri ) {
+	std::size_t	foundQ = uri.find( "?" );
+	std::string	tmp;
 
-	std::size_t	found = uri.find( "?" );
+	if ( foundQ != std::string::npos )
+		tmp =  uri.substr( foundQ + 1, uri.length());
+	else
+		return "";
+
+	std::size_t	foundF = tmp.find( "#" );
+
+	if ( foundF != std::string::npos )
+		return tmp.substr( 0, foundF );
+	else
+		return tmp;
+}
+
+std::string	HttpParser::parseFragment( std::string const & uri ) {
+
+	std::size_t	found = uri.find( "#" );
 
 	if ( found != std::string::npos )
 		return uri.substr( found + 1, uri.length());

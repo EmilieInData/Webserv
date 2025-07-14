@@ -6,13 +6,14 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:00:23 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParserTester.hpp"
 #include "HttpParser.hpp"
 #include "RequestLine.hpp"
+#include "Uri.hpp"
 #include <iostream>
 #include <string>
 
@@ -126,7 +127,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	std::string host( "www.example.com" );
 	
 	try {
-		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHoSt: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess );
 		std::cout << GREEN << "valid host:	  " << host << " accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
@@ -315,7 +316,7 @@ void	HttpParserTester::shouldHaveThreeTokens() {
 
 void	HttpParserTester::uriTooLong() {
 	try {
-		std::string	uri( 8001, 'x' );
+		std::string	uri( 8001, '/' );
 		std::string req_line( "GET " + uri + " HTTP/1.1" );
 		HttpParser::parseRequestLine( req_line );
 		std::cout << RED << "Valid req-line:   8001 octects accepted / Test FAIL" << std::endl;
@@ -324,7 +325,7 @@ void	HttpParserTester::uriTooLong() {
 	}
 
 	try {
-		std::string	uri( 8000, 'x' );
+		std::string	uri( 8000, '/' );
 		HttpParser::parseRequestLine( "GET " + uri + " HTTP/1.1" );
 		std::cout << GREEN << "Valid req-line:   8000 octects accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
@@ -373,6 +374,20 @@ void	HttpParserTester::implementedMethod() {
 	}
 }
 
+void	HttpParserTester::parseRequestLineTest() {
+
+	std::cout << "_____________Request-line tests_____________" << std::endl;
+
+	shouldHaveTwoSpaces();
+	shouldHaveThreeTokens();
+	uriTooLong();
+	httpVersion();
+	implementedMethod();
+ 
+	std::cout << RESET << std::endl;
+}
+
+
 void	HttpParserTester::invalidCharUri() {
 
 	std::string uri( "/holi(hola)" );
@@ -393,6 +408,38 @@ void	HttpParserTester::invalidCharUri() {
 	} catch( std::invalid_argument e ) {
 		std::cout << GREEN << e.what() << ":  " << uri << " '{' and '}' char don't accepted/ Test OK" << std::endl;
 	}
+} 
+
+void	HttpParserTester::invalidForm() {
+
+	std::string uri( "http://example.com/index.html" );
+		
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid uri:	          " << uri << " absolut-form accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " absolut-form don't accepted/ Test OK" << std::endl;
+	}
+
+	uri = "example.com:80";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid uri:	          " << uri << " authority-form accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " authority-form don't accepted/ Test OK" << std::endl;
+	}
+
+	uri = "*";
+	try {
+		std::string	http_mess( "POST " + uri + " HTTP/1.1");
+		HttpParser::parseRequestLine( http_mess );
+		std::cout << RED << "valid uri:	          " << uri << " asterisk-form accepted / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GREEN << e.what() << ":  " << uri << " asterisk-form don't accepted/ Test OK" << std::endl;
+	}
+
 } 
 
 
@@ -436,22 +483,36 @@ void	HttpParserTester::validPercentEncoded() {
 	}
 }
 
+void	HttpParserTester::uriReconstruction() {
+	std::string	uri( "/post%20kost?query#holi" ), host( "example.com" );
+	Uri			test = Uri( uri, host );
+		
+	std::cout << std::endl;
+	std::cout << RESET << "Uri reconstruction: " << test.getUri() << std::endl;
+	std::cout << "path: " << test.getPath() << ", query: " << test.getQuery();
+	std::cout << ", fragment: " << test.getFragment() << std::endl;
+
+	std::string	uri2( "/post%20kost#frrragment" ), host2( "example.com" );
+	Uri			test2 = Uri( uri2, host2 );
+		
+	std::cout << std::endl;
+	std::cout << RESET << "Uri reconstruction: " << test2.getUri() << std::endl;
+	std::cout << "path: " << test2.getPath() << ", query: " << test2.getQuery();
+	std::cout << ", fragment: " << test2.getFragment() << std::endl;
+
+}
 
 
 
+void	HttpParserTester::parseUriTest() {
 
-void	HttpParserTester::parseRequestLineTest() {
+	std::cout << "_________________Uri tests__________________" << std::endl;
 
-	std::cout << "_____________Request-line tests_____________" << std::endl;
-
-	shouldHaveTwoSpaces();
-	shouldHaveThreeTokens();
-	uriTooLong();
-	httpVersion();
-	implementedMethod();
+//	uriTooLong();
 	invalidCharUri();
+	invalidForm();
 	validPercentEncoded();
-
+	uriReconstruction(); 
 
  
 	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;

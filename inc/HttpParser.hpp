@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/11 14:35:59 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:57:03 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,13 @@ public:
 	static bool						isUnreservedForUri( char c );
 	static bool						isReservedForUri( char c );
 	static bool						isHexChar( char c );
+	static std::string				toLower( std::string const & str );
 
 	static RequestLine				parseRequestLine( std::string const & line );
 	static void						parseReqTarget( std::string & uri ); 
 	static std::string				parsePath( std::string const & uri );
 	static std::string				parseQuery( std::string const & uri );
+	static std::string				parseFragment( std::string const & uri );
 	static void						notImplementedMethod( std::string const & method );
 	static void						notAllowedMethod( std::string const & method, std::string const & path );
 

@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 13:30:49 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/11 14:26:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 12:20:15 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,13 @@ Uri::Uri( std::string const & req_target, std::string const & host ) : scheme( "
 	
 	path = HttpParser::parsePath( req_target );
 	query = HttpParser::parseQuery( req_target );
-	//fragment = HttpParser::parseFragment( req_target );
+	fragment = HttpParser::parseFragment( req_target );
 
-	uri = scheme + "://" + authority + path + "?" + query + "#" + "fragment";
-	std::cout << uri << std::endl;
+	uri = scheme + "://" + authority + path;
+	if ( !query.empty()) uri += "?" + query;
+	if ( !fragment.empty()) uri += "#" + fragment;
+	
+//	std::cout << "URI: " << uri << std::endl;
 }
 
 Uri::Uri( Uri const & src ) { *this = src; }

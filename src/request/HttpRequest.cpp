@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/11 14:31:12 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:07:30 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) { 
 	HttpParserTester::parseHttpMessageTest();
 	HttpParserTester::parseRequestLineTest();
+	HttpParserTester::parseUriTest();
 }
 
 HttpRequest::HttpRequest( std::string const & message ) : req_line( NULL ), uri( NULL ) {
