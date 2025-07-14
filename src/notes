@@ -118,8 +118,6 @@
 
 --> TO DO
 
-//changer pour parser en deux temps et gerer TOUTES les infos server avant les locations
-
 //garder l'adresse ip en type ip et non std::string // a ver
 
 ///checker si une ligne est si grande que la fonction me la retourne en deux fois ? 

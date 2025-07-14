@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 20:34:31 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 18:49:40 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/14 14:52:12 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int ac, char** av)
 		std::string line;
 		while (std::getline(file, line))
 			P.doParsing(line, buffer);
-		P.print_tokens(buffer);
+		// P.print_tokens(buffer);
 		P.fillStructs(buffer);
 	}
 	catch(const std::exception& e)

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 18:48:46 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/14 12:26:17 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,17 @@ std::map<std::string, LocationConf>&	ServerConf::getLocations()
 std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::string const& key)
 {
 	return _locations.find(key);
-}	
+}
+
+std::vector<listen>	ServerConf::getListens()
+{
+	return _listens;
+}
+
+std::vector<std::string>	ServerConf::getServerName()
+{
+	return _serverName;
+}
 
 size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 {
