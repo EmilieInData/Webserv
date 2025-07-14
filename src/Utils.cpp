@@ -6,11 +6,11 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 18:49:35 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:03:22 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/Utils.hpp"
+#include "Utils.hpp"
 
 bool	isInt(std::string const& value)
 {
@@ -118,20 +118,32 @@ std::string	socketToIp(std::string const& value)
 	for (size_t i = 0; i < value.length(); i++)
 	{
 		if (value[i] == ':')
+		{
 			str = value.substr(0, i);
+			break;
+		}
 	}
+	if (str == "")
+		throw std::invalid_argument(" Parsing error, 'listen' socket address"
+		" is not correct\n");
 	return str;
 }
 
-int			socketToPort(std::string const& value)
+int	socketToPort(std::string const& value)
 {
 	std::string str = "";
 	
 	for (size_t i = 0; i < value.length(); i++)
 	{
 		if (value[i] == ':')
+		{
 			str = value.substr(i + 1);
+			break;
+		}
 	}
+	if (str == "")
+		throw std::invalid_argument(" Parsing error, 'listen' socket address"
+		" is not correct\n"); 
 	int num = strToInt(str);
 	return num;
 }
@@ -213,9 +225,9 @@ bool	checkLabel(std::string const& str)
 	return (num);
 }
 
-std::map<int, std::pair<std::string, std::string>>  defaultErrorPages() //to implemante commun class error_page
+std::map<int, std::pair<std::string, std::string> >  defaultErrorPages()
 {
-	std::map<int, std::pair<std::string, std::string>>	map;
+	std::map<int, std::pair<std::string, std::string> >	map;
 	
 	map[400] = std::make_pair("400 - Bad Request", "/4xx.html");
 	map[401] = std::make_pair("401 - Unauthorized", "/4xx.html");
@@ -261,3 +273,17 @@ void	checkErrorPage(std::map<int, std::string> const& value)
 	}
 	return;
 }
+const std::string utilsTimestamp()
+{
+	std::string timeStamp;
+	char buffer[64];
+	time_t timeNow = time(NULL);
+	struct tm *timeData = localtime(&timeNow);
+	
+	strftime(buffer, sizeof(buffer), "[%H:%M:%S] ", timeData);
+	timeStamp = "\033[35m" + std::string(buffer) + "\033[0m";
+	
+	return timeStamp;
+}
+
+// vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}

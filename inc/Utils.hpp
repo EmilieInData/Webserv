@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/10 18:17:55 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/14 17:38:25 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,25 @@
 #define UTILS_HPP
 
 #include <map>
+#include <ctime>
 #include <stack>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <cstdlib>
 #include <sstream>
 #include <utility>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+
+#include <poll.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #define ERROR	"📍"
 #define RESET   "\033[0m"
@@ -48,9 +58,12 @@ bool       	    checkLabel(std::string const& str);
 unsigned int    strToSize(std::string const& value);
 
 //error_page
-std::map<int, std::pair<std::string, std::string>>  defaultErrorPages();
+std::map<int, std::pair<std::string, std::string> > defaultErrorPages();
 bool                                                isErrorPage(std::string const& value);
 bool                                                isHtmlAddress(std::string const& value);
 void                                                checkErrorPage(std::map<int, std::string> const& value);
+
+//sockets
+const std::string   utilsTimestamp();
 
 #endif

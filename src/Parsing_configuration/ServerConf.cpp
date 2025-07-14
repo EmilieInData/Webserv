@@ -6,17 +6,17 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 12:26:17 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/14 16:48:06 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/Utils.hpp"
-#include "../../inc/ServerConf.hpp"
+#include "Utils.hpp"
+#include "ServerConf.hpp"
 
 ServerConf::ServerConf()
 {
-	_listens.push_back(listen{8080, "127.0.0.1"}); //accepter localhost
-	_serverName.push_back("default");
+	_listens.push_back(std::make_pair(8080, "127.0.0.1")); //accepter localhost
+	// _serverName.push_back("default");
 }
   
 ServerConf::~ServerConf() {} 
@@ -54,7 +54,7 @@ std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::st
 	return _locations.find(key);
 }
 
-std::vector<listen>	ServerConf::getListens()
+std::vector<std::pair<int, std::string> >	ServerConf::getListens()
 {
 	return _listens;
 }
@@ -97,13 +97,13 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 	{
 		for (size_t i = 0; i < _listens.size(); i++)
 		{
-			if (_listens[i].ip == ip && _listens[i].port == port)
+			if (_listens[i].first == port && _listens[i].second == ip)
 				throw std::invalid_argument(" Parsing error, duplicate 'listen' arguments\n");
 		}	
-		_listens.push_back(listen{port, ip});
+		_listens.push_back(std::make_pair(port, ip));
 	}
 	else
-		_listens[0] = listen{port, ip};
+		_listens[0] = std::make_pair(port, ip);
 	return (i + 2);   
 }
 
