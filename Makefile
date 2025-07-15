@@ -1,7 +1,7 @@
 NAME		= webserv
 
 CC			= c++ 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g #-fsanitize=leak
 DEP_FLAG	= -MMD -MP
 INCLUDE		= -I$(INC_DIR)
 
@@ -13,19 +13,21 @@ INC_DIR		= inc/
 SRC_DIR		= src/
 OBJ_DIR		= obj/
 TEST_DIR	= tests/
+CONF_DIR	= Parsing_configuration/
 
 SRC_FILES	= main HttpRequest HttpParser RequestLine Server Utils \
 
 TEST_FILES	= HttpParserTester
 
+CONF_FILES = ABlockBase LocationConf ParsingConf ServerConf
+
 ALL_FILES	+= $(SRC_FILES)
 ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
+ALL_FILES	+= $(addprefix $(CONF_DIR), $(CONF_FILES))
 
 SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(ALL_FILES)))
 OBJS		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(ALL_FILES)))
 DEPS		= $(addprefix $(OBJ_DIR), $(addsuffix .d, $(ALL_FILES)))
-
-
 
 all:	$(NAME)
 
@@ -46,5 +48,3 @@ re: fclean all
 
 -include $(DEPS)
 .PHONY:	all clean fclean re
-
-
