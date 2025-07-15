@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 15:45:31 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 16:14:54 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,11 @@ bool	HttpParser::isReservedForUri( char c ) {
     return false;
 }
 
+bool	HttpParser::isTokenChar( char c ) {
+	const std::string specials = "!#$%&'*+-.^_`|~";
 
-
+    return std::isalnum(static_cast<unsigned char>(c)) || specials.find(c) != std::string::npos;
+}
 
 bool HttpParser::isHexChar( char c ) {
 	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');

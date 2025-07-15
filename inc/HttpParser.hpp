@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 14:57:03 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/14 16:14:54 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ public:
 	static bool						isReservedForUri( char c );
 	static bool						isHexChar( char c );
 	static std::string				toLower( std::string const & str );
+	static bool						isTokenChar( char c );
 
 	static RequestLine				parseRequestLine( std::string const & line );
 	static void						parseReqTarget( std::string & uri ); 
