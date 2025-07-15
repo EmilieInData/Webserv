@@ -1,0 +1,137 @@
+// server {
+//     listen 8080;                    # port choisi
+//     listen localhost:8080;    
+//     listen 127.0.0.1:8080;          # host + port possible //v6
+//     server_name localhost test.i.2; # optionnel //checker avec un autre server si ok mm nom
+//     root /www;
+//     index index.html;
+//     error_page 404 /404.html;
+//     error_page 500 501 /50x.html;
+//     error_page 400 401 403 405 410 413 414 /4xx.html;
+//     client_max_body_size 1m;
+
+//     location / {
+//         autoindex off;
+//         allow_methods GET POST;
+//     }
+//     location /static/ {
+//         root /static;
+//         allow_methods GET;
+//     }
+//     location /cgi-bin/ {
+//         cgi_pass .py /usr/bin/python3;
+//         cgi_pass .php /usr/bin/php-cgi;
+//         allow_methods GET POST;
+//     }
+
+//     location /uploads/ {
+//         client_max_body_size 10k; #nginx max 1M for eveything
+//         root /uploads;
+//         allow_methods POST;
+//     }
+//     location /redirect/ {
+//         return 301 http://localhost:8080/; #define the direction we want
+//     }
+// }
+
+
+//passer le premier arg a la fonction buffer[i + 1]
+//verifier le bon nombre d'arg et le ; a la fin
+//verifier si le type des args est correct
+//parser/transformer les args
+//checker le flag si l'arg existe deja ou non et l'ajouter
+//checker les doublons de ligne dans le fichier de config
+//ajouter aux attributs de la classe associees
+//checker si l'arg est valide (port pas ferme, fichier existants ...) ??
+
+//gerer les changements de bloc server et location en changeant leur iterateurs aussi
+
+
+--> listen <--
+
+//quel port et ip address ecouter pour la connexion
+
+// default ip address: 0.0.0.0
+// default port : 80
+// socket address : 0.0.0.0:80
+//possible many listen on server block only (no location)
+//not possible same ip & port address two times
+//default one 80 & 0.0.0.0
+
+
+--> serverName <--
+
+//associer une configuration a un nom de domaine
+//ce serveur répondra à telle ou telle URL ou nom de domaine, cela signifie
+// que cette config s’appliquera uniquement aux requêtes faites aux args passes
+
+// www.example.com
+// www est un label, example est un autre label, com est un autre label
+
+// Chaque label doit respecter les règles DNS:
+// Ne contenir que des lettres, chiffres et tirets
+// Ne pas commencer ni finir par un tiret
+// Avoir une longueur entre 1 et 63 caractères
+// Longueur totale du nom ≤ 255 caractères.
+//possible many args, check with the DNS standart all 'label' from all args
+//can be only one time by server block only (no location)
+
+
+--> autoindex <--
+
+//contrôle si le serveur doit afficher automatiquement la liste des fichiers
+//d’un dossier, quand aucun fichier index (comme index.html) n’est trouvé
+//De naviguer visuellement dans les dossiers (comme un explorateur de fichiers).
+
+// 'on'  ->affiche les fichiers du dossier si aucun index trouvé
+// 'off' ->	(Défaut) masque les fichiers, renvoie une erreur à la place (403)
+
+//only one by block, only 'on' or 'off' authorized, only one arg
+
+
+--> root <--
+
+//le chemin de base (dans le système de fichiers) où Nginx va chercher
+//les fichiers statics (HTML, CSS, images, JS...) à servir au client
+
+
+//mot-clé dans une requête HTTP qui indique l’intention du client 
+//(souvent un navigateur ou un autre programme) envers une ressource
+
+// GET		Récupérer une ressource (lecture)
+// POST		Envoyer des données (ex. formulaire)
+// DELETE	Supprimer une ressource
+// PUT		Remplacer une ressource entière
+// PATCH	Modifier partiellement une ressource
+// HEAD		Même chose que GET sans le corps de réponse // A AJOUTER??
+// OPTIONS	Demander au serveur quelles méthodes sont autorisées
+
+//peut ecrire plusieurs fois la mm methods ds la directive, la methode en doublon est juste ignorer
+//on peut mettre une erreur si on le souhaite mais nginx ne le fait pas
+// une directive par bloc
+
+--> return <--
+
+// -> Server error <-
+//500 internal server error
+//501 Not Implemented -> Cleo
+
+--> TO DO
+
+//garder l'adresse ip en type ip et non std::string // a ver
+
+///checker si une ligne est si grande que la fonction me la retourne en deux fois ? 
+
+--> TO ASK
+
+
+--> TO KNOW
+
+//chemin absolu = /blabla
+//chemin relatif = ./blabla
+
+//test char no printable 
+// printf "server\x01{}\n" > ../conf/test.conf
+
+//si il manque des arguments au fichier comme listen par ex,
+//les messages d'erreurs sont au lancement du server pas au parsing

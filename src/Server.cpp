@@ -3,22 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/08 16:33:43 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/15 14:22:36 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "HttpRequest.hpp"
+#include "ParsingConf.hpp"
 
-Server::Server(): _createdTime(time(NULL))
-{ 
+// Server::Server(): _createdTime(time(NULL))
+// { 
+// 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
+// }
+
+Server::Server(ParsingConf& P) : _createdTime(time(NULL)), 	_serversList(P.getServers()), _defaultErrorPages(defaultErrorPages())
+{
 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
 }
 
-Server::Server(Server const &copy)
+Server::Server(Server const &copy) : _serversList(copy._serversList), _defaultErrorPages(copy._defaultErrorPages)
 {
 	*this = copy;
 }
@@ -133,6 +139,16 @@ void Server::servRun()
 		}
 	}
 	close(_socketFd);
+}
+
+std::vector<ServerConf> const&	Server::getServersList() const
+{
+	return _serversList;
+}
+
+std::map<int, std::pair<std::string, std::string> > const&	Server::getDefaultErrorPages() const
+{
+	return _defaultErrorPages;
 }
 
 
