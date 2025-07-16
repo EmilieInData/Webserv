@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 16:10:24 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:30:43 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ std::string	HttpParser::toLower( std::string const & str ) {
 }
 
 
-std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message ) {
+std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message, std::string & host_str ) {
 
 	std::vector<std::string> lines = crlfSplit( message );
 
@@ -147,8 +147,10 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 		s_ite = (*it).end();
 		for ( s_it = (*it).begin(); s_it != s_ite; ++s_it )
 			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
-		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 )
+		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 ) {
+			host_str = (*it).substr( 5, (*it).length() - 5 );
 			host++;
+		}
 		header++;
 		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );
 	}
@@ -169,10 +171,6 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	std::vector<std::string>	tokens = split( line, ' ' );
 	
 	if ( tokens.size() != 3 ) throw std::invalid_argument( E_400 );
-
-	if ( !notImplementedMethod( tokens[0] )) throw std::invalid_argument( E_501 );
-
-	//if ( notAllowedMethod( tokens[0], getPath( tokens[1] ))) throw std::invalid_argument( E_405 );
 
 	if ( tokens[1].length() > 8000 ) throw std::invalid_argument( E_414 );
 
@@ -195,8 +193,6 @@ void	HttpParser::parseReqTarget( std::string & uri ) { //request target = uri
 			it ++;
 		}
 	}
-
-
 }
 
 std::string	HttpParser::parsePath( std::string const & uri ) {
@@ -236,7 +232,6 @@ std::string	HttpParser::parseFragment( std::string const & uri ) {
 
 }
 
-
 bool	HttpParser::notImplementedMethod( std::string const & method ) {
 	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
 
@@ -246,29 +241,17 @@ bool	HttpParser::notImplementedMethod( std::string const & method ) {
 	return false;
 }
 
-
 ServerConf const &	HttpParser::checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host ) {
 	std::vector<ServerConf>::const_iterator	it, ite = servers.end();
 	std::vector<std::string>::const_iterator	it_name, ite_name; 
 
-	std::cout << "HOST REQUEST : " << host << std::endl;
-
-/*	for ( it = servers.begin(); it != ite; ++it ) {
-		ite_name = (*it).getServerName().end();
-		for ( it_name = (*it).getServerName().begin(); it_name != ite_name; ++it_name )
-			if ( *it_name == host )
-				return *it;
-	}*/
-
 	for (it = servers.begin(); it != ite; ++it) {
-	const std::vector<std::string>& names = it->getServerName();
-	for (it_name = names.begin(); it_name != names.end(); ++it_name) {
-		if (*it_name == host)
-			return *it;
-	}
-}
-
-	
+		const std::vector<std::string>& names = it->getServerName();
+		for (it_name = names.begin(); it_name != names.end(); ++it_name) {
+			if (*it_name == host)
+				return *it;
+		}
+	}	
 	throw std::invalid_argument( E_421 );
 
 }
@@ -312,27 +295,3 @@ void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator
 	
 
 
-
-
-
-
-
-
-/*
-primero check allowed methos in server;
-
-
-
-
-	buscar en el archivo de config si el /location correspondiente al path, tiene allowed-method
-
-	if ( el /location tiene allowed method ) 		
-		if (el method esta incluido )
-			return;
-	else 
-		return;
-	
-	throw std::invalid_argument( E_405 );
-}
-
-*/

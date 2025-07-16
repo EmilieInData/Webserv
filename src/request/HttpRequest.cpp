@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 15:50:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:45:18 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,22 @@ HttpRequest::HttpRequest( std::string const & message, Server & server) : req_li
 
 		std::cout << message << std::endl;
 
-		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message );
+		std::string							tmp_host;
+		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message, tmp_host );
 		std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
+
+//		host = HttpParser::parseHost( tmp_host ); // HACER EL PARSEO DE HOSTTTTT 
 
 		while ( it != ite && (*it).empty() )
 			++it;
 
 		req_line = new RequestLine( HttpParser::parseRequestLine( *it ));
 
-		std::string host( "test" ); /// recoger el host de la request !!!
+		std::cout << "host from parseHttpMessage: " << tmp_host << std::endl;
 
-		uri = new Uri( req_line->getReqTarget(), host );
+		uri = new Uri( req_line->getReqTarget(), tmp_host );
 
-		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host ); //solo host.getName() ?????
-		std::cout << "Uri->getPAth() : " << uri->getPath() << std::endl;
+		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), tmp_host ); //solo host.getName() ?????
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 

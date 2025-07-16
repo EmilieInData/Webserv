@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 15:50:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:04:29 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ public:
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
 
-	static std::vector<std::string>	parseHttpMessage( std::string const & str );
+	static std::vector<std::string>	parseHttpMessage( std::string const & str, std::string & host );
 };
 
 #endif
