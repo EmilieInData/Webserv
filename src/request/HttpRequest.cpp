@@ -6,14 +6,17 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 13:07:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 15:50:40 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include "HttpParser.hpp"
 #include "HttpParserTester.hpp"
+#include "RequestLine.hpp"
 #include "Uri.hpp"
+#include "Server.hpp"
+#include "ServerConf.hpp"
 #include <iostream>
 #include <string>
 #include <stdexcept>
@@ -24,7 +27,7 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 	HttpParserTester::parseUriTest();
 }
 
-HttpRequest::HttpRequest( std::string const & message ) : req_line( NULL ), uri( NULL ) {
+HttpRequest::HttpRequest( std::string const & message, Server & server) : req_line( NULL ), uri( NULL ) {
 	try {
 
 		std::cout << message << std::endl;
@@ -37,11 +40,14 @@ HttpRequest::HttpRequest( std::string const & message ) : req_line( NULL ), uri(
 
 		req_line = new RequestLine( HttpParser::parseRequestLine( *it ));
 
-		std::string host( "www.example.org" );
+		std::string host( "test" ); /// recoger el host de la request !!!
 
 		uri = new Uri( req_line->getReqTarget(), host );
 
-		//HttpParser::notImplementedMethod( req_line->method, header->find( "path" ) );
+		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host ); //solo host.getName() ?????
+		std::cout << "Uri->getPAth() : " << uri->getPath() << std::endl;
+		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
+		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 
 	} catch ( std::invalid_argument e ) {
 		std::cout << e.what() << std::endl;

@@ -6,12 +6,13 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 16:14:54 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 16:10:24 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
 #include "RequestLine.hpp"
+#include "ServerConf.hpp"
 #include <iostream>
 #include <cctype>
 #include <cstring>
@@ -169,6 +170,10 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	
 	if ( tokens.size() != 3 ) throw std::invalid_argument( E_400 );
 
+	if ( !notImplementedMethod( tokens[0] )) throw std::invalid_argument( E_501 );
+
+	//if ( notAllowedMethod( tokens[0], getPath( tokens[1] ))) throw std::invalid_argument( E_405 );
+
 	if ( tokens[1].length() > 8000 ) throw std::invalid_argument( E_414 );
 
 	if ( tokens[2] != "HTTP/1.1" ) throw std::invalid_argument( E_400 );
@@ -176,7 +181,7 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	return	 RequestLine( tokens );
 }
 
-void	HttpParser::parseReqTarget( std::string & uri ) {
+void	HttpParser::parseReqTarget( std::string & uri ) { //request target = uri
 	std::string::iterator	it, ite = uri.end();
 
 	if ( uri.at( 0 ) && uri.at( 0 ) != '/' ) throw std::invalid_argument( E_400 );
@@ -231,22 +236,96 @@ std::string	HttpParser::parseFragment( std::string const & uri ) {
 
 }
 
-/*
-void	notImplementedMethod( std::string const & method ) {
-	//buscar en archivo config los metodos implementados // array de metodos implementados 
 
-	if ( encuentra el methodo )
-		return;
-		
-	throw std::invalid_argument( E_501 );
+bool	HttpParser::notImplementedMethod( std::string const & method ) {
+	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+
+	for ( int i = 0; i < 8; i++ )
+		if ( method == valid_method[i] ) 
+			return true;
+	return false;
+}
+
+
+ServerConf const &	HttpParser::checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host ) {
+	std::vector<ServerConf>::const_iterator	it, ite = servers.end();
+	std::vector<std::string>::const_iterator	it_name, ite_name; 
+
+	std::cout << "HOST REQUEST : " << host << std::endl;
+
+/*	for ( it = servers.begin(); it != ite; ++it ) {
+		ite_name = (*it).getServerName().end();
+		for ( it_name = (*it).getServerName().begin(); it_name != ite_name; ++it_name )
+			if ( *it_name == host )
+				return *it;
+	}*/
+
+	for (it = servers.begin(); it != ite; ++it) {
+	const std::vector<std::string>& names = it->getServerName();
+	for (it_name = names.begin(); it_name != names.end(); ++it_name) {
+		if (*it_name == host)
+			return *it;
+	}
+}
+
+	
+	throw std::invalid_argument( E_421 );
 
 }
-*/
 
-/*	
-void	notAllowedMethod( std::string const & method, std::string const & path ) {
-	buscar en el archivo de config si el /location correspondiente al path, tiene allowed-method
+void	HttpParser::checkIfPathExist( std::map<std::string, LocationConf> & location, std::string const & path ) {
+	std::map<std::string, LocationConf>::iterator	it = location.find( path );
+
+	if ( it == location.end() ) throw std::invalid_argument( E_404 );
+
+	std::cout << "PATH EXIST IN SERVER: " << (*it).first << std::endl;
+}
+
+
+void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator location, 
+	std::vector<std::string> const & allowed_serv, std::string const & method ) {
+
+	std::vector<std::string> const &	allowed_loc = location->second.getAllowedMethods();
+
+	if ( !allowed_loc.empty()) {
+		for ( std::size_t i = 0; i < allowed_loc.size(); i++ )
+			if ( allowed_loc[i] == method ) return;
+		throw std::invalid_argument( E_405 );
+	}
+
+	if ( !allowed_serv.empty()) {
+		for ( std::size_t i = 0; i < allowed_serv.size(); i++ )
+			if ( allowed_serv[i] == method ) return;
+		throw std::invalid_argument( E_405 );
+	}
+
+/*	const char *	allowed_default[] = { "GET", "POST", "DELETE" }; //YA HECHO X EMILIE DEFAULT METHODS IN SERVER
+	for ( int i = 0; i < 3; i++ )
+		if ( method == allowed_default[i] ) return;
+
+	throw std::invalid_argument( E_405 );
+*/
+//	std::cout << "allowed methods loc: " << allowed_loc[0] << std::endl;
+//	std::cout << "allowed methods serv: " << allowed_serv[0] << std::endl;
+//	std::cout << ", request method: " << method << std::endl;
+}
 	
+
+
+
+
+
+
+
+
+/*
+primero check allowed methos in server;
+
+
+
+
+	buscar en el archivo de config si el /location correspondiente al path, tiene allowed-method
+
 	if ( el /location tiene allowed method ) 		
 		if (el method esta incluido )
 			return;
@@ -255,5 +334,5 @@ void	notAllowedMethod( std::string const & method, std::string const & path ) {
 	
 	throw std::invalid_argument( E_405 );
 }
-*/
 
+*/

@@ -6,16 +6,16 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 13:07:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:39:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef	HTTPARSERTESTER_HPP
 #define	HTTPARSERTESTER_HPP
 
-#define RED   "\033[31m"
-#define GREEN "\033[32m"
-#define RESET "\033[0m"
+#define RED		"\033[31m"
+#define GRE		"\033[32m"
+#define RESET	"\033[0m"
 
 class	HttpParserTester	{
 private:

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/15 14:22:36 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 11:57:15 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void Server::servRun()
 				std::cout << "*****" << std::endl;
 		*/
 
-				HttpRequest	req = HttpRequest( buffer );
+				HttpRequest	req = HttpRequest( buffer, *this );
 				
 				std::string response = 
 				"HTTP/1.1 200 OK\n"

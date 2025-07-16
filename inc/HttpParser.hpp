@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 16:14:54 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/16 15:50:40 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,18 @@
 #define	HTTPARSER_HPP
 
 #define E_400 "400 Bad Request"
+#define E_404 "404 Not Found"
 #define E_405 "405 Method Not Allowed"
 #define E_414 "414 URI Too Long"
+#define E_421 "421 Misdirected Request"
 #define E_501 "501 Not Implemented"
 
-
+#include "LocationConf.hpp"
 #include <string>
 #include <vector>
 
 class	RequestLine;
+class	ServerConf;
 
 class	HttpParser	{
 private:
@@ -48,8 +51,11 @@ public:
 	static std::string				parsePath( std::string const & uri );
 	static std::string				parseQuery( std::string const & uri );
 	static std::string				parseFragment( std::string const & uri );
-	static void						notImplementedMethod( std::string const & method );
-	static void						notAllowedMethod( std::string const & method, std::string const & path );
+	static bool						notImplementedMethod( std::string const & method );
+	static ServerConf const &		checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host );
+	static void						checkIfPathExist( std::map<std::string, LocationConf> & loc, std::string const & path );
+	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
+									std::vector<std::string> const & serv_meth, std::string const & meth);
 
 	static std::vector<std::string>	parseHttpMessage( std::string const & str );
 };
