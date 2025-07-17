@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 14:57:00 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:31:06 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,9 +130,7 @@ std::string	HttpParser::toLower( std::string const & str ) {
 }
 
 std::string	trimSpaceAndTab( std::string & str ) {
-//	std::string						result( str );	
 	std::string::reverse_iterator	rit, rite = str.rend();
-//	std::string::iterator			it, ite = str.end();
 
 	for ( rit = str.rbegin(); rit != rite; ++rit ) {
 		if ( *rit == ' ' || *rit == '\t' )
@@ -173,8 +171,8 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 			host++;
 		}
 		header++;
-		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );//REVISAR ESTO EL CONNTENIDO DEL HOST 
-																			 //PUEDE CONTENER TABS QUE SE ELIMINAN
+		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 ); 
+																			 
 	}
 	if ( host != 1 ) throw std::invalid_argument( E_400 );
 
@@ -306,15 +304,16 @@ void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator
 }
 
 std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & str ) {
-	std::string							tmp( str );
-	std::pair<std::string, std::string>	result;
-	std::string							second = "";
-	std::string							first = trimSpaceAndTab( tmp );
+	std::string	tmp( str );
+	std::string	second = "";
+	std::string	first = trimSpaceAndTab( tmp );
+	std::size_t	found = tmp.find( ':' );
 
-
-//	std::cout << "\"" << first << "\"" << std::endl;
-
-	result = std::make_pair( first, second );
+	if ( found != std::string::npos ) {
+		first = tmp.substr( 0, found ); //NAME
+		second = tmp.substr( found + 1, tmp.size() - found ); //PORT
+		if ( second.empty()) throw std::invalid_argument( E_400 ); //Marche pas ??? test fail je crois "domain:"
+	}		
 	
-	return result;
+	return  std::make_pair( first, second );
 }

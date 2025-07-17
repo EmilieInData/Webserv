@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 14:45:58 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:31:06 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ HttpRequest::HttpRequest( std::string const & message, Server & server) : req_li
 		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message, tmp_host );
 		std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
 
-		host = HttpParser::parseHost( tmp_host ); // HACER EL PARSEO DE HOSTTTTT 
+		host = HttpParser::parseHost( tmp_host ); // ACABAR EL PARSEO DE HOST CON FCT DE EMILIE  
 
 		std::cout << "tmp_host: \"" << tmp_host << "\" /host pair first: \"" << host.first;
 		std::cout << "\", second: \"" << host.second <<  "\"" << std::endl;
@@ -48,11 +48,9 @@ HttpRequest::HttpRequest( std::string const & message, Server & server) : req_li
 
 		req_line = new RequestLine( HttpParser::parseRequestLine( *it ));
 
-	//	std::cout << "host from parseHttpMessage: " << tmp_host << std::endl;
-
 		uri = new Uri( req_line->getReqTarget(), host.first );
 
-		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host.first ); //solo host.getName() ?????
+		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 
