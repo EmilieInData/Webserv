@@ -6,13 +6,14 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:31:06 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:50:14 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
 #include "RequestLine.hpp"
 #include "ServerConf.hpp"
+#include "Utils.hpp"
 #include <iostream>
 #include <cctype>
 #include <cstring>
@@ -142,7 +143,7 @@ std::string	trimSpaceAndTab( std::string & str ) {
 	while (!str.empty() && (str[0] == ' ' || str[0] == '\t'))
 		str.erase(0, 1);
 	
-	std::cout << "\"" << str << "\"" << std::endl;
+//	std::cout << "\"" << str << "\"" << std::endl;
 
 	return str;
 }
@@ -312,8 +313,11 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	if ( found != std::string::npos ) {
 		first = tmp.substr( 0, found ); //NAME
 		second = tmp.substr( found + 1, tmp.size() - found ); //PORT
-		if ( second.empty()) throw std::invalid_argument( E_400 ); //Marche pas ??? test fail je crois "domain:"
-	}		
+		if ( second.empty()) throw std::invalid_argument( E_400 );
+		if ( !isInt( second )) throw std::invalid_argument( E_400 );
+	}
+
+
 	
 	return  std::make_pair( first, second );
 }

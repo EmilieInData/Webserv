@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:32:31 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 15:42:46 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << GRE << "valid host:	  " << host << " accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
@@ -179,6 +180,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -188,6 +190,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -197,6 +200,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -206,6 +210,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << GRE << "valid host:	  " << host << " accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
@@ -215,6 +220,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -224,6 +230,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -233,6 +240,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << GRE << "valid host:	  " << host << " accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  " << host << " host don't accepted/ Test FAIL" << std::endl;
@@ -242,6 +250,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -251,6 +260,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -260,6 +270,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -269,6 +280,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << std::endl;
@@ -278,6 +290,7 @@ void	HttpParserTester::validHostSyntaxis() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << RESET << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << RESET << std::endl;
@@ -292,6 +305,7 @@ void	HttpParserTester::trimSpacesAndTab() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHoSt: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << GRE << "valid host:	  \"" << host << "\" spaces accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  \"" << host << "\" host don't accepted/ Test FAIL" << std::endl;
@@ -301,6 +315,7 @@ void	HttpParserTester::trimSpacesAndTab() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
 		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
 		std::cout << GRE << "valid host:	  \"" << host << "\" spaces and tabs accepted / Test OK" << RESET << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  \"" << host << "\" host don't accepted, tabs ans spaces/ Test FAIL";
