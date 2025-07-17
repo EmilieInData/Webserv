@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 17:45:18 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 14:45:58 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@
 HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) { 
 	HttpParserTester::parseHttpMessageTest();
 	HttpParserTester::parseRequestLineTest();
+	HttpParserTester::parseHostTest();
 	HttpParserTester::parseUriTest();
+
 }
 
 HttpRequest::HttpRequest( std::string const & message, Server & server) : req_line( NULL ), uri( NULL ) {
@@ -36,18 +38,21 @@ HttpRequest::HttpRequest( std::string const & message, Server & server) : req_li
 		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message, tmp_host );
 		std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
 
-//		host = HttpParser::parseHost( tmp_host ); // HACER EL PARSEO DE HOSTTTTT 
+		host = HttpParser::parseHost( tmp_host ); // HACER EL PARSEO DE HOSTTTTT 
+
+		std::cout << "tmp_host: \"" << tmp_host << "\" /host pair first: \"" << host.first;
+		std::cout << "\", second: \"" << host.second <<  "\"" << std::endl;
 
 		while ( it != ite && (*it).empty() )
 			++it;
 
 		req_line = new RequestLine( HttpParser::parseRequestLine( *it ));
 
-		std::cout << "host from parseHttpMessage: " << tmp_host << std::endl;
+	//	std::cout << "host from parseHttpMessage: " << tmp_host << std::endl;
 
-		uri = new Uri( req_line->getReqTarget(), tmp_host );
+		uri = new Uri( req_line->getReqTarget(), host.first );
 
-		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), tmp_host ); //solo host.getName() ?????
+		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host.first ); //solo host.getName() ?????
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 
@@ -71,6 +76,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
         req_line = rhs.req_line ? new RequestLine(*rhs.req_line) : NULL;
 		if (uri) delete uri;
         uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
+		//anadir HOST PAIR 
     }
     return *this;
 }

@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 17:44:21 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 13:08:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@ class	RequestLine;
 class	Uri;
 
 class	HttpRequest	{
-private:
-	
-	
+private:	
 	RequestLine	*						req_line;
 	Uri *								uri;
 	std::pair<std::string, std::string>	host;

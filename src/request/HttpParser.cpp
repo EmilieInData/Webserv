@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 17:30:43 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 14:57:00 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,11 @@ std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 bool	HttpParser::isAsciiPrintable( std::string const & str ) {
 	std::string::const_iterator	it, ite = str.end();
 
-	for ( it = str.begin(); *it != *ite; ++it ) 
+	for ( it = str.begin(); *it != *ite; ++it ) { 
+		if ( *it == '\t' ) continue;
 		if ( *it > 126 || *it < 32 )
 			return false;
+	}
 	return true;
 }
 
@@ -127,6 +129,25 @@ std::string	HttpParser::toLower( std::string const & str ) {
 	return result;
 }
 
+std::string	trimSpaceAndTab( std::string & str ) {
+//	std::string						result( str );	
+	std::string::reverse_iterator	rit, rite = str.rend();
+//	std::string::iterator			it, ite = str.end();
+
+	for ( rit = str.rbegin(); rit != rite; ++rit ) {
+		if ( *rit == ' ' || *rit == '\t' )
+			str.erase( str.size() - 1 );
+		else
+			break;
+	}
+
+	while (!str.empty() && (str[0] == ' ' || str[0] == '\t'))
+		str.erase(0, 1);
+	
+	std::cout << "\"" << str << "\"" << std::endl;
+
+	return str;
+}
 
 std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message, std::string & host_str ) {
 
@@ -152,7 +173,8 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 			host++;
 		}
 		header++;
-		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );
+		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 );//REVISAR ESTO EL CONNTENIDO DEL HOST 
+																			 //PUEDE CONTENER TABS QUE SE ELIMINAN
 	}
 	if ( host != 1 ) throw std::invalid_argument( E_400 );
 
@@ -281,17 +303,18 @@ void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator
 			if ( allowed_serv[i] == method ) return;
 		throw std::invalid_argument( E_405 );
 	}
-
-/*	const char *	allowed_default[] = { "GET", "POST", "DELETE" }; //YA HECHO X EMILIE DEFAULT METHODS IN SERVER
-	for ( int i = 0; i < 3; i++ )
-		if ( method == allowed_default[i] ) return;
-
-	throw std::invalid_argument( E_405 );
-*/
-//	std::cout << "allowed methods loc: " << allowed_loc[0] << std::endl;
-//	std::cout << "allowed methods serv: " << allowed_serv[0] << std::endl;
-//	std::cout << ", request method: " << method << std::endl;
 }
+
+std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & str ) {
+	std::string							tmp( str );
+	std::pair<std::string, std::string>	result;
+	std::string							second = "";
+	std::string							first = trimSpaceAndTab( tmp );
+
+
+//	std::cout << "\"" << first << "\"" << std::endl;
+
+	result = std::make_pair( first, second );
 	
-
-
+	return result;
+}

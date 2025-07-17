@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 17:13:13 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/17 14:51:38 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,31 @@ void	HttpParserTester::shouldHaveOneHost() {
 	try {
 		std::string	http_mess( "POST /form HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\rido=perez" );
 		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED <<"Valid message:     message without host accepted / Test FAIL" << std::endl;
+		std::cout << RED <<"Valid message:     message without host accepted / Test FAIL" << RESET << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  message without host don't accepted / Test OK" << std::endl;
+		std::cout << GRE << e.what() << ":  message without host don't accepted / Test OK" << RESET << std::endl;
 	}
 }
+
+void	HttpParserTester::parseHttpMessageTest() {
+	
+	std::cout << "_____________Http message tests_____________" << std::endl;
+
+	onlyASCII();
+	crWithoutLf();
+	emptyLinesBeforeReqLine();
+	isspaceBeforeHeader();
+	sfWithoutCrlf();
+	shouldHaveOneHost();
+
+	std::cout << std::endl;
+
+}
+
+
+
+/*-----------------------------------Host Header-----------------------------------------*/
+
 
 void	HttpParserTester::validHostSyntaxis() {
 	
@@ -265,22 +285,39 @@ void	HttpParserTester::validHostSyntaxis() {
 
 }
 
-void	HttpParserTester::parseHttpMessageTest() {
+void	HttpParserTester::trimSpacesAndTab() {
+
+	std::string host( "   www.example.com   " );
 	
-	std::cout << "_____________Http message tests_____________" << std::endl;
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHoSt: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << GRE << "valid host:	  \"" << host << "\" spaces accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  \"" << host << "\" host don't accepted/ Test FAIL" << std::endl;
+	}
 
-	onlyASCII();
-	crWithoutLf();
-	emptyLinesBeforeReqLine();
-	isspaceBeforeHeader();
-	sfWithoutCrlf();
-	shouldHaveOneHost();
-	validHostSyntaxis();
-
-	std::cout << std::endl;
+		host = "   \twww.example.com   \t";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << GRE << "valid host:	  \"" << host << "\" accepted / Test OK" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  \"" << host << "\" host don't accepted, tabs ans spaces/ Test FAIL";
+		std::cout << RESET << std::endl;
+	}
 
 }
 
+
+void	HttpParserTester::parseHostTest() {
+
+	std::cout << "_______________Host syntaxis tester_____________" << std::endl;
+	validHostSyntaxis();
+	trimSpacesAndTab();
+
+	std::cout << std::endl;
+}
 
 
 /*-----------------------------------Request Line----------------------------------------*/
