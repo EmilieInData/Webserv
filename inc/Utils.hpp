@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 17:38:25 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:21:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <csignal>
 
 #include <poll.h>
 #include <fcntl.h>
@@ -63,7 +64,9 @@ bool                                                isErrorPage(std::string cons
 bool                                                isHtmlAddress(std::string const& value);
 void                                                checkErrorPage(std::map<int, std::string> const& value);
 
-//sockets
+//signals
+void	handleSignal(int signum);
+//timestamp
 const std::string   utilsTimestamp();
 
 #endif

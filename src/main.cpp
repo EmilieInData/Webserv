@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/21 12:47:01 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:19:37 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int main(int ac, char** av)
 		
 	std::ifstream file;
 	if (ac == 1)
-		file.open(DEFAULTCONF);
+		file.open(DEFAULTCONF); // it can also run without a specified cfg file
 	else
 		file.open(av[1]);
 	if (!file)
@@ -48,6 +48,8 @@ int main(int ac, char** av)
 	}
 	file.close();
 
+	signal(SIGINT, handleSignal);
+
 	Server testserv(P);
 
 	// ----> print defaultErrorPages
@@ -57,7 +59,7 @@ int main(int ac, char** av)
 	// }
 	
 	HttpRequest test = HttpRequest();
-	
+	/* implement try/catch */
 	testserv.servSetup();
 	testserv.servRun();
 

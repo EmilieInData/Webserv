@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 18:03:22 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:15:17 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,14 @@ void	checkErrorPage(std::map<int, std::string> const& value)
 	}
 	return;
 }
+
+void handleSignal(int signum)
+{
+	(void) signum;
+	std::cout << "\n" << utilsTimestamp() << "Sigint triggered" << std::endl;
+	exit(signum);
+}
+
 const std::string utilsTimestamp()
 {
 	std::string timeStamp;
