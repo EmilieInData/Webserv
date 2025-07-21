@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConf.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 17:24:18 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/21 12:49:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "ABlockBase.hpp"
 #include "LocationConf.hpp"
 
+#define DEFAULTCONF "configuration_files/01.conf"
 class ServerConf;
 
 class ParsingConf
