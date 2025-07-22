@@ -6,12 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/22 16:11:03 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/22 18:06:38 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVERMANAGER_HPP
-#define SERVERMANAGER_CPP
+#define SERVERMANAGER_HPP
 
 #include "Utils.hpp"
 #include "Server.hpp"
@@ -34,6 +34,7 @@ class ServerManager
 	
 	void	servSetup();
 	void	servRun();
+	// create servQuit() to stop all servers;
 };
 
 #endif

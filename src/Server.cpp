@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/22 16:24:53 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/22 17:44:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,12 +140,6 @@ void Server::servStart()
 	}
 	close(_socketFd);
 	
-}
-
-void Server::servSetup()
-{
-	for (size_t i = 0; i < _serversList.size(); i++)
-		servInit(_serversList[i]);
 }
 
 std::vector<ServerData> const&	Server::getServersList() const
