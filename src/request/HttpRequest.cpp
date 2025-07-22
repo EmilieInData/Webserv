@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:31:06 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ HttpRequest::HttpRequest( std::string const & message, Server & server) : req_li
 
 		uri = new Uri( req_line->getReqTarget(), host.first );
 
-		ServerConf serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
+		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 

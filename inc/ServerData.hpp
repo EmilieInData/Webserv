@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ServerConf.hpp                                     :+:      :+:    :+:   */
+/*   ServerData.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/16 13:59:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/22 16:03:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVERCONF_HPP
-#define SERVERCONF_HPP
+#ifndef SERVERDATA_HPP
+#define SERVERDATA_HPP
 
 #include "Utils.hpp"
 #include "LocationConf.hpp"
@@ -19,13 +19,13 @@
 
 class LocationConf;
 
-class ServerConf : public ABlockBase
+class ServerData : public ABlockBase // [ciao] I was getting a bit confused so I changed to ServerData
 {
 	public:
-		ServerConf();
-		~ServerConf();
-		ServerConf(ServerConf const& other);
-		ServerConf&	operator=(ServerConf const& other);
+		ServerData();
+		~ServerData();
+		ServerData(ServerData const& other);
+		ServerData&	operator=(ServerData const& other);
 
 		bool											getAutoindex() const;
 		std::map<std::string, LocationConf>&			getLocations();

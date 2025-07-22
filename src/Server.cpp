@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/21 20:22:12 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/22 16:24:53 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 // 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
 // }
 
-Server::Server(ParsingConf& P) : _createdTime(time(NULL)), 	_serversList(P.getServers()), _defaultErrorPages(defaultErrorPages())
+Server::Server(ServerData& servData) : _createdTime(time(NULL)), 	_serversList(P.getServers()), _defaultErrorPages(defaultErrorPages())
 {
 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
 }
@@ -45,7 +45,7 @@ time_t Server::servTimeGet() // delete??
 	return this->_createdTime;
 }
 
-void Server::servSetup()
+void Server::servInit(ServerData &servData)
 {
 	/* creating socket */
 	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -84,7 +84,7 @@ void Server::servSetup()
 	}
 }
 
-void Server::servRun()
+void Server::servStart()
 {	
 	std::cout << utilsTimestamp() << "Server started" << std::endl;
 	
@@ -139,9 +139,16 @@ void Server::servRun()
 		}
 	}
 	close(_socketFd);
+	
 }
 
-std::vector<ServerConf> const&	Server::getServersList() const
+void Server::servSetup()
+{
+	for (size_t i = 0; i < _serversList.size(); i++)
+		servInit(_serversList[i]);
+}
+
+std::vector<ServerData> const&	Server::getServersList() const
 {
 	return _serversList;
 }

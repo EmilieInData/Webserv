@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/21 20:19:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/22 16:23:33 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "ParsingConf.hpp"
 #include "HttpRequest.hpp"
 #include "HttpParserTester.hpp"
-#include "Server.hpp"
+#include "ServerManager.hpp"
 
 int main(int ac, char** av)
 {
@@ -50,7 +50,7 @@ int main(int ac, char** av)
 
 	signal(SIGINT, handleSignal);
 
-	Server testserv(P);
+	ServerManager testserv(P);
 
 	// ----> print defaultErrorPages
 	// for (std::map<int, std::pair<std::string, std::string> >::const_iterator it = testserv.getDefaultErrorPages().begin(); it != testserv.getDefaultErrorPages().end(); it++)
@@ -58,7 +58,7 @@ int main(int ac, char** av)
 	// 	std::cout << GREEN << it->first << " " << it->second.first << " " << it->second.second << "\n"; 
 	// }
 	
-	HttpRequest test = HttpRequest();
+	// HttpRequest test = HttpRequest();
 	/* implement try/catch */
 	testserv.servSetup();
 	testserv.servRun();

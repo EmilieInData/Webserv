@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 13:09:51 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #include <vector>
 
 class	RequestLine;
-class	ServerConf;
+class	ServerData;
 
 class	HttpParser	{
 private:
@@ -52,7 +52,7 @@ public:
 	static std::string				parseQuery( std::string const & uri );
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
-	static ServerConf const &		checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host );
+	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::string const & host );
 	static void						checkIfPathExist( std::map<std::string, LocationConf> & loc, std::string const & path );
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);

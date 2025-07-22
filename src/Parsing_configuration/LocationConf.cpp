@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LocationConf.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 15:25:22 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 LocationConf::LocationConf() {}
 
-LocationConf::LocationConf(ServerConf const& S)
+LocationConf::LocationConf(ServerData const& S)
 {
 	_autoindex = S.getAutoindex();
 	_root = S.getRoot();

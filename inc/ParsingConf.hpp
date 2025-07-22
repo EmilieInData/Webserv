@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/21 13:57:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/22 16:13:46 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "LocationConf.hpp"
 
 #define DEFAULTCONF "configuration_files/test01.conf"
-class ServerConf;
+class ServerData;
 
 class ParsingConf
 {
@@ -26,9 +26,9 @@ class ParsingConf
 		ParsingConf();
 		~ParsingConf();
 
-		std::vector<ServerConf>	servers;
+		std::vector<ServerData>	servers;
 		
-		std::vector<ServerConf>&	getServers();
+		std::vector<ServerData>&	getServers(); // [ciao] if servers are public do we need getters?
 		
 		void		checkLocation(std::string& line);
 		void		checkSemicolon(std::string& line);
@@ -39,10 +39,10 @@ class ParsingConf
 		void		doParsing(std::string line, std::vector<std::string>& buffer);
 		size_t		fillServers(std::vector<std::string>& buffer,
 								size_t& i, std::vector<ABlockBase*>& blocks,
-								std::vector<ServerConf>::iterator& itServer);
+								std::vector<ServerData>::iterator& itServer);
 		size_t		fillLocations(std::vector<std::string>& buffer,
 								size_t& i, std::vector<ABlockBase*>& blocks,
-								std::vector<ServerConf>::iterator& itServer,
+								std::vector<ServerData>::iterator& itServer,
 								std::map<std::string, LocationConf>::iterator& itLocation);
 		void	 	fillStructs(std::vector<std::string>& buffer);
 

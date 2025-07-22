@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ServerConf.cpp                                     :+:      :+:    :+:   */
+/*   ServerData.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/16 13:59:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/22 16:07:18 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
-#include "ServerConf.hpp"
+#include "ServerData.hpp"
 
-ServerConf::ServerConf()
+ServerData::ServerData()
 {
 	_listens.push_back(std::make_pair(8080, "127.0.0.1")); //accepter localhost
 	// _serverName.push_back("default");
 }
   
-ServerConf::~ServerConf() {} 
+ServerData::~ServerData() {} 
 //detruire des trucs ici?
 
-ServerConf::ServerConf(ServerConf const& other) : ABlockBase(other)
+ServerData::ServerData(ServerData const& other) : ABlockBase(other)
 {
 	*this = other;
 }
 
-ServerConf&	ServerConf::operator=(ServerConf const& other)
+ServerData&	ServerData::operator=(ServerData const& other)
 {
 	if (this != &other)
 	{
@@ -39,32 +39,32 @@ ServerConf&	ServerConf::operator=(ServerConf const& other)
 	return *this;
 }
 
-bool    ServerConf::getAutoindex() const
+bool    ServerData::getAutoindex() const
 {
 	return _autoindex;
 }
 
-std::map<std::string, LocationConf>&	ServerConf::getLocations()
+std::map<std::string, LocationConf>&	ServerData::getLocations()
 {
 	return _locations;
 }
 
-std::map<std::string, LocationConf>::iterator	ServerConf::getItLocations(std::string const& key)
+std::map<std::string, LocationConf>::iterator	ServerData::getItLocations(std::string const& key)
 {
 	return _locations.find(key);
 }
 
-std::vector<std::pair<int, std::string> >	ServerConf::getListens()
+std::vector<std::pair<int, std::string> >	ServerData::getListens()
 {
 	return _listens;
 }
 
-std::vector<std::string>	ServerConf::getServerName() const
+std::vector<std::string>	ServerData::getServerName() const
 {
 	return _serverName;
 }
 
-size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
+size_t ServerData::fillListens(std::vector<std::string>& buffer, size_t i)
 {
 	int port = 0;
 	std::string ip = "";
@@ -107,7 +107,7 @@ size_t ServerConf::fillListens(std::vector<std::string>& buffer, size_t i)
 	return (i + 2);   
 }
 
-size_t	ServerConf::fillServerName(std::vector<std::string>& buffer, size_t i)
+size_t	ServerData::fillServerName(std::vector<std::string>& buffer, size_t i)
 {
 	if (checkFlag("server_name"))
 		throw std::invalid_argument(" Parsing error, only one 'server_name'"

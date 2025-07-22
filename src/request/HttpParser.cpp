@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:50:14 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,8 +262,8 @@ bool	HttpParser::notImplementedMethod( std::string const & method ) {
 	return false;
 }
 
-ServerConf const &	HttpParser::checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host ) {
-	std::vector<ServerConf>::const_iterator	it, ite = servers.end();
+ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const & servers, std::string const & host ) {
+	std::vector<ServerData>::const_iterator	it, ite = servers.end();
 	std::vector<std::string>::const_iterator	it_name, ite_name; 
 
 	for (it = servers.begin(); it != ite; ++it) {
