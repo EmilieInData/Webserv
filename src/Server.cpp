@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/22 17:44:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 12:21:53 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,13 @@
 // 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
 // }
 
-Server::Server(ServerData& servData) : _createdTime(time(NULL)), 	_serversList(P.getServers()), _defaultErrorPages(defaultErrorPages())
+Server::Server(ServerData& servData) : _createdTime(time(NULL))
 {
+	serverInit(servData);
 	std::cout << utilsTimestamp() << "Server Created" << std::endl;
 }
 
-Server::Server(Server const &copy) : _serversList(copy._serversList), _defaultErrorPages(copy._defaultErrorPages)
+Server::Server(Server const &copy)
 {
 	*this = copy;
 }
@@ -45,43 +46,45 @@ time_t Server::servTimeGet() // delete??
 	return this->_createdTime;
 }
 
-void Server::servInit(ServerData &servData)
+void Server::servListen(std::pair<int, std::string> _listens)
 {
-	/* creating socket */
-	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->_socketFd < 0)
-	std::cerr << "Socket creation error" << std::endl;
-	
-	
-	/* setting socket to non blocking as by subject 
-	using fcntl() first to get the flags (F_GETFL)
-	and then setting them (F_SETFL)*/
-	int flags = fcntl(_socketFd, F_GETFL, 0);
-	if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) < 0)
-	std::cerr << "Nonblocking setup error" << std::endl;
-	
-	
-	/* using the sockaddr_in structure to store the
-	socket address information */
-	std::memset(&_servAddr, 0, sizeof(_servAddr));	
-	_servAddr.sin_family = AF_INET;
-	_servAddr.sin_port = htons(8080);
-	_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // for now set to localhost
-	
-	/* binding the socket we created to the address we
-	have set above */
-	if (bind(_socketFd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0)
-	{
-		std::cerr << "Socket binding error" << std::endl;
-		close(_socketFd);
-	}
-	
-	/* setup the socket to listen */
-	if (listen(_socketFd, 10) < 0) // change back to SOMAXCONN?
-	{
-		std::cerr << "Listen socket setup error" << std::endl;
-		close(_socketFd);
-	}
+	/* for each element of _listens vector:
+			create _socketFD
+			set flags to nonblock
+			setup struct
+			bind socket to struct
+			setup listen */
+		int					newsocket = socket(AF_INET, SOCK_STREAM, 0);
+		struct sockaddr_in	newaddr;
+		
+		if (newsocket < 0)
+			std::cerr << "Socket creation error" << std::endl;
+		
+		int flags = fcntl(newsocket, F_GETFL, 0);
+		if (fcntl(newsocket, F_SETFL, flags | O_NONBLOCK) < 0)	
+		std::cerr << "Nonblocking setup error" << std::endl;  	
+		
+		std::memset(&newaddr, 0, sizeof(newaddr));	
+		newaddr.sin_family = AF_INET;                                                	
+		newaddr.sin_port = htons(_listens.first);
+		newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); 
+		
+		if (bind(newsocket, (struct sockaddr*)&newaddr, sizeof(newaddr)) < 0)
+		{
+			std::cerr << "Socket binding error" << std::endl;
+			close(newsocket);
+		}
+
+		if (listen(newsocket, 10) < 0) // change back to SOMAXCONN?
+		{
+			std::cerr << "Listen socket setup error" << std::endl;
+			close(newsocket);
+		}
+}
+
+void Server::serverInit(ServerData &servData)
+{
+
 }
 
 void Server::servStart()
@@ -142,10 +145,10 @@ void Server::servStart()
 	
 }
 
-std::vector<ServerData> const&	Server::getServersList() const
-{
-	return _serversList;
-}
+// std::vector<ServerData> const&	Server::getServersList() const
+// {
+// 	return _serversList;
+// }
 
 std::map<int, std::pair<std::string, std::string> > const&	Server::getDefaultErrorPages() const
 {
