@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 15:12:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
 #include "ParsingConf.hpp"
-#include "ServerConf.hpp"
+#include "ServerData.hpp"
 #include "LocationConf.hpp"
 
 ParsingConf::ParsingConf() {}

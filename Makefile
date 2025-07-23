@@ -21,8 +21,7 @@ SRC_FILES	= main  Server Utils \
 TEST_FILES	= HttpParserTester
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri
 
-CONF_FILES = ABlockBase LocationConf ParsingConf ServerConf
-
+CONF_FILES = ABlockBase LocationConf ParsingConf ServerData
 ALL_FILES	+= $(SRC_FILES)
 ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
 ALL_FILES	+= $(addprefix $(REQ_DIR), $(REQ_FILES))

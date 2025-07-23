@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/23 14:48:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 15:46:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 // 	std::cout << timeStamp() << "Server Created" << std::endl;
 // }
 
-Server::Server(ServerData& servData) : _createdTime(time(NULL))
+Server::Server(ServerData& servData) : _createdTime(time(NULL)), _locations(servData.getLocations())
 {
 	serverInit(servData);
 	std::cout << timeStamp() << "Server Created" << std::endl;
@@ -160,10 +160,15 @@ void Server::servStart()
 	}
 }
 
-std::vector<ServerData> const&	Server::getServersList() const
+std::map<std::string, LocationConf>&	ServerData::getLocations()
 {
-	return _serversList;
+	return _locations;
 }
+
+// std::vector<ServerData> const&	Server::getServersList() const
+// {
+// 	return _serversList;
+// }
 
 // std::map<int, std::pair<std::string, std::string> > const&	Server::getDefaultErrorPages() const
 // {
