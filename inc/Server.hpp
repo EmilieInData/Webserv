@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 10:40:54 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/23 15:45:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:16:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ class Server
 		Server &operator=(Server const &copy);
 		~Server();
 		
-		void														serverInit(ServerData &servData);
-		void														servListen(std::pair<int, std::string> _listens);
-		void														servStart();
+		void							serverInit(ServerData &servData);
+		void							servListen(std::pair<int, std::string> _listens);
+		void							servStart();
 		std::map<std::string, LocationConf>&						getLocations();
 		// std::vector<ServerData> const&								getServersList() const;
 		// std::map<int, std::pair<std::string, std::string> > const&	getDefaultErrorPages() const;
