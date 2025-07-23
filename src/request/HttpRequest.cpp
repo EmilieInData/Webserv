@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 14:44:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "RequestLine.hpp"
 #include "Uri.hpp"
 #include "Server.hpp"
-#include "ServerConf.hpp"
+#include "ServerData.hpp"
 #include <iostream>
 #include <string>
 #include <stdexcept>

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/21 20:21:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 12:43:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,6 @@ void                                                checkErrorPage(std::map<int,
 //signals
 void	handleSignal(int signum);
 //timestamp
-const std::string   utilsTimestamp();
+const std::string   timeStamp();
 
 #endif
