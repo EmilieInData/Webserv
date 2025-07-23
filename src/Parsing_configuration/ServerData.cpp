@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 16:22:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:56:52 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,4 +174,79 @@ void ServerData::servListen(std::pair<int, std::string> _listens)
 	
 	_socketFd.push_back(newsocket);
 	_servAddr.push_back(newaddr);
+}
+
+void ServerData::serverInit()
+{
+	for (size_t i = 0; i < _listens.size(); i++)
+	servListen(_listens[i]);
+}
+
+void ServerData::servStart()
+{	
+	std::cout << timeStamp() << __PRETTY_FUNCTION__ << std::endl;
+	
+	struct pollfd *polls = new pollfd[_socketFd.size()];
+	
+	for(size_t i = 0; i < _socketFd.size(); i++)
+	{
+		polls[i].fd = _socketFd[i];
+		polls[i].events = POLLIN;
+	}
+	
+	std::cout << timeStamp() << "Waiting for connection on port 8080" << std::endl;
+	
+	while (true)
+	{
+		int check = poll(polls, 1, 5000);
+		if (check < 0)
+		{
+			std::cerr << "Poll error" << std::endl;
+			break ;
+		}
+		else if (check == 0)
+		{
+			std::cout << timeStamp() << "Still waiting for connection" << std::endl;
+			continue ;
+		}
+		
+		for (size_t i = 0; i < _socketFd.size(); i++)
+		{
+			if (polls[i].revents & POLLIN)
+			{
+				int					clientFd;
+				struct sockaddr_in	clientAddr;
+				socklen_t			clientLen = sizeof(clientAddr);
+				clientFd = accept(_socketFd[i], (struct sockaddr *)&clientAddr, &clientLen);
+				if (clientFd >= 0)
+				{
+					std::cout << timeStamp() << "New connection accepted" << std::endl;
+					char buffer[4096];
+					ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+					if (bytes > 0)
+					buffer[bytes] = '\0';
+					std::cout << timeStamp() << "Request content:\n*****\n" << std::endl;
+					std::cout << buffer;
+					std::cout << "*****" << std::endl;
+					
+					// HttpRequest	req = HttpRequest( buffer, *this );
+					
+					std::string response = 
+					"HTTP/1.1 200 OK\n"
+					"Content-Type: text/html\n"
+					"Content-Length: 85\n"
+					"\n"
+					"<html><body><h1>Bonjour!</h1></body></html>";
+					
+					send(clientFd, response.c_str(), response.size(), 0);
+					
+					close(clientFd);
+				}
+			}
+		}
+		
+		for (size_t i = 0; i < _socketFd.size(); i++)
+		close(_socketFd[i]);
+		delete[] polls;
+	}
 }

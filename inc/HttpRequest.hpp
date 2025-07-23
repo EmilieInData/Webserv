@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 13:08:44 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:08:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ private:
 
 public:
 	HttpRequest();
-	HttpRequest( std::string const & message, Server & server );
+	HttpRequest( std::string const & message, ServerData & server );
 	HttpRequest( HttpRequest const & src );
 	~HttpRequest();
 

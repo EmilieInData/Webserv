@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/22 18:06:38 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:58:39 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class ServerManager
 {
 	private:
-		std::vector<Server>		_servers;
+		// std::vector<Server>		_servers;
 		std::vector<ServerData>	_serverData;
 		
 		ServerManager();

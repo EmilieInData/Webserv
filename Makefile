@@ -16,7 +16,7 @@ TEST_DIR	= tests/
 REQ_DIR		= request/
 CONF_DIR	= Parsing_configuration/
 
-SRC_FILES	= main  Server Utils \
+SRC_FILES	= main  Server ServerManager Utils \
 
 TEST_FILES	= HttpParserTester
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri

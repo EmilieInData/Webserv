@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 16:18:40 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:55:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class ServerData : public ABlockBase // [ciao] I was getting a bit confused so I
 	std::vector<std::string>						getServerName() const;
 	size_t											fillListens(std::vector<std::string>& buffer, size_t i);
 	size_t											fillServerName(std::vector<std::string>& buffer, size_t i);
-	void											serverInit(ServerData &servData);
+	void											serverInit();
 	void											servListen(std::pair<int, std::string> _listens);
 	void											servStart();
 	
@@ -42,8 +42,8 @@ class ServerData : public ABlockBase // [ciao] I was getting a bit confused so I
 	std::vector< std::pair<int, std::string> >		_listens;
 	std::vector<std::string>						_serverName;
 	std::map<std::string, LocationConf>				_locations;
-	std::vector<int>								_socketFd; // convert into vector for multiple sockets
-	
+	std::vector<int>								_socketFd;
+	std::vector<struct sockaddr_in>					_servAddr;
 	
 };
 

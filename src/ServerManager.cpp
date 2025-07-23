@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/23 15:04:21 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:58:50 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,11 @@ ServerManager::~ServerManager() {}
 void ServerManager::servSetup()
 {
 	for (size_t i = 0; i < _serverData.size(); i++)
-	{
-		_servers.push_back(Server(_serverData[i]));
-		// _servers[i].socketInit(_serverData[i]);
-	}
+		_serverData[i].serverInit();
 }
 
 void ServerManager::servRun()
 {
-	for (size_t i = 0; i < _servers.size(); i++)
-		_servers[i].servStart();
+	for (size_t i = 0; i < _serverData.size(); i++)
+		_serverData[i].servStart();
 }
