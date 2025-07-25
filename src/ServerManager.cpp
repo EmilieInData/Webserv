@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/25 12:35:02 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/25 13:58:10 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,13 +68,33 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	std::cout << timeStamp() << "Socket set: " << _listens.second << ":" << _listens.first << std::endl;
 }
 
+// struct pollfd *ServerManager::servPoll(size_t totalSocket)
+// {	
+// 	struct pollfd *polls = new pollfd[totalSocket];
+	
+// 	for (size_t i = 0; i < totalSocket; i++)
+// 	{
+// 		polls[i].fd = _socketFd[i];
+// 		polls[i].revents = POLLIN;
+// 	}
+
+// 	return polls;
+// }
+
 void ServerManager::servRun()
 {
 	size_t socketsize = _socketFd.size();
 	
 	std::cout << timeStamp() << "Number of listening sockets: " << _socketFd.size() << std::endl;
 	
-	struct pollfd *polls = new pollfd[socketsize];
+	struct pollfd polls[socketsize];
+	
+	for (size_t i = 0; i < socketsize; i++)
+	{
+		polls[i].fd = _socketFd[i];
+		polls[i].revents = POLLIN;
+		std::cout << "poll for " << polls[i].fd << " " << polls[i].revents << "setup" << std::endl;
+	}
 	
 	while (true)
 	{
@@ -89,11 +109,11 @@ void ServerManager::servRun()
 			std::cout << timeStamp() << "Still waiting for connection" << std::endl;
 			continue ;
 		}
-		
 		for (size_t i = 0; i < socketsize; i++)
 		{
 			if (polls[i].revents & POLLIN)
 			{
+				std::cout << "polls and pollin" << std::endl;
 				int					clientFd;
 				struct sockaddr_in	clientAddr;
 				socklen_t			clientLen = sizeof(clientAddr);
@@ -123,32 +143,16 @@ void ServerManager::servRun()
 					close(clientFd);
 				}
 			}
-		}
-		
-		for (size_t i = 0; i < _socketFd.size(); i++)
-		close(_socketFd[i]);
-		delete[] polls;
+		}		
 	}
+	for (size_t i = 0; i < _socketFd.size(); i++)
+		close(_socketFd[i]);
 }
 
-// struct pollfd *ServerManager::servPoll(size_t totalSocket)
-// {	
-// 	struct pollfd *polls = new pollfd[totalSocket];
 
-// 	size_t fds = 0;
-	
-// 	while (fds < totalSocket)
-// 	{
-// 		for(size_t i = 0; i < _serverData.size(); i++)
-// 		{
-// 			for(size_t j = 0; j < _serverData[i].getSocketFd().size(); j++)
-// 			{
-// 				polls[fds].fd = _serverData[i].getSocketFd()[j];
-// 				polls[fds].revents = POLLIN;
-// 				fds++;
-// 			}
-// 		}
-// 	}
-
-// 	return polls;
-// }
+/* listening testing methods:
+netstat -an | grep 8080
+ss -ltn // Linux Only
+telnet 127.0.0.1 8080
+http://localhost:8080 // via browser
+*/

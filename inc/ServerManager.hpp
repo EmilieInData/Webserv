@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/25 12:27:39 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/25 13:03:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class ServerManager
 		void			servSetup();
 		void			servRun();
 		void			servListen(std::pair<int, std::string> _listens);
-		struct pollfd	*servPoll(size_t totalSocket);
+		// struct pollfd	*servPoll(size_t totalSocket);
 		// create servQuit() to stop all servers;
 };
 
