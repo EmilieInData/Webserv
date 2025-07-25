@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/25 13:58:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/25 14:15:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ void ServerManager::servRun()
 	for (size_t i = 0; i < socketsize; i++)
 	{
 		polls[i].fd = _socketFd[i];
-		polls[i].revents = POLLIN;
-		std::cout << "poll for " << polls[i].fd << " " << polls[i].revents << "setup" << std::endl;
+		polls[i].events = POLLIN;
+		std::cout << "poll for " << polls[i].fd << " " << polls[i].events << "setup" << std::endl;
 	}
 	
 	while (true)
@@ -113,7 +113,7 @@ void ServerManager::servRun()
 		{
 			if (polls[i].revents & POLLIN)
 			{
-				std::cout << "polls and pollin" << std::endl;
+				std::cout << timeStamp() << "POLLIN at " << polls[i].fd << std::endl;
 				int					clientFd;
 				struct sockaddr_in	clientAddr;
 				socklen_t			clientLen = sizeof(clientAddr);
@@ -132,12 +132,13 @@ void ServerManager::servRun()
 					// HttpRequest	req = HttpRequest( buffer, *this );
 					
 					std::string response = 
-					"HTTP/1.1 200 OK\n"
-					"Content-Type: text/html\n"
-					"Content-Length: 85\n"
-					"\n"
+					"HTTP/1.1 200 OK\r\n"
+					"Content-Type: text/html\r\n"
+					"Content-Length: 47\r\n"
+					"\r\n"
 					"<html><body><h1>Bonjour!</h1></body></html>";
 					
+					std::cout << response << std::endl; // for debug purposes
 					send(clientFd, response.c_str(), response.size(), 0);
 					
 					close(clientFd);
