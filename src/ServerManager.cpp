@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 11:42:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 12:31:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,31 +125,9 @@ void ServerManager::servRun()
 						std::cout << "*****" << std::endl;
 						
 						std::string content = "<html><body><h1>Bonjour!</h1></body></html>";
-						std::ostringstream output;
-						output << content.length();
-						std::string content_length = output.str();
-						
-						std::string response = 
-						"HTTP/1.1 200 OK\r\n"
-						"Content-Type: text/html\r\n"
-						"Content-Length: " + content_length + "\r\n"
-						"Connection: close\r\n"
-						"Cache-Control: no-cache\r\n"
-						"\r\n" + content;
-
-						std::cout << "Sending response (" << response.size() << " bytes):" << std::endl;
-						std::cout << "[RAW RESPONSE]" << std::endl;
-						for (size_t i = 0; i < response.size(); i++) {
-							if (response[i] == '\r') std::cout << "\\r";
-							else if (response[i] == '\n') std::cout << "\\n\n";
-							else std::cout << response[i];
-						}
-						std::cout << "\n[END RAW]" << std::endl;
-
-						ssize_t sent = send(clientFd, response.c_str(), response.size(), 0);
-						std::cout << "Bytes sent: " << sent << " of " << response.size() << std::endl;
-						if (sent < 0)
-							std::cerr << "Send failed" << std::endl;
+						_response.setContent(content);
+						_response.setClientFd(clientFd);
+						_response.sendResponse();
 					}
 					close(clientFd);
 				}

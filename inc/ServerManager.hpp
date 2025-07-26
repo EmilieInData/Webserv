@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 11:20:46 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 12:28:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,16 @@
 #include "Server.hpp"
 #include "ParsingConf.hpp"
 #include "ServerData.hpp"
+#include "Response.hpp"
 
 class ServerManager
 {
 	private:
-		// std::vector<Server>		_servers;
+		Response						_response;
 		std::vector<ServerData>			_serverData;
 		std::vector<int>				_socketFd;
 		std::vector<struct sockaddr_in>	_servAddr;
+		// std::vector<Server>		_servers;
 		
 		ServerManager();
 		ServerManager(ServerManager const &copy);
