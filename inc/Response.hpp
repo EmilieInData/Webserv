@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 11:52:03 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 12:02:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ class Response
 	Response();
 	~Response();
 
-	void	getResponse(std::string response);
-	void	getContent(std::string content);
-	void	prepResponse();
-	void	sendResponse();
+	void		setResponse(std::string response);
+	void		setContent(std::string content);
+	std::string	prepResponse();
+	void		sendResponse();
 };
 
 #endif
