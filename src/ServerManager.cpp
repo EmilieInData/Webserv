@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 12:31:47 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 13:07:37 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,8 @@ void ServerManager::servRun()
 						std::cout << buffer;
 						std::cout << "*****" << std::endl;
 						
-						std::string content = "<html><body><h1>Bonjour!</h1></body></html>";
-						_response.setContent(content);
+						std::string location = "/Users/palmiro/42/webserv/test/page.html";
+						_response.setContent(location);
 						_response.setClientFd(clientFd);
 						_response.sendResponse();
 					}

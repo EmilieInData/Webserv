@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 12:38:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 13:08:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::string content)
 {
-	_content = content;
+	_location = content;
 }
 
 void Response::setClientFd(int clientFd)
@@ -31,10 +31,24 @@ void Response::setClientFd(int clientFd)
 	_clientFd = clientFd;
 }
 
+std::string Response::prepFile()
+{
+	std::ifstream page(_location.c_str());
+
+	if (!page.is_open())
+		return NULL;
+	
+	std::ostringstream pageContent;
+	pageContent << page.rdbuf();
+	page.close();
+	return pageContent.str();
+}
+
 void Response::prepResponse()
 {
+	std::string content = prepFile();
 	std::ostringstream output;
-	output << _content.length();
+	output << content.length();
 	std::string content_length = output.str();
 	
 	_response = 
@@ -43,7 +57,7 @@ void Response::prepResponse()
 	"Content-Length: " + content_length + "\r\n"
 	"Connection: close\r\n"
 	"Cache-Control: no-cache\r\n"
-	"\r\n" + _content;
+	"\r\n" + content;
 }
 
 void Response::sendResponse()
