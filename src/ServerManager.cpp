@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 11:18:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 11:22:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,18 +68,19 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	std::cout << timeStamp() << "Socket set: " << _listens.second << ":" << _listens.first << std::endl;
 }
 
-// struct pollfd *ServerManager::servPoll(size_t totalSocket)
-// {	
-// 	struct pollfd *polls = new pollfd[totalSocket];
+struct pollfd *ServerManager::servPoll(size_t totalSocket)
+{	
+	struct pollfd *polls = new pollfd[totalSocket];
 	
-// 	for (size_t i = 0; i < totalSocket; i++)
-// 	{
-// 		polls[i].fd = _socketFd[i];
-// 		polls[i].revents = POLLIN;
-// 	}
+	for (size_t i = 0; i < totalSocket; i++)
+	{
+		polls[i].fd = _socketFd[i];
+		polls[i].events = POLLIN;
+		std::cout << "poll for " << polls[i].fd << " " << polls[i].events << "setup" << std::endl;
+	}
 
-// 	return polls;
-// }
+	return polls;
+}
 
 void ServerManager::servRun()
 {
@@ -87,14 +88,7 @@ void ServerManager::servRun()
 	
 	std::cout << timeStamp() << "Number of listening sockets: " << _socketFd.size() << std::endl;
 	
-	struct pollfd *polls = new pollfd[socketsize];
-	
-	for (size_t i = 0; i < socketsize; i++)
-	{
-		polls[i].fd = _socketFd[i];
-		polls[i].events = POLLIN;
-		std::cout << "poll for " << polls[i].fd << " " << polls[i].events << "setup" << std::endl;
-	}
+	struct pollfd *polls = servPoll(socketsize);	
 	
 	while (true)
 	{
