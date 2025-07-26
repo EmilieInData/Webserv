@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/25 14:15:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/26 10:36:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,11 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 
 void ServerManager::servRun()
 {
-	size_t socketsize = _socketFd.size();
+	const size_t socketsize = _socketFd.size();
 	
 	std::cout << timeStamp() << "Number of listening sockets: " << _socketFd.size() << std::endl;
 	
-	struct pollfd polls[socketsize];
+	struct pollfd *polls = new pollfd[socketsize];
 	
 	for (size_t i = 0; i < socketsize; i++)
 	{
@@ -121,33 +121,40 @@ void ServerManager::servRun()
 				if (clientFd >= 0)
 				{
 					std::cout << timeStamp() << "New connection accepted" << std::endl;
-					char buffer[4096];
-					ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+					char buffer[4096] = {0};
+					ssize_t bytes = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 					if (bytes > 0)
-					buffer[bytes] = '\0';
-					std::cout << timeStamp() << "Request content:\n*****\n" << std::endl;
-					std::cout << buffer;
-					std::cout << "*****" << std::endl;
-					
-					// HttpRequest	req = HttpRequest( buffer, *this );
-					
-					std::string response = 
-					"HTTP/1.1 200 OK\r\n"
-					"Content-Type: text/html\r\n"
-					"Content-Length: 47\r\n"
-					"\r\n"
-					"<html><body><h1>Bonjour!</h1></body></html>";
-					
-					std::cout << response << std::endl; // for debug purposes
-					send(clientFd, response.c_str(), response.size(), 0);
-					
+					{
+						buffer[bytes] = '\0';
+						std::cout << timeStamp() << "Request content:\n*****\n" << std::endl;
+						std::cout << buffer;
+						std::cout << "*****" << std::endl;
+						
+						// HttpRequest	req = HttpRequest( buffer, *this );
+						
+						std::string response = 
+						"HTTP/1.1 200 OK\r\n"
+						"Content-Type: text/html\r\n"
+						"Content-Length: 47\r\n"
+						"Connection: close\r\n"
+						"\r\n"
+						"<html><body><h1>Bonjour!</h1></body></html>";
+						
+						std::cout << response << std::endl; // for debug purposes
+						ssize_t sent = send(clientFd, response.c_str(), response.size(), 0);
+						if (sent < 0)
+							std::cerr << "Send failed" << std::endl;
+					}
 					close(clientFd);
 				}
+				else
+					std::cerr << "Send failed" << std::endl;
 			}
 		}		
 	}
 	for (size_t i = 0; i < _socketFd.size(); i++)
 		close(_socketFd[i]);
+	delete[] polls;
 }
 
 
