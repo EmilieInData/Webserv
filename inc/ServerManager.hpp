@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 12:28:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/28 10:46:08 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Server.hpp"
 #include "ParsingConf.hpp"
 #include "ServerData.hpp"
+#include "HttpRequest.hpp"
 #include "Response.hpp"
 
 class ServerManager
@@ -36,10 +37,11 @@ class ServerManager
 		ServerManager(ParsingConf &parsData);
 		~ServerManager();
 	
-		void			servSetup();
-		void			servRun();
-		void			servListen(std::pair<int, std::string> _listens);
-		struct pollfd	*servPoll(size_t totalSocket);
+		void						servSetup();
+		void						servRun();
+		void						servListen(std::pair<int, std::string> _listens);
+		std::vector<ServerData>		getServersList();
+		struct pollfd				*servPoll(size_t totalSocket);
 		// create servQuit() to stop all servers;
 };
 

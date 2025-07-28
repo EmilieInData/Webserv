@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/23 17:07:33 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/28 10:57:20 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "ServerManager.hpp"
 #include "HttpParser.hpp"
 #include "HttpParserTester.hpp"
 #include "RequestLine.hpp"
@@ -29,7 +30,7 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 
 }
 
-HttpRequest::HttpRequest(const std::string &message, ServerData &server) : req_line(NULL), uri(NULL) {
+HttpRequest::HttpRequest(const std::string &message, ServerManager &server) : req_line(NULL), uri(NULL) {
 	try {
 
 		std::cout << message << std::endl;
@@ -51,9 +52,9 @@ HttpRequest::HttpRequest(const std::string &message, ServerData &server) : req_l
 
 		uri = new Uri( req_line->getReqTarget(), host.first );
 
-		// ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
-		HttpParser::checkIfPathExist( server.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
-		HttpParser::notAllowedMethod( server.getItLocations( uri->getPath()), server.getAllowedMethods(), req_line->getMethod());
+		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
+		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
+		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 
 	} catch ( std::invalid_argument e ) {
 		std::cout << e.what() << std::endl;

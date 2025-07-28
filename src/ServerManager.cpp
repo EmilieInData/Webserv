@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/28 10:09:16 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/28 11:02:01 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void ServerManager::servSetup()
 	{
 		for (size_t j = 0; j < _serverData[i].getListens().size(); j++)
 			servListen(_serverData[i].getListens()[j]);
-	
 	}
 }
 
@@ -125,6 +124,9 @@ void ServerManager::servRun()
 						std::cout << buffer;
 						std::cout << "*****" << std::endl;
 						
+						HttpRequest req = HttpRequest(buffer, *this);
+						std::cout << "path from req: " << req.getPath() << std::endl;
+						
 						std::string location = "/Users/palmiro/42/webserv/test/page.html";
 						_response.setContent(location);
 						_response.setClientFd(clientFd);
@@ -142,6 +144,10 @@ void ServerManager::servRun()
 	delete[] polls;
 }
 
+std::vector<ServerData> ServerManager::getServersList()
+{
+	return _serverData;
+}
 
 /* listening testing methods:
 netstat -an | grep 8080
