@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 12:43:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/27 16:57:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 #define RESET   "\033[0m"
 #define BLUE	"\033[38;5;147m"
 #define PINK    "\033[38;5;207m"
-#define GREEN  	"\033[38;5;194m"
+#define GREEN  	"\033[32m"
 #define PURPLE  "\033[38;5;62m"
 
 //listen

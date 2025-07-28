@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 15:12:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/27 16:58:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,7 +347,8 @@ void	ParsingConf::print_structure()
 {
 	for (size_t i  = 0; i < servers.size(); i++)
 	{
-		std::cout << PURPLE << "Listen:\n";
+		std::cout << GREEN << "\n[SERVER #" << i << "]" << std::endl;
+		std::cout << PINK << "Listen:\n";
 		for (size_t j = 0; j < servers[i].getListens().size(); j++)
 			std::cout << "port: " << servers[i].getListens()[j].first
 					  << "ip: " << servers[i].getListens()[j].second << "\n";

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 13:07:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/28 10:09:16 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void ServerManager::servSetup()
 	{
 		for (size_t j = 0; j < _serverData[i].getListens().size(); j++)
 			servListen(_serverData[i].getListens()[j]);
+	
 	}
 }
 
@@ -65,7 +66,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	
 	_socketFd.push_back(newsocket);
 	_servAddr.push_back(newaddr);
-	std::cout << timeStamp() << "Socket set: " << _listens.second << ":" << _listens.first << std::endl;
+	std::cout << timeStamp() << "Socket set: " << _listens.second << ":" << _listens.first << " Number:" << newsocket << std::endl;
 }
 
 struct pollfd *ServerManager::servPoll(size_t totalSocket)
