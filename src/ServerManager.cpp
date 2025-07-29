@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/29 12:38:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 17:53:50 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,13 +157,13 @@ void ServerManager::servRun()
 							std::string location;
 							
 							if (requestedPath == "/" || requestedPath.empty()) {
-								location = "/Users/palmiro/42/webserv/test/page.html";
+								location = "/Users/palmiro/42/webserv/serv01/page.html";
 							} else {
 								std::string filename = requestedPath;
 								if (filename[0] == '/') {
 									filename = filename.substr(1);
 								}
-								location = "/Users/palmiro/42/webserv/test/" + filename;
+								location = "/Users/palmiro/42/webserv/serv01/" + filename;
 							}
 							
 							std::cout << "Serving file: " << location << std::endl;

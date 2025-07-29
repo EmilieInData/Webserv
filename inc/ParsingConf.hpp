@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/22 16:13:46 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 17:59:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class ParsingConf
 
 		std::vector<ServerData>	servers;
 		
-		std::vector<ServerData>&	getServers(); // [ciao] if servers are public do we need getters?
+		std::vector<ServerData>&	getServers(); // TODO if servers are public do we need getters?
 		
 		void		checkLocation(std::string& line);
 		void		checkSemicolon(std::string& line);
