@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/28 10:46:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 12:59:55 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #define SERVERMANAGER_HPP
 
 #include "Utils.hpp"
-#include "Server.hpp"
 #include "ParsingConf.hpp"
 #include "ServerData.hpp"
 #include "HttpRequest.hpp"
@@ -27,7 +26,6 @@ class ServerManager
 		std::vector<ServerData>			_serverData;
 		std::vector<int>				_socketFd;
 		std::vector<struct sockaddr_in>	_servAddr;
-		// std::vector<Server>		_servers;
 		
 		ServerManager();
 		ServerManager(ServerManager const &copy);
@@ -42,7 +40,7 @@ class ServerManager
 		void						servListen(std::pair<int, std::string> _listens);
 		std::vector<ServerData>		getServersList();
 		struct pollfd				*servPoll(size_t totalSocket);
-		// create servQuit() to stop all servers;
+		// TODO create servQuit() to stop all servers;
 };
 
 #endif

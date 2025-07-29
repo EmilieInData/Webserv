@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/25 12:33:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 13:00:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 class LocationConf;
 
-class ServerData : public ABlockBase // [ciao] I was getting a bit confused so I changed to ServerData
+class ServerData : public ABlockBase // INFO I was getting a bit confused so I changed to ServerData
 {
 	public:
 	ServerData();
