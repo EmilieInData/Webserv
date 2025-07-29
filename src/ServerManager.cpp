@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/28 11:02:01 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 12:38:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void ServerManager::servSetup()
 
 void ServerManager::servListen(std::pair<int, std::string> _listens)
 {
-	/* for each element of _listens vector:
+	/* INFO for each element of _listens vector:
 	create _socketFD
 	set flags to nonblock
 	setup struct
@@ -115,22 +115,73 @@ void ServerManager::servRun()
 				if (clientFd >= 0)
 				{
 					std::cout << timeStamp() << "New connection accepted" << std::endl;
-					char buffer[4096] = {0};
-					ssize_t bytes = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-					if (bytes > 0)
+					
+					std::string fullRequest; // TODO wrap everything into a "receiveRequest" function
+					char buffer[4096]; // HACK i put 4096, but i don't know if it's right
+					bool isComplete = false;
+					int attempts = 0;
+					const int maxAttempts = 100;
+					
+					while (!isComplete && attempts < maxAttempts)
 					{
-						buffer[bytes] = '\0';
+						ssize_t bytes = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+						if (bytes > 0)
+						{
+							buffer[bytes] = '\0';
+							fullRequest += buffer;
+							
+							if (fullRequest.find("\r\n\r\n") != std::string::npos)
+								isComplete = true;
+						}
+						else if (bytes == 0)
+							break;
+						else if (bytes < 0)
+						{
+							usleep(10000); // wait and try again
+							attempts++;
+							continue;
+						}
+					}
+					
+					if (isComplete && !fullRequest.empty())
+					{
 						std::cout << timeStamp() << "Request content:\n*****\n" << std::endl;
-						std::cout << buffer;
+						std::cout << fullRequest;
 						std::cout << "*****" << std::endl;
 						
-						HttpRequest req = HttpRequest(buffer, *this);
-						std::cout << "path from req: " << req.getPath() << std::endl;
-						
-						std::string location = "/Users/palmiro/42/webserv/test/page.html";
-						_response.setContent(location);
-						_response.setClientFd(clientFd);
-						_response.sendResponse();
+						try {
+							HttpRequest req = HttpRequest(fullRequest, *this);
+							std::cout << "path from req: " << req.getPath() << std::endl;
+							
+							std::string requestedPath = req.getPath();
+							std::string location;
+							
+							if (requestedPath == "/" || requestedPath.empty()) {
+								location = "/Users/palmiro/42/webserv/test/page.html";
+							} else {
+								std::string filename = requestedPath;
+								if (filename[0] == '/') {
+									filename = filename.substr(1);
+								}
+								location = "/Users/palmiro/42/webserv/test/" + filename;
+							}
+							
+							std::cout << "Serving file: " << location << std::endl;
+							_response.setContent(location);
+							_response.setClientFd(clientFd);
+							_response.sendResponse();
+						}
+						catch (const std::exception& e) {
+							std::cerr << "Error processing request: " << e.what() << std::endl;
+							std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+							send(clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+						}
+					}
+					else
+					{
+						std::cerr << timeStamp() << "Incomplete or empty request received" << std::endl;
+						std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+						send(clientFd, errorResponse.c_str(), errorResponse.length(), 0);
 					}
 					close(clientFd);
 				}

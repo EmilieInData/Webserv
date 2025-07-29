@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/26 13:06:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/29 12:32:57 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class Response
 	~Response();
 
 	std::string	prepFile();
+	std::string	checkType();
 	void		setClientFd(int _clientFd);
 	void		setResponse(std::string response);
 	void		setContent(std::string content);
