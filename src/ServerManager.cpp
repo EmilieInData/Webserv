@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/30 12:44:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 14:09:19 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,22 @@ ServerManager::ServerManager(ParsingConf &parsData)
 
 ServerManager::~ServerManager() {}
 
+
+
 void ServerManager::servSetup()
 {
+	// INFO I use "set" to automatically remove doubles
+
+	std::set<std::pair<int, std::string> > uniqueListens;
 	for (size_t i = 0; i < _serverData.size(); i++)
 	{
 		for (size_t j = 0; j < _serverData[i].getListens().size(); j++)
-			servListen(_serverData[i].getListens()[j]);
+			uniqueListens.insert(_serverData[i].getListens()[j]);
 	}
+	
+	for (std::set<std::pair<int, std::string> >::iterator it = uniqueListens.begin();
+			it != uniqueListens.end(); ++it)
+		servListen(*it);
 }
 
 void ServerManager::servListen(std::pair<int, std::string> _listens)
@@ -46,8 +55,8 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	if (fcntl(newsocket, F_SETFL, flags | O_NONBLOCK) < 0)	
 	std::cerr << "Nonblocking setup error" << std::endl;  	
 	
-	std::memset(&newaddr, 0, sizeof(newaddr));	
-	newaddr.sin_family = AF_INET;                                                	
+	std::memset(&newaddr, 0, sizeof(newaddr));
+	newaddr.sin_family = AF_INET;
 	newaddr.sin_port = htons(_listens.first);
 	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); 
 	
