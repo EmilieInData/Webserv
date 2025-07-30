@@ -110,10 +110,8 @@ void Response::prepResponse()
 	"\r\n" + content;
 }
 
-void Response::sendResponse()
+void Response::printRawResponse()
 {
-	prepResponse();
-	std::cout << "Sending response (" << _response.size() << " bytes):" << std::endl;
 	std::cout << PINK <<"[RAW RESPONSE]" << RESET << std::endl;
 	for (size_t i = 0; i < _response.size(); i++)
 	{
@@ -122,6 +120,14 @@ void Response::sendResponse()
 		else std::cout << _response[i];
 	}
 	std::cout << PINK << "\n[END OF RESPONSE]" << RESET << std::endl;
+}
+
+void Response::sendResponse()
+{
+	prepResponse();
+	std::cout << "Sending response (" << _response.size() << " bytes):" << std::endl;
+
+	// printRawResponse();
 
 	size_t totalSent = 0;
 	size_t totalSize = _response.size();

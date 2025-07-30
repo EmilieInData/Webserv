@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/29 17:53:50 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 12:44:48 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,13 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	
 	if (bind(newsocket, (struct sockaddr*)&newaddr, sizeof(newaddr)) < 0)
 	{
-		std::cerr << "Socket binding error" << std::endl;
+		std::cerr << "Socket binding error for " << _listens.second << ":" << _listens.first << std::endl;
 		close(newsocket);
 	}
 	
 	if (listen(newsocket, 10) < 0) // change back to SOMAXCONN?
 	{
-		std::cerr << "Listen socket setup error" << std::endl;
+		std::cerr << "Listen socket error for " << _listens.second << ":" << _listens.first << std::endl;
 		close(newsocket);
 	}
 	
@@ -157,13 +157,13 @@ void ServerManager::servRun()
 							std::string location;
 							
 							if (requestedPath == "/" || requestedPath.empty()) {
-								location = "/Users/palmiro/42/webserv/serv01/page.html";
+								location = "/home/fdi-cecc/webserv/serv01/page.html";
 							} else {
 								std::string filename = requestedPath;
 								if (filename[0] == '/') {
 									filename = filename.substr(1);
 								}
-								location = "/Users/palmiro/42/webserv/serv01/" + filename;
+								location = "/home/fdi-cecc/webserv/serv01/" + filename;
 							}
 							
 							std::cout << "Serving file: " << location << std::endl;
