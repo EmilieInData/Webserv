@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/29 12:57:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 16:12:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 
 }
 
-HttpRequest::HttpRequest(const std::string &message, ServerManager &server) : req_line(NULL), uri(NULL) {
+HttpRequest::HttpRequest(std::pair<int, std::string> received, ServerManager &server) : req_line(NULL), uri(NULL) {
 	try {
 
-		std::cout << message << std::endl;
-
+		// std::cout << message << std::endl;
+		std::pair<int, std::string>			incoming = server.getSocketData(received.first);
 		std::string							tmp_host;
-		std::vector<std::string>			lines = HttpParser::parseHttpMessage( message, tmp_host );
+		std::vector<std::string>			lines = HttpParser::parseHttpMessage( received.second, tmp_host );
 		std::vector<std::string>::iterator	it = lines.begin();
 		std::vector<std::string>::iterator	ite = lines.end();
 
@@ -51,7 +51,8 @@ HttpRequest::HttpRequest(const std::string &message, ServerManager &server) : re
 
 		uri = new Uri( req_line->getReqTarget(), host.first );
 
-		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), host.first );
+		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), incoming );
+		std::cout << BLUE << "[Server connected] > " << serv.getServerName()[0] << RESET << std::endl;
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 

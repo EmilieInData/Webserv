@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/29 13:00:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 16:07:03 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class ServerData : public ABlockBase // INFO I was getting a bit confused so I c
 	bool											getAutoindex() const;
 	std::map<std::string, LocationConf>&			getLocations();
 	std::map<std::string, LocationConf>:: iterator	getItLocations(std::string const& key);
-	std::vector< std::pair<int, std::string> >		getListens();
+	std::vector< std::pair<int, std::string> >		getListens() const;
 	std::vector<std::string>						getServerName() const;
 	size_t											fillListens(std::vector<std::string>& buffer, size_t i);
 	size_t											fillServerName(std::vector<std::string>& buffer, size_t i);

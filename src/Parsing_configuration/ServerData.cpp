@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/25 12:34:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 16:07:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ std::map<std::string, LocationConf>::iterator	ServerData::getItLocations(std::st
 	return _locations.find(key);
 }
 
-std::vector<std::pair<int, std::string> >	ServerData::getListens()
+std::vector<std::pair<int, std::string> >	ServerData::getListens() const
 {
 	return _listens;
 }

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/30 14:09:19 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 15:53:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,24 @@ struct pollfd *ServerManager::servPoll(size_t totalSocket)
 	return polls;
 }
 
+std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
+{
+	struct sockaddr_in	socketIn;
+	socklen_t			socketInLen = sizeof(socketIn);
+	std::memset(&socketIn, 0, socketInLen);
+	char	ipStr[INET_ADDRSTRLEN];
+	int		portIn;
+	
+	if (getsockname(socketFd, (struct sockaddr*) &socketIn, &socketInLen) < 0)
+		std::cerr << timeStamp() << "getsockname failed for socket num " << socketFd << std::endl;
+	
+	inet_ntop(AF_INET, &socketIn.sin_addr, ipStr, INET_ADDRSTRLEN);
+	portIn = ntohs(socketIn.sin_port);
+
+	std::cout << BLUE << "[Incoming connection data] > " << ipStr << ":" << portIn << RESET << std::endl;
+	return std::make_pair(portIn, ipStr);
+}
+
 void ServerManager::servRun()
 {
 	const size_t socketsize = _socketFd.size();
@@ -120,6 +138,7 @@ void ServerManager::servRun()
 				int					clientFd;
 				struct sockaddr_in	clientAddr;
 				socklen_t			clientLen = sizeof(clientAddr);
+				
 				clientFd = accept(_socketFd[i], (struct sockaddr *)&clientAddr, &clientLen);
 				if (clientFd >= 0)
 				{
@@ -159,7 +178,7 @@ void ServerManager::servRun()
 						std::cout << "*****" << std::endl;
 						
 						try {
-							HttpRequest req = HttpRequest(fullRequest, *this);
+							HttpRequest req = HttpRequest(std::make_pair<int, std::string>(_socketFd[i], fullRequest), *this);
 							std::cout << "path from req: " << req.getPath() << std::endl;
 							
 							std::string requestedPath = req.getPath();

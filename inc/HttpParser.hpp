@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 15:59:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ public:
 	static std::string				parseQuery( std::string const & uri );
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
-	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::string const & host );
+	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming );
 	static void						checkIfPathExist( std::map<std::string, LocationConf> & loc, std::string const & path );
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/23 11:19:19 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/30 16:06:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,14 +262,15 @@ bool	HttpParser::notImplementedMethod( std::string const & method ) {
 	return false;
 }
 
-ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const & servers, std::string const & host ) {
+ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming ) {
 	std::vector<ServerData>::const_iterator	it, ite = servers.end();
-	std::vector<std::string>::const_iterator	it_name, ite_name; 
+	std::vector<std::pair<int, std::string> >::const_iterator	it_listen, ite_listen; 
 
 	for (it = servers.begin(); it != ite; ++it) {
-		const std::vector<std::string>& names = it->getServerName();
-		for (it_name = names.begin(); it_name != names.end(); ++it_name) {
-			if (*it_name == host)
+		const std::vector<std::pair<int, std::string> >& listens = it->getListens();
+		ite_listen = listens.end();
+		for (it_listen = listens.begin(); it_listen != ite_listen; ++it_listen) {
+			if (*it_listen == incoming)
 				return *it;
 		}
 	}	
