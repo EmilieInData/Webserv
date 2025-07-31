@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/30 16:18:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 14:00:45 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "ServerData.hpp"
 #include "HttpRequest.hpp"
 #include "Response.hpp"
+#include "PrintLog.hpp"
 
 class ServerManager
 {

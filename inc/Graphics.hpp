@@ -1,31 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PrintLog.hpp                                       :+:      :+:    :+:   */
+/*   Graphics.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 14:10:32 by fdi-cecc         ###   ########.fr       */
+/*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
+/*   Updated: 2025/07/31 15:09:17 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PRINTLOG_HPP
-#define PRINTLOG_HPP
+#ifndef GRAPHICS_HPP
+#define GRAPHICS_HPP
 
 #include "Utils.hpp"
-#include "Graphics.hpp"
-#include "ServerManager.hpp"
 
+#define LINELENGTH 60
 
-class	ServerManager;
+#define PROJ_TITLE "le webserv fantastique - 42 bcn"
 
-void	printServersData(ServerManager const &serv);
-void	printServersStatus(ServerManager const &serv);
-void	createLog();
-void	logRequest(std::string const &request);
-void	logResponse(std::string const &response);
+#define TEAM_LIST "cle-tron - esellier - fdi-cecc"
+
+#define LEFT_SIDE "| "
+#define PAD "+"
+#define RIGHT_SIDE " | |"
+
+void	graSimpleLine(char const &c);
+void	graSeparator(char const &c);
+void	graTextLine(std::string const &str);
 
 #endif
-
-/* max line length for print 80 char */

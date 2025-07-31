@@ -15,6 +15,7 @@ OBJ_DIR		= obj/
 TEST_DIR	= tests/
 REQ_DIR		= request/
 RSP_DIR		= response/
+PRT_DIR		= printlog/
 CONF_DIR	= Parsing_configuration/
 
 SRC_FILES	= main  ServerManager Utils \
@@ -22,12 +23,14 @@ SRC_FILES	= main  ServerManager Utils \
 TEST_FILES	= HttpParserTester
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri
 RSP_FILES	= Response
-CONF_FILES = ABlockBase LocationConf ParsingConf ServerData
+PRT_FILES	= PrintLog Graphics
+CONF_FILES	= ABlockBase LocationConf ParsingConf ServerData
 
 ALL_FILES	+= $(SRC_FILES)
 ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
 ALL_FILES	+= $(addprefix $(REQ_DIR), $(REQ_FILES))
 ALL_FILES	+= $(addprefix $(RSP_DIR), $(RSP_FILES))
+ALL_FILES	+= $(addprefix $(PRT_DIR), $(PRT_FILES))
 ALL_FILES	+= $(addprefix $(CONF_DIR), $(CONF_FILES))
 
 SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(ALL_FILES)))

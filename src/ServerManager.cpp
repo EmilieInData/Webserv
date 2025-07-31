@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 11:59:17 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 14:08:03 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ void ServerManager::servRun()
 	std::cout << timeStamp() << "Number of listening sockets: " << _socketFd.size() << std::endl;
 	
 	struct pollfd *polls = servPoll(socketsize);	
+	
+	printServersData(*this);
 	
 	while (true)
 	{
