@@ -6,20 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/30 16:12:15 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:47:46 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include "ServerManager.hpp"
-#include "HttpParser.hpp"
-#include "HttpParserTester.hpp"
-#include "RequestLine.hpp"
-#include "Uri.hpp"
-#include "ServerData.hpp"
-#include <iostream>
-#include <string>
-#include <stdexcept>
 
 HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) { 
 	HttpParserTester::parseHttpMessageTest();
@@ -52,6 +43,7 @@ HttpRequest::HttpRequest(std::pair<int, std::string> received, ServerManager &se
 		uri = new Uri( req_line->getReqTarget(), host.first );
 
 		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), incoming );
+		setFullPath(serv);
 		std::cout << BLUE << "[Server connected] > " << serv.getServerName()[0] << RESET << std::endl;
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
@@ -86,6 +78,19 @@ std::string	HttpRequest::getHttpMethod() const { return this->req_line->getMetho
 std::string	HttpRequest::getRequestUri() const { return this->uri->getUri(); }
 
 std::string	HttpRequest::getPath() const { return this->uri->getPath(); }
+
+/* TODO we need to check also for the case when we get an absolute path i think
+ getFullPath() just adds the root to the path in the Uri from the request */
+
+void HttpRequest::setFullPath(ServerData const &serv)
+{
+	_fullPath = std::make_pair<std::string, std::string>(serv.getRoot(), uri->getPath());
+}
+
+std::pair<std::string, std::string> HttpRequest::getFullPath() const
+{
+	return _fullPath;
+}
 
 std::string	HttpRequest::getQuery() const { return this->uri->getQuery(); }
 

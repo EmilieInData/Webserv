@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/30 22:36:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:59:17 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,21 +181,7 @@ void ServerManager::servRun()
 							HttpRequest req = HttpRequest(std::make_pair<int, std::string>(_socketFd[i], fullRequest), *this);
 							std::cout << "path from req: " << req.getPath() << std::endl;
 							
-							std::string requestedPath = req.getPath();
-							std::string location;
-							
-							if (requestedPath == "/" || requestedPath.empty()) {
-								location = "./serv01/page.html";
-							} else {
-								std::string filename = requestedPath;
-								if (filename[0] == '/') {
-									filename = filename.substr(1);
-								}
-								location = "./serv01/" + filename;
-							}
-							
-							std::cout << "Serving file: " << location << std::endl;
-							_response.setContent(location);
+							_response.setContent(req.getFullPath());
 							_response.setClientFd(clientFd);
 							_response.sendResponse();
 						}

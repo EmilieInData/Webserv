@@ -21,9 +21,15 @@ void Response::setResponse(std::string response)
 	_response = response;
 }
 
-void Response::setContent(std::string content)
+void Response::setContent(std::pair<std::string, std::string> fullPath)
 {
-	_location = content;
+	if (fullPath.second == "/" || fullPath.second.empty())
+	{
+		_location = fullPath.first + "/index.html";
+	}
+	else
+		_location = fullPath.first + fullPath.second;
+	std::cout << timeStamp() << "Serving file: " << _location << std::endl;
 }
 
 void Response::setClientFd(int clientFd)
