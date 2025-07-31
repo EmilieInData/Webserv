@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 15:00:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 16:44:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void printServersData(ServerManager const &serv)
 	graSeparator('_');
 	graTextLine(PROJ_TITLE);
 	graTextLine(TEAM_LIST);
+	graTextHeader("HEADER");
+	graTextElement("element");
 	graSeparator('_');
 	graSimpleLine('=');
 	/* should print all the relevant

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 15:09:17 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/07/31 16:53:53 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,12 @@
 #define LEFT_SIDE "| "
 #define PAD "+"
 #define RIGHT_SIDE " | |"
+#define SYMBOL "  > "
 
 void	graSimpleLine(char const &c);
 void	graSeparator(char const &c);
 void	graTextLine(std::string const &str);
+void	graTextHeader(std::string const &str);
+void	graTextElement(std::string const &str);
 
 #endif
