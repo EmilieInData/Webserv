@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/30 14:01:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/01 18:40:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,11 @@ void                                                checkErrorPage(std::map<int,
 
 //signals
 void	handleSignal(int signum);
+
 //timestamp
 const std::string   timeStamp();
+
+//use colors without affecting linelength
+size_t visLen(const std::string &str);
 
 #endif

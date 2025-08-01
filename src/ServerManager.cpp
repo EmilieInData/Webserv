@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 14:08:03 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/01 18:08:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,8 +201,6 @@ void ServerManager::servRun()
 					}
 					close(clientFd);
 				}
-				else
-					std::cerr << "Send failed" << std::endl;
 			}
 		}		
 	}

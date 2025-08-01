@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 16:44:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/01 18:28:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 void printServersData(ServerManager const &serv)
 {
 	(void)serv;
-	graSimpleLine('=');
-	graSeparator('_');
+	graOuterLine('=');
 	graTextLine(PROJ_TITLE);
 	graTextLine(TEAM_LIST);
+	graSeparator('=');
+	graTime();
 	graTextHeader("HEADER");
 	graTextElement("element");
-	graSeparator('_');
-	graSimpleLine('=');
+	graOuterLine('=');
 	/* should print all the relevant
 	information from server/config */
 }

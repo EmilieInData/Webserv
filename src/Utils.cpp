@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 12:43:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/01 18:42:51 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,4 +294,21 @@ const std::string timeStamp()
 	return timeStamp;
 }
 
+size_t visLen(const std::string &str)
+{
+	size_t	visLen = 0;
+	bool	escCode = false;
+	
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == '\033')
+			escCode = true;
+		else if (escCode == true && str[i] == 'm')
+			escCode = false;
+		else if (escCode == false)
+			visLen++;
+	}
+
+	return visLen;
+}
 // vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}
