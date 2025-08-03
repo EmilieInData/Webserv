@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/23 17:57:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:09:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int main(int ac, char** av)
 		
 	std::ifstream file;
 	if (ac == 1)
-		file.open(DEFAULTCONF); // it can also run without a specified cfg file
+		file.open(DEFAULTCONF); // FABIO it can also run without a specified cfg file
 	else
 		file.open(av[1]);
 	if (!file)
@@ -48,7 +48,7 @@ int main(int ac, char** av)
 	}
 	file.close();
 
-	signal(SIGINT, handleSignal);
+	signal(SIGINT, handleSignal); // TODO this needs to be completed
 
 	ServerManager testserv(P);
 

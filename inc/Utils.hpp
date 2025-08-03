@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 14:05:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:07:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@
 #define PINK    "\033[38;5;207m"
 #define GREEN  	"\033[32m"
 #define PURPLE  "\033[38;5;62m"
+#define GREY    "\033[38;5;236m"
 
 //listen
 bool            isInt(std::string const& value);

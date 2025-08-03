@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 14:12:09 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:17:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void ServerManager::servSetup()
 {
 	// INFO I use "set" to automatically remove doubles
 
+	graTopLine();
 	std::set<std::pair<int, std::string> > uniqueListens;
 	for (size_t i = 0; i < _serverData.size(); i++)
 	{

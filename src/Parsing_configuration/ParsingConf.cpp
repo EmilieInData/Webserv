@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/27 16:58:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:10:20 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,7 +339,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		// else
 		// 	throw std::invalid_argument(" Parsing error, invalid directives\n");
 	}
-	print_structure();
+	// print_structure(); // TODO turned it off for now
 	return;
 }
 

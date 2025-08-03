@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 18:08:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:59:36 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,33 +15,31 @@
 
 void	printServerManager(ServerManager const &servMan)
 {
-	std::cout << WEBSERV_BANNER << std::endl;
+	std::cout << BLUE << WEBSERV_BANNER << RESET << std::endl;
 	graTopLine();
-	graTextLine(PROJ_TITLE);
-	graSeparator();
-	graTextLine(TEAM_LIST);
-	graSeparator();
 	graTime("Server Started");
+	graEmptyLine();
 	graTextHeader("# of servers");
 	graTextElement(servMan.getServersList().size());
 	
 	for (size_t i = 0; i < servMan.getServersList().size(); i++)
-		printServersData(servMan.getServersList()[i]);
+		printServersData(servMan.getServersList()[i], i);
+	graBottomLine();
 }
 
-void	printServersData(ServerData const &serv)
+void	printServersData(ServerData const &serv, size_t i)
 {
+	graSeparator();
+	graTextHeader("Server number " + intToString(i + 1));
 	printServerNames(serv.getServerName());
 	printServerListens(serv.getListens());
 	printServerLocations(serv);
-	graBottomLine();
 
 	// TODO add all missing relevant server info (full locations data?)
 }
 
 void	printServerNames(std::vector<std::string> names)
 {
-	graBottomLine();
 	graTextHeader("Server Names");
 	
 	std::vector<std::string>::iterator it;
