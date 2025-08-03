@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/01 18:28:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 12:14:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,45 @@
 void printServersData(ServerManager const &serv)
 {
 	(void)serv;
-	graOuterLine('=');
+	graTopLine();
 	graTextLine(PROJ_TITLE);
+	graSeparator();
 	graTextLine(TEAM_LIST);
-	graSeparator('=');
-	graTime();
-	graTextHeader("HEADER");
-	graTextElement("element");
-	graOuterLine('=');
+	graTime("Server Started");
+	printServerNames(serv.getServersList()[0].getServerName());
+	printServerListens(serv.getServersList()[0].getListens());
+	graBottomLine();
+	
 	/* should print all the relevant
 	information from server/config */
+}
+
+void	printServerNames(std::vector<std::string> names)
+{
+	graSeparator();
+	graTextHeader("Server Names");
+	
+	std::vector<std::string>::iterator it;
+	std::vector<std::string>::iterator ite = names.end();
+
+	for (it = names.begin(); it != ite; it++)
+		graTextElement(*it);
+}
+
+void	printServerListens(std::vector< std::pair<int, std::string> > listens)
+{
+	graSeparator();
+	graTextHeader("Listening Sockets");
+
+	std::vector< std::pair<int, std::string> >::iterator it;
+	std::vector< std::pair<int, std::string> >::iterator ite = listens.end();
+
+	for (it = listens.begin(); it != ite; it++)
+	{
+		std::ostringstream num;
+		num << it->first;
+		graTextElement(it->second + ":" + num.str());
+	}
 }
 
 // void printServersStatus(ServerManager const &serv)
