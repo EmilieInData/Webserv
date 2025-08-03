@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 14:33:21 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:08:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 void	printServerManager(ServerManager const &servMan)
 {
+	std::cout << WEBSERV_BANNER << std::endl;
 	graTopLine();
 	graTextLine(PROJ_TITLE);
 	graSeparator();
