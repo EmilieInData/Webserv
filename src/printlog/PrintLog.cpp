@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 20:39:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 22:00:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,11 @@ void	printServerLocations(ServerData const &serv)
 	}
 }
 
-void printServersStatus(ServerManager &serv)
+void	printServersStatus(ServerManager &serv)
 {
 	// TODO make this function called from the command line while server is running
 	graTopLine();
-	graTextHeader("Server status");
-	graTextElement("Running/Waiting");
+	graTime("Waiting for connection");
 	graEmptyLine();
 	graTextHeader("Requests received");
 	graTextElement(intToString(serv.getReqCount()));
@@ -108,6 +107,30 @@ void printServersStatus(ServerManager &serv)
 	/* while running at intervals
 	it should print listening sockets,
 	number of connections happened etc... */
+}
+
+void	printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath)
+{
+	std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
+	graTopLine();
+	graTime("Request received");
+	graEmptyLine();
+	graTextHeader("Request number");
+	graEmptyLine();
+	graTextElement(serv.getReqCount());
+	graEmptyLine();
+	graTextHeader("Received on");
+	graTextElement(incoming.second + ":" + intToString(incoming.first));
+	graEmptyLine();
+	graTextHeader("Path for request");
+	graTextElement(fullPath);
+	graEmptyLine();
+	graTextLine("Request content below.");
+	graBottomLine();
+	std::cout << request << std::endl;
+	graTopLine();
+	graTextLine("End of request");
+	graBottomLine();
 }
 
 // void createLog()

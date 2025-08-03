@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 20:34:24 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 22:06:13 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,14 +176,10 @@ void ServerManager::servRun()
 					
 					if (isComplete && !fullRequest.empty())
 					{
-						std::cout << timeStamp() << "Request content:\n*****\n" << std::endl;
-						std::cout << fullRequest;
-						std::cout << "*****" << std::endl;
 						
 						try {
 							HttpRequest req = HttpRequest(std::make_pair<int, std::string>(_socketFd[i], fullRequest), *this);
-							std::cout << "path from req: " << req.getPath() << std::endl;
-							
+							printRequest(*this, _socketFd[i], fullRequest, req.getFullPath().first + req.getFullPath().second);
 							_response.setContent(req.getFullPath());
 							_response.setClientFd(clientFd);
 							_response.sendResponse();
