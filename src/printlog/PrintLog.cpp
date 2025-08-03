@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 14:27:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:33:21 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	printServersData(ServerData const &serv)
 	printServerLocations(serv);
 	graBottomLine();
 
-	// TODO add all missing relevant server info (full location data?)
+	// TODO add all missing relevant server info (full locations data?)
 }
 
 void	printServerNames(std::vector<std::string> names)
