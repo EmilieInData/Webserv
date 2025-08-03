@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 12:14:42 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 12:36:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,22 @@ void	printServerListens(std::vector< std::pair<int, std::string> > listens)
 		std::ostringstream num;
 		num << it->first;
 		graTextElement(it->second + ":" + num.str());
+	}
+}
+
+void	printServerLocations(ServerData const &serv)
+{
+	graTextHeader("Root");
+	graTextElement(serv.getRoot());
+	graEmptyLine();
+	graTextHeader("Locations");
+	
+	std::map<std::string, LocationConf>::iterator	it;
+	std::map<std::string, LocationConf>::iterator ite = serv.getLocations().end();
+
+	for (it = serv.getLocations().begin(); it != ite; it++)
+	{
+		graTextElement(it->second.getKey());
 	}
 }
 

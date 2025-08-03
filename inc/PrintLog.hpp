@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 11:27:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 12:22:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	logResponse(std::string const &response);
 
 void	printServerNames(std::vector<std::string> names);
 void	printServerListens(std::vector< std::pair<int, std::string> > listens);
+void	printServerLocations(ServerData const &serv);
 
 #endif
 

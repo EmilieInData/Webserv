@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/30 16:07:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 12:34:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ bool    ServerData::getAutoindex() const
 	return _autoindex;
 }
 
-std::map<std::string, LocationConf>&	ServerData::getLocations()
+std::map<std::string, LocationConf>&	ServerData::getLocations() const
 {
 	return _locations;
 }
