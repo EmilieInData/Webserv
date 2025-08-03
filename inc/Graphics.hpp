@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 19:05:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:36:37 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,16 @@
 
 #define TEAM_LIST "cle-tron - esellier - fdi-cecc"
 
-#define TOP_LEFT GREY "╔" RESET
+#define TOP_LEFT GREY "\n╔" RESET
 #define TOP_RIGHT GREY "╗" RESET
 #define MID_LEFT GREY "╠" RESET
 #define MID_RIGHT GREY "╣" RESET
 #define BOT_LEFT GREY "╚" RESET
-#define BOT_RIGHT GREY "╝" RESET
+#define BOT_RIGHT GREY "╝\n" RESET
 #define VERTICAL GREY "║" RESET
 #define HORIZONTAL GREY "═" RESET
 #define SYMBOL "   > "
+#define ERROR_TAG RED "[ ERROR ] " RESET
 
 void		graBottomLine();
 void		graTopLine();
@@ -62,6 +63,7 @@ void		graTextElement(int const &num);
 void		graTime(std::string const &str);
 void		graTime();
 std::string	graPad(std::string const &str);
+void		graError(std::string const &error);
 
 #endif
 

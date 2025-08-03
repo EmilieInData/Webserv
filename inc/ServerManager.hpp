@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 11:11:02 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 20:34:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@
 class ServerManager
 {
 	private:
-		Response						_response;
-		std::vector<ServerData>			_serverData;
-		std::vector<int>				_socketFd;
-		std::vector<struct sockaddr_in>	_servAddr;
+		Response								_response;
+		std::vector<ServerData>					_serverData;
+		std::vector<int>						_socketFd;
+		std::vector<struct sockaddr_in>			_servAddr;
+		int										_reqCount;
+		int										_rspCount;
+		std::set<std::pair<int, std::string> >	_uniqueListens;
 		
 		ServerManager();
 		ServerManager(ServerManager const &copy);
@@ -36,12 +39,15 @@ class ServerManager
 		ServerManager(ParsingConf &parsData);
 		~ServerManager();
 	
-		void						servSetup();
-		void						servRun();
-		void						servListen(std::pair<int, std::string> _listens);
-		std::vector<ServerData>		getServersList() const;
-		struct pollfd				*servPoll(size_t totalSocket);
-		std::pair<int, std::string>	getSocketData(int socketFd);
+		void									servSetup();
+		void									servRun();
+		void									servListen(std::pair<int, std::string> _listens);
+		std::vector<ServerData>					getServersList() const;
+		struct pollfd							*servPoll(size_t totalSocket);
+		std::pair<int, std::string>				getSocketData(int socketFd);
+		std::set<std::pair<int, std::string> >	getUniqueListens();
+		int										getReqCount() const;
+		int										getRspCount() const;
 		// TODO create servQuit() to stop all servers;
 
 };

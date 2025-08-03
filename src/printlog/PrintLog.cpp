@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 18:59:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 20:39:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,33 @@ void	printServerLocations(ServerData const &serv)
 	}
 }
 
-// void printServersStatus(ServerManager const &serv)
-// {
-// 	/* while running at intervals
-// 	it should print listening sockets,
-// 	number of connections happened etc... */
-// }
+void printServersStatus(ServerManager &serv)
+{
+	// TODO make this function called from the command line while server is running
+	graTopLine();
+	graTextHeader("Server status");
+	graTextElement("Running/Waiting");
+	graEmptyLine();
+	graTextHeader("Requests received");
+	graTextElement(intToString(serv.getReqCount()));
+	graEmptyLine();
+	graTextHeader("Responses sent");
+	graTextElement(intToString(serv.getRspCount()));
+	graEmptyLine();
+	graTextHeader("Listening Sockets");
+	
+	const std::set<std::pair<int, std::string> >& listens = serv.getUniqueListens();
+	std::set<std::pair<int, std::string> >::const_iterator it;
+	std::set<std::pair<int, std::string> >::const_iterator ite = listens.end();
+	
+	for (it = listens.begin(); it != ite; it++)
+		graTextElement(it->second + ":" + intToString(it->first));
+	
+	graBottomLine();
+	/* while running at intervals
+	it should print listening sockets,
+	number of connections happened etc... */
+}
 
 // void createLog()
 // {

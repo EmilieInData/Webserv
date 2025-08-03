@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 19:17:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 20:34:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
 
-ServerManager::ServerManager(ParsingConf &parsData) 
+ServerManager::ServerManager(ParsingConf &parsData): _reqCount(0), _rspCount(0) 
 {
 	_serverData = parsData.servers;
 }
@@ -25,17 +25,18 @@ void ServerManager::servSetup()
 {
 	// INFO I use "set" to automatically remove doubles
 
-	graTopLine();
-	std::set<std::pair<int, std::string> > uniqueListens;
 	for (size_t i = 0; i < _serverData.size(); i++)
 	{
 		for (size_t j = 0; j < _serverData[i].getListens().size(); j++)
-			uniqueListens.insert(_serverData[i].getListens()[j]);
+		_uniqueListens.insert(_serverData[i].getListens()[j]);
 	}
 	
-	for (std::set<std::pair<int, std::string> >::iterator it = uniqueListens.begin();
-			it != uniqueListens.end(); ++it)
+	graTopLine();
+	graTextHeader("Listening Sockets Setup");
+	for (std::set<std::pair<int, std::string> >::iterator it = _uniqueListens.begin();
+			it != _uniqueListens.end(); ++it)
 		servListen(*it);
+	graBottomLine();
 }
 
 void ServerManager::servListen(std::pair<int, std::string> _listens)
@@ -50,11 +51,11 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	struct sockaddr_in	newaddr;
 	
 	if (newsocket < 0)
-	std::cerr << "Socket creation error" << std::endl;
+		graError("Socket creation error");
 	
 	int flags = fcntl(newsocket, F_GETFL, 0);
 	if (fcntl(newsocket, F_SETFL, flags | O_NONBLOCK) < 0)	
-	std::cerr << "Nonblocking setup error" << std::endl;  	
+		graError("Nonblocking setup error");
 	
 	std::memset(&newaddr, 0, sizeof(newaddr));
 	newaddr.sin_family = AF_INET;
@@ -63,19 +64,19 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	
 	if (bind(newsocket, (struct sockaddr*)&newaddr, sizeof(newaddr)) < 0)
 	{
-		std::cerr << "Socket binding error for " << _listens.second << ":" << _listens.first << std::endl;
+		graError("Binding error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
 	
 	if (listen(newsocket, 10) < 0) // change back to SOMAXCONN?
 	{
-		std::cerr << "Listen socket error for " << _listens.second << ":" << _listens.first << std::endl;
+		graError("Listen error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
 	
 	_socketFd.push_back(newsocket);
 	_servAddr.push_back(newaddr);
-	std::cout << timeStamp() << "Socket set: " << _listens.second << ":" << _listens.first << " Number:" << newsocket << std::endl;
+	graTime("Socket: " + _listens.second + ":" + intToString(_listens.first));
 }
 
 struct pollfd *ServerManager::servPoll(size_t totalSocket)
@@ -118,8 +119,6 @@ void ServerManager::servRun()
 	
 	struct pollfd *polls = servPoll(socketsize);	
 	
-	printServerManager(*this);
-	
 	while (true)
 	{
 		int check = poll(polls, socketsize, 5000);
@@ -130,14 +129,15 @@ void ServerManager::servRun()
 		}
 		else if (check == 0)
 		{
-			std::cout << timeStamp() << "Still waiting for connection" << std::endl;
+			printServersStatus(*this);
 			continue ;
 		}
 		for (size_t i = 0; i < socketsize; i++)
 		{
 			if (polls[i].revents & POLLIN)
 			{
-				std::cout << timeStamp() << "POLLIN at " << polls[i].fd << std::endl;
+				// std::cout << timeStamp() << "POLLIN at " << polls[i].fd << std::endl;
+				_reqCount++;
 				int					clientFd;
 				struct sockaddr_in	clientAddr;
 				socklen_t			clientLen = sizeof(clientAddr);
@@ -213,6 +213,22 @@ void ServerManager::servRun()
 std::vector<ServerData> ServerManager::getServersList() const
 {
 	return _serverData;
+}
+
+int	ServerManager::getReqCount() const
+{
+	return _reqCount;
+}
+
+int	ServerManager::getRspCount() const
+{
+	return _rspCount;
+}
+
+
+std::set<std::pair<int, std::string> >	ServerManager::getUniqueListens()
+{
+	return _uniqueListens;
 }
 
 /* listening testing methods:

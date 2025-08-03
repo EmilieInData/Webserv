@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 18:52:50 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 20:35:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class	ServerManager;
 
 void	printServerManager(ServerManager const &servMan);
 void	printServersData(ServerData const &serv, size_t i);
-void	printServersStatus(ServerManager const &serv);
+void	printServersStatus(ServerManager &serv);
 void	createLog();
 void	logRequest(std::string const &request);
 void	logResponse(std::string const &response);

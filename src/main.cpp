@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/03 19:09:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:24:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int main(int ac, char** av)
 	signal(SIGINT, handleSignal); // TODO this needs to be completed
 
 	ServerManager testserv(P);
-
+	printServerManager(testserv);
 	// ----> print defaultErrorPages
 	// for (std::map<int, std::pair<std::string, std::string> >::const_iterator it = testserv.getDefaultErrorPages().begin(); it != testserv.getDefaultErrorPages().end(); it++)
 	// {

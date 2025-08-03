@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:22:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 19:02:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:41:05 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void graTextHeader(std::string const &str)
 	graEmptyLine();
 }
 
-void graTextElement(std::string const &str) 
+void	graTextElement(std::string const &str) 
 {
 	std::string		element = SYMBOL + str;
 	std::string		padded = graPad(element);
@@ -85,7 +85,7 @@ void graTextElement(std::string const &str)
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-void graTextElement(int const &num) 
+void	graTextElement(int const &num) 
 {
 	std::string		element = SYMBOL + intToString(num);
 	std::string		padded = graPad(element);
@@ -96,7 +96,7 @@ void graTextElement(int const &num)
 }
 
 
-void graTime(std::string const &str)
+void	graTime(std::string const &str)
 {
 	std::string		time = timeStamp();
 	if (!str.empty())
@@ -108,7 +108,7 @@ void graTime(std::string const &str)
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-void graTime()
+void	graTime()
 {
 	std::string		time = timeStamp();
 	std::string 	padded = graPad(time);
@@ -116,4 +116,14 @@ void graTime()
 	const size_t	restLen = LINELENGTH - strLen;
 	
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+}
+
+void	graError(std::string const &error)
+{
+	std::string		str = ERROR_TAG + error;
+	std::string		padded = graPad(str);
+	const size_t	strLen = visLen(padded);
+	const size_t	restLen = LINELENGTH - strLen;
+	
+	std::cerr << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
