@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 11:16:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:12:09 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void ServerManager::servRun()
 	
 	struct pollfd *polls = servPoll(socketsize);	
 	
-	printServersData(*this);
+	printServerManager(*this);
 	
 	while (true)
 	{

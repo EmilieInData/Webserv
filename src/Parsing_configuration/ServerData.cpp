@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 12:34:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 13:44:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ bool    ServerData::getAutoindex() const
 
 std::map<std::string, LocationConf>&	ServerData::getLocations() const
 {
-	return _locations;
+	return const_cast<std::map<std::string, LocationConf>&>(_locations);
 }
 
 std::map<std::string, LocationConf>::iterator	ServerData::getItLocations(std::string const& key)

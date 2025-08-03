@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 12:11:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 13:58:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void		graEmptyLine();
 void		graTextLine(std::string const &str);
 void		graTextHeader(std::string const &str);
 void		graTextElement(std::string const &str);
+void		graTextElement(int const &num);
 void		graTime(std::string const &str);
 void		graTime();
 std::string	graPad(std::string const &str);

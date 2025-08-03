@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/01 18:40:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:05:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,8 @@ const std::string   timeStamp();
 
 //use colors without affecting linelength
 size_t visLen(const std::string &str);
+
+//others
+std::string	intToString(const int &num);
 
 #endif

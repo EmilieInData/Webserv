@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:22:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 12:16:03 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:06:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,17 @@ void graTextElement(std::string const &str)
 	
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
+
+void graTextElement(int const &num) 
+{
+	std::string		element = SYMBOL + intToString(num);
+	std::string		padded = graPad(element);
+	const size_t	strLen = padded.length();
+	const size_t	restLen = LINELENGTH - strLen;
+	
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+}
+
 
 void graTime(std::string const &str)
 {

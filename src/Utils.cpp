@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/01 18:42:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:04:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,4 +311,12 @@ size_t visLen(const std::string &str)
 
 	return visLen;
 }
+
+std::string	intToString(const int &num)
+{
+	std::ostringstream str;
+	str << num;
+	return str.str();
+}
+
 // vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}

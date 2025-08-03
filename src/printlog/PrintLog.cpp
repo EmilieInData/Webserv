@@ -6,32 +6,41 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 12:36:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:19:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PrintLog.hpp"
 #include "Graphics.hpp"
 
-void printServersData(ServerManager const &serv)
+void	printServerManager(ServerManager const &servMan)
 {
-	(void)serv;
 	graTopLine();
 	graTextLine(PROJ_TITLE);
 	graSeparator();
 	graTextLine(TEAM_LIST);
+	graSeparator();
 	graTime("Server Started");
-	printServerNames(serv.getServersList()[0].getServerName());
-	printServerListens(serv.getServersList()[0].getListens());
-	graBottomLine();
+	graTextHeader("# of servers");
+	graTextElement(servMan.getServersList().size());
 	
-	/* should print all the relevant
-	information from server/config */
+	for (size_t i = 0; i < servMan.getServersList().size(); i++)
+		printServersData(servMan.getServersList()[i]);
+}
+
+void	printServersData(ServerData const &serv)
+{
+	printServerNames(serv.getServerName());
+	printServerListens(serv.getListens());
+	printServerLocations(serv);
+	graBottomLine();
+
+	// TODO add all missing relevant server info
 }
 
 void	printServerNames(std::vector<std::string> names)
 {
-	graSeparator();
+	graBottomLine();
 	graTextHeader("Server Names");
 	
 	std::vector<std::string>::iterator it;
@@ -43,7 +52,7 @@ void	printServerNames(std::vector<std::string> names)
 
 void	printServerListens(std::vector< std::pair<int, std::string> > listens)
 {
-	graSeparator();
+	graEmptyLine();
 	graTextHeader("Listening Sockets");
 
 	std::vector< std::pair<int, std::string> >::iterator it;
@@ -59,6 +68,7 @@ void	printServerListens(std::vector< std::pair<int, std::string> > listens)
 
 void	printServerLocations(ServerData const &serv)
 {
+	graEmptyLine();
 	graTextHeader("Root");
 	graTextElement(serv.getRoot());
 	graEmptyLine();
