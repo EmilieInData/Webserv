@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 19:38:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:01:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 #include <algorithm>
 #include <csignal>
 #include <set>
+#include <sys/time.h>
+#include <iomanip>
 
 #include <poll.h>
 #include <fcntl.h>

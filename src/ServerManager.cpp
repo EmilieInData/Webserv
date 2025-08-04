@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 11:52:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:09:12 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,12 @@ struct pollfd *ServerManager::servPoll(size_t totalSocket)
 	graTime("Poll Setup");
 	graTextHeader("Number of unique listening sockets");
 	graTextElement(intToString(_socketFd.size()));
-	graEmptyLine();
 	graTextHeader("Polls and methods");
 	for (size_t i = 0; i < totalSocket; i++)
 	{
 		polls[i].fd = _socketFd[i];
 		polls[i].events = POLLIN;
-		graTextElement("Socket fd: " + intToString(polls[i].fd) + " setup to event: " + intToString(polls[i].events));
+		graTime("Socket fd: " + intToString(polls[i].fd) + " setup to event: " + intToString(polls[i].events));
 	}
 	graBottomLine();
 	return polls;

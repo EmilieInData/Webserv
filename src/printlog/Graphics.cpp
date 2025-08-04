@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:22:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 11:53:01 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:11:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,14 @@ void	graTextLine(std::string const &str)
 
 void graTextHeader(std::string const &str)
 {
+	graEmptyLine();
 	std::string		header = "[ " + str + " ]";
 	std::string		padded = graPad(header);
 	const size_t	strLen = padded.length();
 	const size_t	restLen = LINELENGTH - strLen;
 	
 	std::cout << VERTICAL << GREEN << padded << RESET << std::string(restLen, ' ') << VERTICAL << std::endl;
+	graEmptyLine();
 	// graEmptyLine();
 }
 

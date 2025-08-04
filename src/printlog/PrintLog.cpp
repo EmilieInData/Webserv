@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 11:16:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:15:21 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void	printServerManager(ServerManager const &servMan)
 	std::cout << BLUE << WEBSERV_BANNER << RESET << std::endl;
 	graTopLine();
 	graTime("Server Started");
-	graEmptyLine();
 	graTextHeader("# of servers");
 	graTextElement(servMan.getServersList().size());
 	
@@ -30,7 +29,8 @@ void	printServerManager(ServerManager const &servMan)
 void	printServersData(ServerData const &serv, size_t i)
 {
 	graSeparator();
-	graTextHeader("Server number " + intToString(i + 1));
+	graTextHeader("Server number");
+	graTextElement(intToString(i + 1));
 	printServerNames(serv.getServerName());
 	printServerListens(serv.getListens());
 	printServerLocations(serv);
@@ -51,7 +51,6 @@ void	printServerNames(std::vector<std::string> names)
 
 void	printServerListens(std::vector< std::pair<int, std::string> > listens)
 {
-	graEmptyLine();
 	graTextHeader("Listening Sockets");
 
 	std::vector< std::pair<int, std::string> >::iterator it;
@@ -67,10 +66,8 @@ void	printServerListens(std::vector< std::pair<int, std::string> > listens)
 
 void	printServerLocations(ServerData const &serv)
 {
-	graEmptyLine();
 	graTextHeader("Root");
 	graTextElement(serv.getRoot());
-	graEmptyLine();
 	graTextHeader("Locations");
 	
 	std::map<std::string, LocationConf>::iterator	it;
@@ -90,10 +87,8 @@ void	printServersStatus(ServerManager &serv)
 	graEmptyLine();
 	graTextHeader("Requests received");
 	graTextElement(intToString(serv.getReqCount()));
-	graEmptyLine();
 	graTextHeader("Responses sent");
 	graTextElement(intToString(serv.getRspCount()));
-	graEmptyLine();
 	graTextHeader("Listening Sockets");
 	
 	const std::set<std::pair<int, std::string> >& listens = serv.getUniqueListens();
@@ -114,17 +109,12 @@ void	printRequest(ServerManager &serv, int socketFd, std::string request, std::s
 	std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
 	graTopLine();
 	graTime("Request received");
-	graEmptyLine();
 	graTextHeader("Request number");
-	graEmptyLine();
 	graTextElement(serv.getReqCount());
-	graEmptyLine();
 	graTextHeader("Received on");
 	graTextElement(incoming.second + ":" + intToString(incoming.first));
-	graEmptyLine();
 	graTextHeader("Path for request");
 	graTextElement(fullPath);
-	graEmptyLine();
 	graTextLine("Request content below.");
 	graBottomLine();
 	std::cout << request << std::endl;
@@ -140,13 +130,10 @@ void	printResponse(ServerManager &serv, std::pair<int, std::string> incoming, st
 	graEmptyLine();
 	graTextHeader("Response Number");
 	graTextElement(intToString(serv.getRspCount()));
-	graEmptyLine();
 	graTextHeader("Request Number");
 	graTextElement(intToString(serv.getReqCount()));
-	graEmptyLine();
 	graTextHeader("Socket received");
 	graTextElement(incoming.second + ":" + intToString(incoming.first));
-	graEmptyLine();
 	graTextHeader("Response location");
 	graTextElement(fullPath);
 	graTextLine("Raw response below");

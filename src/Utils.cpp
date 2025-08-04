@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 14:04:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:08:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,11 @@ bool	isSocket(std::string const& value)
 int	strToInt(std::string const& value)
 {
 	int num;
-    std::istringstream str(value);
-    
+	std::istringstream str(value);
+	
 	str >> num;
-    if (str.fail())
-	    throw std::runtime_error(" error to convert the string argument in int");
+	if (str.fail())
+		throw std::runtime_error(" error to convert the string argument in int");
 	return num;
 }
 
@@ -101,7 +101,7 @@ bool    checkSocketAddress(std::string const& value)
  		if (i > 4)
 			return false;
 		if (nums[i].length() > 5)
-		    return false;
+			return false;
 		tmp = strToInt(nums[i]);
 		if (i < 4 && (tmp < 0 || tmp > 255))
 			return false;
@@ -285,12 +285,21 @@ const std::string timeStamp()
 {
 	std::string timeStamp;
 	char buffer[64];
-	time_t timeNow = time(NULL);
-	struct tm *timeData = localtime(&timeNow);
 	
-	strftime(buffer, sizeof(buffer), "[%H:%M:%S] ", timeData);
-	timeStamp = "\033[35m" + std::string(buffer) + "\033[0m";
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
 	
+	struct tm *timeData = localtime(&tv.tv_sec);
+	strftime(buffer, sizeof(buffer), "[%H:%M:%S", timeData);
+	
+	int milliseconds = tv.tv_usec / 1000;
+	int microseconds = tv.tv_usec % 1000;
+	
+	std::ostringstream milSec;
+	milSec << buffer << "." << std::setfill('0') << std::setw(3) << milliseconds 
+		<< "." << std::setfill('0') << std::setw(3) << microseconds << "] ";
+	
+	timeStamp = "\033[35m" + milSec.str() + "\033[0m";
 	return timeStamp;
 }
 
