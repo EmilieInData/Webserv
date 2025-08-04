@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 10:57:02 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 11:12:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,15 @@ void	printServersData(ServerData const &serv, size_t i);
 void	printServersStatus(ServerManager &serv);
 void	printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath);
 void	printResponse(ServerManager &serv, std::pair<int, std::string> incoming, std::string fullResponse, std::string fullPath);
-// void	createLog();
-// void	logRequest(std::string const &request);
-// void	logResponse(std::string const &response);
-
+void	printBoxMsg(std::string const &str);
+void	printBoxError(std::string const &str);
 void	printServerNames(std::vector<std::string> names);
 void	printServerListens(std::vector< std::pair<int, std::string> > listens);
 void	printServerLocations(ServerData const &serv);
 
+// void	createLog();
+// void	logRequest(std::string const &request);
+// void	logResponse(std::string const &response);
 #endif
 
 /* max line length for print 80 char */

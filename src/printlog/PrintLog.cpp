@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 11:06:32 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 11:16:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,21 @@ void	printResponse(ServerManager &serv, std::pair<int, std::string> incoming, st
 	
 	graTopLine();
 	graTextHeader("Response size");
-	graTextElement(intToString(fullResponse.size()));
+	graTextElement(intToString(fullResponse.size()) + "bytes");
+	graBottomLine();
+}
+
+void	printBoxMsg(std::string const &str)
+{
+	graTopLine();
+	graTime(str);
+	graBottomLine();
+}
+
+void	printBoxError(std::string const &str)
+{
+	graTopLine();
+	graError(str);
 	graBottomLine();
 }
 
