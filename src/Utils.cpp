@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 16:57:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:05:39 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,17 +276,7 @@ void	checkErrorPage(std::map<int, std::string> const& value)
 
 void	setupSignal()
 {
-	struct sigaction	sa;
-	
-	sa.sa_handler = handleSignal;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	
-	if (sigaction(SIGINT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(1);
-	}
+	signal(SIGINT, handleSignal);
 }
 
 void	handleSignal(int signum)
