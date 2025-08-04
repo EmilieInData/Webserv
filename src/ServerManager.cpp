@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 16:07:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:03:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,8 +133,13 @@ void ServerManager::servRun()
 		int check = poll(polls, socketsize + 1, 5000);
 		if (check < 0)
 		{
-			std::cerr << "Poll error" << std::endl;
-			break ;
+			if (errno == EINTR) // FABIO here errno can be used because it's just for signal managing
+				continue ;
+			else
+			{
+				std::cerr << "Poll error" << std::endl;
+				break ;
+			}
 		}
 		else if (check == 0)
 			continue ;

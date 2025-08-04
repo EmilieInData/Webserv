@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 15:45:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:54:16 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ bool                                                isHtmlAddress(std::string co
 void                                                checkErrorPage(std::map<int, std::string> const& value);
 
 //signals
+void	setupSignal();
 void	handleSignal(int signum);
 
 //timestamp

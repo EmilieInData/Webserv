@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 15:44:17 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:57:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,11 +274,26 @@ void	checkErrorPage(std::map<int, std::string> const& value)
 	return;
 }
 
-void handleSignal(int signum)
+void	setupSignal()
 {
-	(void) signum;
-	std::cout << "\n" << timeStamp() << "Sigint triggered" << std::endl;
-	exit(signum);
+	struct sigaction	sa;
+	
+	sa.sa_handler = handleSignal;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+	
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+	{
+		perror("sigaction");
+		exit(1);
+	}
+}
+
+void	handleSignal(int signum)
+{
+	if (signum == SIGINT)
+		std::cout << "\r\033[K" << std::flush;
+	return ;
 }
 
 const std::string timeStamp()
