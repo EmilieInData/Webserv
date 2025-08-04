@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/03 19:24:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:37:01 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,6 @@ int main(int ac, char** av)
 
 	ServerManager testserv(P);
 	printServerManager(testserv);
-	// ----> print defaultErrorPages
-	// for (std::map<int, std::pair<std::string, std::string> >::const_iterator it = testserv.getDefaultErrorPages().begin(); it != testserv.getDefaultErrorPages().end(); it++)
-	// {
-	// 	std::cout << GREEN << it->first << " " << it->second.first << " " << it->second.second << "\n"; 
-	// }
-	
-	// HttpRequest test = HttpRequest();
-	/* implement try/catch */
 	testserv.servSetup();
 	testserv.servRun();
 

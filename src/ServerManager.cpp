@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 12:09:12 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 14:11:19 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
 
-ServerManager::ServerManager(ParsingConf &parsData): _reqCount(0), _rspCount(0) 
+ServerManager::ServerManager(ParsingConf &parsData): _running(false), _reqCount(0), _rspCount(0) 
 {
 	_serverData = parsData.servers;
 }
@@ -122,8 +122,14 @@ void ServerManager::servRun()
 	
 	struct pollfd *polls = servPoll(socketsize);	
 	
-	while (true)
+	_running = true;
+	
+	while (_running == true)
 	{
+		printBoxMsg("Server Running");
+		std::getline(std::cin, _input);
+		if (_input == "QUIT")
+			servQuit();
 		int check = poll(polls, socketsize, 5000);
 		if (check < 0)
 		{
@@ -235,6 +241,14 @@ int	ServerManager::getRspCount() const
 std::set<std::pair<int, std::string> >	ServerManager::getUniqueListens()
 {
 	return _uniqueListens;
+}
+
+void	ServerManager::servQuit()
+{
+	if (_running == true)
+		_running = false;
+
+	printBoxMsg("Server quit");
 }
 
 /* listening testing methods:
