@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 12:01:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 15:45:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,16 @@
 #include <set>
 #include <sys/time.h>
 #include <iomanip>
-
 #include <poll.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+#include "PrintLog.hpp"
+
+class	ServerManager;
 
 #define ERROR	"📍"
 #define RESET   "\033[0m"
@@ -80,5 +83,8 @@ size_t visLen(const std::string &str);
 
 //others
 std::string	intToString(const int &num);
+
+//check file extension
+bool	isBinary(std::string location);
 
 #endif

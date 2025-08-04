@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/04 10:26:55 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:08:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullR
 
 		host = HttpParser::parseHost( tmp_host ); // ACABAR EL PARSEO DE HOST CON FCT DE EMILIE  
 
-		std::cout << "tmp_host: \"" << tmp_host << "\" /host pair first: \"" << host.first;
-		std::cout << "\", second: \"" << host.second <<  "\"" << std::endl;
+		// std::cout << "tmp_host: \"" << tmp_host << "\" /host pair first: \"" << host.first;
+		// std::cout << "\", second: \"" << host.second <<  "\"" << std::endl;
 
 		while ( it != ite && (*it).empty() )
 			++it;
@@ -43,7 +43,6 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullR
 
 		ServerData serv = HttpParser::checkIfServerExist( server.getServersList(), incoming );
 		setFullPath(serv);
-		std::cout << BLUE << "[Server connected] > " << serv.getServerName()[0] << RESET << std::endl;
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 

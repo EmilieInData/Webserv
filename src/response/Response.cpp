@@ -29,7 +29,6 @@ void Response::setContent(std::pair<std::string, std::string> fullPath)
 	}
 	else
 		_location = fullPath.first + fullPath.second;
-	std::cout << timeStamp() << "Serving file: " << _location << std::endl;
 }
 
 void Response::setClientFd(int clientFd)
@@ -40,19 +39,8 @@ void Response::setClientFd(int clientFd)
 std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
-	std::string extension;
-	size_t dotPos = _location.find_last_of('.');
-	if (dotPos != std::string::npos)
-		extension = _location.substr(dotPos);
 	
-	/* TODO create a check function
-	for these file extensions or just generally
-	refactor this one maybe in utils? */
-	bool isBinary = (extension == ".jpg" || extension == ".jpeg" || 
-					 extension == ".png" || extension == ".gif" || 
-					 extension == ".ico");
-	
-	if (isBinary)
+	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
 		if (!file.is_open())
@@ -131,9 +119,6 @@ void Response::printRawResponse()
 void Response::sendResponse()
 {
 	prepResponse();
-	std::cout << "Sending response (" << _response.size() << " bytes):" << std::endl;
-
-	// printRawResponse();
 
 	size_t totalSent = 0;
 	size_t totalSize = _response.size();
@@ -158,9 +143,8 @@ void Response::sendResponse()
 		}
 	}
 	
-	std::cout << "Bytes sent: " << totalSent << " of " << totalSize << std::endl;
 	if (totalSent != totalSize)
-		std::cerr << "Warning: Not all data was sent!" << std::endl;
+		printBoxError("Warning, send incomplete");
 }
 
 std::string	Response::getResponse()

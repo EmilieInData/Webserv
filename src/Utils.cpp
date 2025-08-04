@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 12:08:23 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 15:44:17 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,4 +328,15 @@ std::string	intToString(const int &num)
 	return str.str();
 }
 
+bool	isBinary(std::string location)
+{
+	std::string extension;
+	size_t dotPos = location.find_last_of('.');
+	if (dotPos != std::string::npos)
+		extension = location.substr(dotPos);
+	
+	return (extension == ".jpg" || extension == ".jpeg" || 
+					 extension == ".png" || extension == ".gif" || 
+					 extension == ".ico");
+}
 // vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}

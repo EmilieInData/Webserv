@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 12:54:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 15:12:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@
 #include "Response.hpp"
 #include "PrintLog.hpp"
 
+class Response;
 class ServerManager
 {
 	private:
 		bool									_running;
+		int										_inputFd;
 		std::string								_input;
 		Response								_response;
 		std::vector<ServerData>					_serverData;
@@ -51,6 +53,7 @@ class ServerManager
 		int										getReqCount() const;
 		int										getRspCount() const;
 		void									servQuit();
+		void									servInput();
 		// TODO create servQuit() to stop all servers;
 
 };
