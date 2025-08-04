@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 10:50:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:29:26 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 #define RESPONSE_HPP
 
 #include "Utils.hpp"
+
+/* TODO right now the response is very basic
+and only provides with responses to GET giving
+back 200 */
 
 class Response
 {

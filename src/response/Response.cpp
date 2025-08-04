@@ -95,6 +95,8 @@ void Response::prepResponse()
 	std::string contentLength = output.str();
 	std::string contentType = checkType();
 	
+	/* TODO the response here is hardcoded
+	and for now it's just for testing */
 	_response = 
 	"HTTP/1.1 200 OK\r\n"
 	"Content-Type: " + contentType + "\r\n"
