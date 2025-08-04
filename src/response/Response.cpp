@@ -162,3 +162,8 @@ void Response::sendResponse()
 	if (totalSent != totalSize)
 		std::cerr << "Warning: Not all data was sent!" << std::endl;
 }
+
+std::string	Response::getResponse()
+{
+	return _response;
+}

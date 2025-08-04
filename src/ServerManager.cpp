@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 22:06:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 11:00:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,14 +177,20 @@ void ServerManager::servRun()
 					if (isComplete && !fullRequest.empty())
 					{
 						
-						try {
-							HttpRequest req = HttpRequest(std::make_pair<int, std::string>(_socketFd[i], fullRequest), *this);
-							printRequest(*this, _socketFd[i], fullRequest, req.getFullPath().first + req.getFullPath().second);
+						try
+						{
+							std::pair<int, std::string> incoming = getSocketData(_socketFd[i]);
+							HttpRequest req = HttpRequest(incoming, fullRequest, *this);
+							std::string fullPath = req.getFullPath().first + req.getFullPath().second;
+							printRequest(*this, _socketFd[i], fullRequest, fullPath);
 							_response.setContent(req.getFullPath());
 							_response.setClientFd(clientFd);
 							_response.sendResponse();
+							_rspCount++;
+							printResponse(*this, incoming, _response.getResponse(), fullPath);
 						}
-						catch (const std::exception& e) {
+						catch (const std::exception& e)
+						{
 							std::cerr << "Error processing request: " << e.what() << std::endl;
 							std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
 							send(clientFd, errorResponse.c_str(), errorResponse.length(), 0);

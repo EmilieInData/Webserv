@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/07/31 11:49:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 10:50:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Response
 	void		setContent(std::pair<std::string, std::string> fullPath);
 	void		prepResponse();
 	void		sendResponse();
+	std::string	getResponse();
 	void		printRawResponse();
 };
 

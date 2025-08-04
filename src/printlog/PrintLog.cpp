@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/03 22:00:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/04 11:06:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,38 @@ void	printRequest(ServerManager &serv, int socketFd, std::string request, std::s
 	std::cout << request << std::endl;
 	graTopLine();
 	graTextLine("End of request");
+	graBottomLine();
+}
+
+void	printResponse(ServerManager &serv, std::pair<int, std::string> incoming, std::string fullResponse, std::string fullPath)
+{
+	graTopLine();
+	graTime("Response sent");
+	graEmptyLine();
+	graTextHeader("Response Number");
+	graTextElement(intToString(serv.getRspCount()));
+	graEmptyLine();
+	graTextHeader("Request Number");
+	graTextElement(intToString(serv.getReqCount()));
+	graEmptyLine();
+	graTextHeader("Socket received");
+	graTextElement(incoming.second + ":" + intToString(incoming.first));
+	graEmptyLine();
+	graTextHeader("Response location");
+	graTextElement(fullPath);
+	graTextLine("Raw response below");
+	graBottomLine();
+	
+	for (size_t i = 0; i < fullResponse.size(); i++)
+	{
+		if (fullResponse[i] == '\r') std::cout << "\\r";
+		else if (fullResponse[i] == '\n') std::cout << "\\n\n";
+		else std::cout << fullResponse[i];
+	}
+	
+	graTopLine();
+	graTextHeader("Response size");
+	graTextElement(intToString(fullResponse.size()));
 	graBottomLine();
 }
 
