@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:45:40 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 16:22:53 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,16 @@
 Response::Response() {}
 
 Response::~Response() {}
+
+Response::Response(Response const &copy)
+	: _clientFd(copy._clientFd),
+	  _response(copy._response),
+	  _location(copy._location),
+	  _method(copy._method),
+	  _contentLength(copy._contentLength)
+{
+	_output << copy._output.str();
+}
 
 void Response::setResponse(std::string response)
 {

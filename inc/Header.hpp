@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:52:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 16:34:48 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,62 @@ the beginning of the response*/
 class Header
 {
 private:
-	Response _response;
+	Response	_response;
+	std::string _header;
+	std::string	_statusCode;
+	std::string _contentType;
+	std::string _protocol;
+	std::string _contentLength;
+	std::string _connectionType;
+	std::string _cacheControl;
 
-	Header(Header const &copy);
 	Header &operator=(Header const &copy);
 	Header();
+	Header(Header const &copy);
 
 public:
+	Header(Response response);
+	~Header();
 
+	void		setContentType();
+	void		setProtocol();
+	void		setConnectionType();
+	void		setCacheControl();
+	void		buildHeader();
+	void		setStatusCode();
+	std::string getHeader();
+
+	/* TODO do we need getters
+	for single elements when we mostly
+	build it inside the class? */
 };
 
 #endif
+
+/* needed in header
+http protocol
+number for outcome
+	(200, 201 etc...)
+content type
+content length
+connection type
+cache control
+
++ content
+*/
+/* 
+REFERENCE:
+
+_response =
+	"HTTP/1.1 200 OK\r\n"
+	"Content-Type: " +
+	contentType +
+	"\r\n"
+	"Content-Length: " +
+	contentLength +
+	"\r\n"
+	"Connection: close\r\n"
+	"Cache-Control: no-cache\r\n"
+	"\r\n" +
+	content;
+*/

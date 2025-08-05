@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:44:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 16:19:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@ back 200 */
 
 class Response
 {
-  private:
-	int				   _clientFd;
-	std::string		   _response;
-	std::string		   _location;
-	std::string		   _method;
-	std::ostringstream _output;
-	std::string		   _contentLength;
+private:
+	int					_clientFd;
+	std::string			_response;
+	std::string			_location;
+	std::string			_method;
+	std::ostringstream	_output;
+	std::string			_contentLength;
 
-	Response(Response const &copy);
 	Response &operator=(Response const &copy);
 
-  public:
+public:
 	Response();
+	Response(Response const &copy);
 	~Response();
 
 	std::string prepFile();
