@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 16:19:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 17:10:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,8 @@
 
 #include "Utils.hpp"
 
-/* TODO right now the response is very basic
-and only provides with responses to GET giving
-back 200 */
+/* TODO maybe this class can inherit
+from HttpRequest? */
 
 class Response
 {

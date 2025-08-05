@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 16:34:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 17:18:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,11 @@ public:
 
 	void		setContentType();
 	void		setProtocol();
+	void		setStatusCode();
+	void		setContentLength();
 	void		setConnectionType();
 	void		setCacheControl();
 	void		buildHeader();
-	void		setStatusCode();
 	std::string getHeader();
 
 	/* TODO do we need getters
@@ -56,8 +57,7 @@ public:
 
 /* needed in header
 http protocol
-number for outcome
-	(200, 201 etc...)
+status code
 content type
 content length
 connection type
