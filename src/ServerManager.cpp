@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 17:03:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 10:58:02 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void ServerManager::servSetup()
 	}
 	
 	graTopLine();
-	graTextHeader("Listening Sockets Setup");
+	graTime("Listening Sockets Setup");
+	graEmptyLine();
 	for (std::set<std::pair<int, std::string> >::iterator it = _uniqueListens.begin();
 			it != _uniqueListens.end(); ++it)
 		servListen(*it);
@@ -76,7 +77,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	
 	_socketFd.push_back(newsocket);
 	_servAddr.push_back(newaddr);
-	graTime("Socket: " + _listens.second + ":" + intToString(_listens.first));
+	graTextElement(_listens.second + ":" + intToString(_listens.first));
 }
 
 struct pollfd *ServerManager::servPoll(size_t totalSocket)
@@ -92,7 +93,7 @@ struct pollfd *ServerManager::servPoll(size_t totalSocket)
 	{
 		polls[i].fd = _socketFd[i];
 		polls[i].events = POLLIN;
-		graTime("Socket fd: " + intToString(polls[i].fd) + " setup to event: " + intToString(polls[i].events));
+		graTextElement("Socket fd: " + intToString(polls[i].fd) + " setup to event: " + intToString(polls[i].events));
 	}
 	polls[totalSocket].fd = STDIN_FILENO; // FABIO for input reading
 	polls[totalSocket].events = POLLIN;
@@ -197,7 +198,7 @@ void ServerManager::servRun()
 							std::pair<int, std::string> incoming = getSocketData(_socketFd[i]);
 							HttpRequest req = HttpRequest(incoming, fullRequest, *this);
 							std::string fullPath = req.getFullPath().first + req.getFullPath().second;
-							printRequest(*this, _socketFd[i], fullRequest, fullPath);
+							printRequest(*this, _socketFd[i], fullRequest, fullPath, req.getHttpMethod());
 							_response.setContent(req.getFullPath());
 							_response.setClientFd(clientFd);
 							_response.sendResponse();

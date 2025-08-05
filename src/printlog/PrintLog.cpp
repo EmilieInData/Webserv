@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 16:00:55 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 10:52:57 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	printServersStatus(ServerManager &serv)
 	number of connections happened etc... */
 }
 
-void	printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath)
+void	printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath, std::string method)
 {
 	std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
 	graTopLine();
@@ -117,6 +117,8 @@ void	printRequest(ServerManager &serv, int socketFd, std::string request, std::s
 	graTextElement(serv.getReqCount());
 	graTextHeader("Received on");
 	graTextElement(incoming.second + ":" + intToString(incoming.first));
+	graTextHeader("Request method");
+	graTextElement(method);
 	graTextHeader("Path for request");
 	graTextElement(fullPath);
 	graEmptyLine();

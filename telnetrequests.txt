@@ -1,0 +1,14 @@
+Requests to test via telnet
+
+> telnet [ip] [port]
+
+GET / HTTP/1.1
+Host: localhost
+
+POST /post HTTP/1.1
+Host: localhost
+Connection: close
+Content-type: application/json
+Content-length: 14
+
+{"test":true}
