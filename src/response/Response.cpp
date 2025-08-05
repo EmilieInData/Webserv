@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 13:05:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:45:40 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@ void Response::setResponse(std::string response)
 	_response = response;
 }
 
-void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
+void Response::setContent(std::pair<std::string, std::string> fullPath,
+						  std::string						  method)
 {
 	if (fullPath.second == "/" || fullPath.second.empty())
-		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
+		_location = fullPath.first + "/index.html";	 // TODO check AutoIndex
 	else
 		_location = fullPath.first + fullPath.second;
-	
+
 	_method = method;
 }
 
@@ -67,7 +68,7 @@ std::string Response::prepFile()
 std::string Response::checkType()
 {
 	std::string extension;
-	size_t dotPos = _location.find_last_of('.');
+	size_t		dotPos = _location.find_last_of('.');
 	if (dotPos != std::string::npos)
 		extension = _location.substr(dotPos);
 
@@ -89,23 +90,25 @@ std::string Response::checkType()
 
 void Response::prepResponse()
 {
-	std::string content = prepFile();
+	std::string		   content = prepFile();
 	std::ostringstream output;
 	output << content.length();
 	std::string contentLength = output.str();
-	std::string contentType = checkType();
+	std::string contentType	  = checkType();
 
 	/* TODO the response here is hardcoded
 	and for now it's just for testing */
 	_response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: " +
-		contentType + "\r\n"
-					  "Content-Length: " +
-		contentLength + "\r\n"
-						"Connection: close\r\n"
-						"Cache-Control: no-cache\r\n"
-						"\r\n" +
+		contentType +
+		"\r\n"
+		"Content-Length: " +
+		contentLength +
+		"\r\n"
+		"Connection: close\r\n"
+		"Cache-Control: no-cache\r\n"
+		"\r\n" +
 		content;
 }
 
@@ -128,15 +131,16 @@ void Response::sendResponse()
 {
 	prepResponse();
 
-	size_t totalSent = 0;
-	size_t totalSize = _response.size();
-	const char *data = _response.c_str();
-	int attempts = 0;
-	const int maxAttempts = 100;
+	size_t		totalSent	= 0;
+	size_t		totalSize	= _response.size();
+	const char *data		= _response.c_str();
+	int			attempts	= 0;
+	const int	maxAttempts = 100;
 
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
-		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0);
+		ssize_t sent =
+			send(_clientFd, data + totalSent, totalSize - totalSent, 0);
 		if (sent > 0)
 			totalSent += sent;
 		else if (sent == 0)

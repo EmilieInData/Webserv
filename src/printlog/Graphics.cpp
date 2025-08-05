@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:22:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 11:15:16 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 14:47:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ void graTextLine(std::string const &str)
 	const size_t strLen = padded.length();
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }
 
 void graTextHeader(std::string const &str)
@@ -72,7 +73,8 @@ void graTextHeader(std::string const &str)
 	const size_t strLen = padded.length();
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << GREEN << padded << RESET << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << GREEN << padded << RESET
+			  << std::string(restLen, ' ') << VERTICAL << std::endl;
 	graEmptyLine();
 	// graEmptyLine();
 }
@@ -84,7 +86,8 @@ void graTextElement(std::string const &str)
 	const size_t strLen = padded.length();
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }
 
 void graTextElement(int const &num)
@@ -94,7 +97,8 @@ void graTextElement(int const &num)
 	const size_t strLen = padded.length();
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }
 
 void graTime(std::string const &str)
@@ -106,7 +110,8 @@ void graTime(std::string const &str)
 	const size_t strLen = visLen(padded);
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }
 
 void graTime()
@@ -116,7 +121,8 @@ void graTime()
 	const size_t strLen = visLen(padded);
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }
 
 void graError(std::string const &error)
@@ -126,5 +132,6 @@ void graError(std::string const &error)
 	const size_t strLen = visLen(padded);
 	const size_t restLen = LINELENGTH - strLen;
 
-	std::cerr << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
+	std::cerr << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL
+			  << std::endl;
 }

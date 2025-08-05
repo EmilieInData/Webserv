@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 14:16:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:52:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,15 @@ the beginning of the response*/
 
 class Header
 {
-	private:
-		Response _response;
+private:
+	Response _response;
 
-		Header(Header const &copy);
-		Header &operator=(Header const &copy);
-		Header();
+	Header(Header const &copy);
+	Header &operator=(Header const &copy);
+	Header();
 
-	public:
+public:
+
 };
 
 #endif

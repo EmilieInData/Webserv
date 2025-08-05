@@ -6,15 +6,15 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 11:16:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:45:57 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PrintLog.hpp"
 #include "Graphics.hpp"
-#include "ServerManager.hpp"
-#include "ServerData.hpp"
 #include "LocationConf.hpp"
+#include "ServerData.hpp"
+#include "ServerManager.hpp"
 #include "Utils.hpp"
 
 void printServerManager(ServerManager const &servMan)
@@ -53,12 +53,12 @@ void printServerNames(std::vector<std::string> names)
 		graTextElement(*it);
 }
 
-void printServerListens(std::vector<std::pair<int, std::string>> listens)
+void printServerListens(std::vector<std::pair<int, std::string> > listens)
 {
 	graTextHeader("Listening Sockets");
 
-	std::vector<std::pair<int, std::string>>::iterator it;
-	std::vector<std::pair<int, std::string>>::iterator ite = listens.end();
+	std::vector<std::pair<int, std::string> >::iterator it;
+	std::vector<std::pair<int, std::string> >::iterator ite = listens.end();
 
 	for (it = listens.begin(); it != ite; it++)
 	{
@@ -75,7 +75,8 @@ void printServerLocations(ServerData const &serv)
 	graTextHeader("Locations");
 
 	std::map<std::string, LocationConf>::iterator it;
-	std::map<std::string, LocationConf>::iterator ite = serv.getLocations().end();
+	std::map<std::string, LocationConf>::iterator ite =
+		serv.getLocations().end();
 
 	for (it = serv.getLocations().begin(); it != ite; it++)
 	{
@@ -85,7 +86,8 @@ void printServerLocations(ServerData const &serv)
 
 void printServersStatus(ServerManager &serv)
 {
-	// TODO make this function called from the command line while server is running
+	// TODO make this function called from the command line while server is
+	// running
 	graTopLine();
 	graTime("Waiting for connection");
 	graEmptyLine();
@@ -95,9 +97,10 @@ void printServersStatus(ServerManager &serv)
 	graTextElement(intToString(serv.getRspCount()));
 	graTextHeader("Listening Sockets");
 
-	const std::set<std::pair<int, std::string>> &listens = serv.getUniqueListens();
-	std::set<std::pair<int, std::string>>::const_iterator it;
-	std::set<std::pair<int, std::string>>::const_iterator ite = listens.end();
+	const std::set<std::pair<int, std::string> > &listens =
+		serv.getUniqueListens();
+	std::set<std::pair<int, std::string> >::const_iterator it;
+	std::set<std::pair<int, std::string> >::const_iterator ite = listens.end();
 
 	for (it = listens.begin(); it != ite; it++)
 		graTextElement(it->second + ":" + intToString(it->first));
@@ -108,7 +111,8 @@ void printServersStatus(ServerManager &serv)
 	number of connections happened etc... */
 }
 
-void printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath, std::string method)
+void printRequest(ServerManager &serv, int socketFd, std::string request,
+				  std::string fullPath, std::string method)
 {
 	std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
 	graTopLine();
@@ -145,7 +149,8 @@ void printRaw(std::string const &text)
 	}
 }
 
-void printResponse(ServerManager &serv, std::pair<int, std::string> incoming, std::string fullResponse, std::string fullPath)
+void printResponse(ServerManager &serv, std::pair<int, std::string> incoming,
+				   std::string fullResponse, std::string fullPath)
 {
 	graTopLine();
 	graTime("Response sent");
