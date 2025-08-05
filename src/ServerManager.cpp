@@ -6,20 +6,18 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 10:58:02 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 11:17:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
 
-ServerManager::ServerManager(ParsingConf &parsData): _running(false), _reqCount(0), _rspCount(0) 
+ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
 	_serverData = parsData.servers;
 }
 
 ServerManager::~ServerManager() {}
-
-
 
 void ServerManager::servSetup()
 {
@@ -28,14 +26,14 @@ void ServerManager::servSetup()
 	for (size_t i = 0; i < _serverData.size(); i++)
 	{
 		for (size_t j = 0; j < _serverData[i].getListens().size(); j++)
-		_uniqueListens.insert(_serverData[i].getListens()[j]);
+			_uniqueListens.insert(_serverData[i].getListens()[j]);
 	}
-	
+
 	graTopLine();
 	graTime("Listening Sockets Setup");
 	graEmptyLine();
-	for (std::set<std::pair<int, std::string> >::iterator it = _uniqueListens.begin();
-			it != _uniqueListens.end(); ++it)
+	for (std::set<std::pair<int, std::string>>::iterator it = _uniqueListens.begin();
+		 it != _uniqueListens.end(); ++it)
 		servListen(*it);
 	graBottomLine();
 }
@@ -48,42 +46,42 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	setup struct
 	bind socket to struct
 	setup listen */
-	int					newsocket = socket(AF_INET, SOCK_STREAM, 0);
-	struct sockaddr_in	newaddr;
-	
+	int newsocket = socket(AF_INET, SOCK_STREAM, 0);
+	struct sockaddr_in newaddr;
+
 	if (newsocket < 0)
 		graError("Socket creation error");
-	
+
 	int flags = fcntl(newsocket, F_GETFL, 0);
-	if (fcntl(newsocket, F_SETFL, flags | O_NONBLOCK) < 0)	
+	if (fcntl(newsocket, F_SETFL, flags | O_NONBLOCK) < 0)
 		graError("Nonblocking setup error");
-	
+
 	std::memset(&newaddr, 0, sizeof(newaddr));
 	newaddr.sin_family = AF_INET;
 	newaddr.sin_port = htons(_listens.first);
-	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); 
-	
-	if (bind(newsocket, (struct sockaddr*)&newaddr, sizeof(newaddr)) < 0)
+	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str());
+
+	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
 	{
 		graError("Binding error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
-	
+
 	if (listen(newsocket, 10) < 0) // change back to SOMAXCONN?
 	{
 		graError("Listen error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
-	
+
 	_socketFd.push_back(newsocket);
 	_servAddr.push_back(newaddr);
 	graTextElement(_listens.second + ":" + intToString(_listens.first));
 }
 
 struct pollfd *ServerManager::servPoll(size_t totalSocket)
-{	
+{
 	struct pollfd *polls = new pollfd[totalSocket + 1]; // FABIO added listening socket for input in terminal
-	
+
 	graTopLine();
 	graTime("Poll Setup");
 	graTextHeader("Number of unique listening sockets");
@@ -104,15 +102,15 @@ struct pollfd *ServerManager::servPoll(size_t totalSocket)
 
 std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 {
-	struct sockaddr_in	socketIn;
-	socklen_t			socketInLen = sizeof(socketIn);
+	struct sockaddr_in socketIn;
+	socklen_t socketInLen = sizeof(socketIn);
 	std::memset(&socketIn, 0, socketInLen);
-	char	ipStr[INET_ADDRSTRLEN];
-	int		portIn;
-	
-	if (getsockname(socketFd, (struct sockaddr*) &socketIn, &socketInLen) < 0)
+	char ipStr[INET_ADDRSTRLEN];
+	int portIn;
+
+	if (getsockname(socketFd, (struct sockaddr *)&socketIn, &socketInLen) < 0)
 		std::cerr << timeStamp() << "getsockname failed for socket num " << socketFd << std::endl;
-	
+
 	inet_ntop(AF_INET, &socketIn.sin_addr, ipStr, INET_ADDRSTRLEN);
 	portIn = ntohs(socketIn.sin_port);
 
@@ -122,28 +120,28 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 void ServerManager::servRun()
 {
 	const size_t socketsize = _socketFd.size();
-	
-	struct pollfd *polls = servPoll(socketsize);	
-	
+
+	struct pollfd *polls = servPoll(socketsize);
+
 	_running = true;
 
 	printBoxMsg("Server Running");
-	
+
 	while (_running == true)
 	{
 		int check = poll(polls, socketsize + 1, 5000);
 		if (check < 0)
 		{
 			if (errno == EINTR) // FABIO here errno can be used because it's just for signal managing
-				continue ;
+				continue;
 			else
 			{
 				std::cerr << "Poll error" << std::endl;
-				break ;
+				break;
 			}
 		}
 		else if (check == 0)
-			continue ;
+			continue;
 		for (size_t i = 0; i < socketsize + 1; i++)
 		{
 			if (polls[i].revents & POLLIN)
@@ -151,24 +149,24 @@ void ServerManager::servRun()
 				if (polls[i].fd == _inputFd)
 				{
 					servInput();
-					continue ;
+					continue;
 				}
 				_reqCount++;
-				int					clientFd;
-				struct sockaddr_in	clientAddr;
-				socklen_t			clientLen = sizeof(clientAddr);
-				
+				int clientFd;
+				struct sockaddr_in clientAddr;
+				socklen_t clientLen = sizeof(clientAddr);
+
 				clientFd = accept(_socketFd[i], (struct sockaddr *)&clientAddr, &clientLen);
 				if (clientFd >= 0)
 				{
 					printBoxMsg("New connection accepted");
-					
+
 					std::string fullRequest; // TODO wrap everything into a "receiveRequest" function
-					char buffer[4096]; // HACK i put 4096, but i don't know if it's right
+					char buffer[4096];		 // HACK i put 4096, but i don't know if it's right
 					bool isComplete = false;
 					int attempts = 0;
 					const int maxAttempts = 100;
-					
+
 					while (!isComplete && attempts < maxAttempts)
 					{
 						ssize_t bytes = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
@@ -176,7 +174,7 @@ void ServerManager::servRun()
 						{
 							buffer[bytes] = '\0';
 							fullRequest += buffer;
-							
+
 							if (fullRequest.find("\r\n\r\n") != std::string::npos)
 								isComplete = true;
 						}
@@ -189,10 +187,10 @@ void ServerManager::servRun()
 							continue;
 						}
 					}
-					
+
 					if (isComplete && !fullRequest.empty())
 					{
-						
+
 						try
 						{
 							std::pair<int, std::string> incoming = getSocketData(_socketFd[i]);
@@ -205,7 +203,7 @@ void ServerManager::servRun()
 							_rspCount++;
 							printResponse(*this, incoming, _response.getResponse(), fullPath);
 						}
-						catch (const std::exception& e)
+						catch (const std::exception &e)
 						{
 							std::cerr << "Error processing request: " << e.what() << std::endl;
 							std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
@@ -221,7 +219,7 @@ void ServerManager::servRun()
 					close(clientFd);
 				}
 			}
-		}		
+		}
 	}
 	for (size_t i = 0; i < _socketFd.size(); i++)
 		close(_socketFd[i]);
@@ -233,23 +231,22 @@ std::vector<ServerData> ServerManager::getServersList() const
 	return _serverData;
 }
 
-int	ServerManager::getReqCount() const
+int ServerManager::getReqCount() const
 {
 	return _reqCount;
 }
 
-int	ServerManager::getRspCount() const
+int ServerManager::getRspCount() const
 {
 	return _rspCount;
 }
 
-
-std::set<std::pair<int, std::string> >	ServerManager::getUniqueListens()
+std::set<std::pair<int, std::string>> ServerManager::getUniqueListens()
 {
 	return _uniqueListens;
 }
 
-void	ServerManager::servQuit()
+void ServerManager::servQuit()
 {
 	if (_running == true)
 		_running = false;
@@ -257,18 +254,18 @@ void	ServerManager::servQuit()
 	printBoxMsg("Server quit");
 }
 
-void	ServerManager::servInput()
+void ServerManager::servInput()
 {
-	char	buffer[256];
-	size_t	charsRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+	char buffer[256];
+	size_t charsRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
 	if (charsRead > 0)
 	{
 		buffer[charsRead] = '\0';
-		std::string	cmd(buffer);
+		std::string cmd(buffer);
 
 		if (!cmd.empty() && cmd[cmd.length() - 1] == '\n')
 			cmd.erase(cmd.length() - 1);
-		
+
 		if (cmd == "quit" || cmd == "q")
 			servQuit();
 		else if (cmd == "status")

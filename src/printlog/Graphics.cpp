@@ -6,22 +6,22 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:22:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 12:11:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 11:15:16 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Graphics.hpp"
 
-void	graTopLine()
+void graTopLine()
 {
 	std::cout << TOP_LEFT;
 	for (size_t i = 0; i < LINELENGTH; i++)
-	std::cout << HORIZONTAL;
+		std::cout << HORIZONTAL;
 	std::cout << TOP_RIGHT << std::endl;
 	graEmptyLine();
 }
 
-void	graBottomLine()
+void graBottomLine()
 {
 	graEmptyLine();
 	std::cout << BOT_LEFT;
@@ -30,24 +30,24 @@ void	graBottomLine()
 	std::cout << BOT_RIGHT << std::endl;
 }
 
-void	graEmptyLine()
+void graEmptyLine()
 {
 	std::string line(LINELENGTH, ' ');
-	
+
 	std::cout << VERTICAL << line << VERTICAL << std::endl;
 }
 
-void	graSeparator()
+void graSeparator()
 {
 	graEmptyLine();
-		std::cout << MID_LEFT;
-	for (size_t i = 0; i < LINELENGTH ; i++)
+	std::cout << MID_LEFT;
+	for (size_t i = 0; i < LINELENGTH; i++)
 		std::cout << HORIZONTAL;
 	std::cout << MID_RIGHT << std::endl;
 	graEmptyLine();
 }
 
-std::string	graPad(std::string const &str)
+std::string graPad(std::string const &str)
 {
 	std::string padded;
 
@@ -55,77 +55,76 @@ std::string	graPad(std::string const &str)
 	return padded;
 }
 
-void	graTextLine(std::string const &str)
+void graTextLine(std::string const &str)
 {
-	std::string		padded = graPad(str);
-	const size_t	strLen = padded.length();
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string padded = graPad(str);
+	const size_t strLen = padded.length();
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
 void graTextHeader(std::string const &str)
 {
 	graEmptyLine();
-	std::string		header = "[ " + str + " ]";
-	std::string		padded = graPad(header);
-	const size_t	strLen = padded.length();
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string header = "[ " + str + " ]";
+	std::string padded = graPad(header);
+	const size_t strLen = padded.length();
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << GREEN << padded << RESET << std::string(restLen, ' ') << VERTICAL << std::endl;
 	graEmptyLine();
 	// graEmptyLine();
 }
 
-void	graTextElement(std::string const &str) 
+void graTextElement(std::string const &str)
 {
-	std::string		element = SYMBOL + str;
-	std::string		padded = graPad(element);
-	const size_t	strLen = padded.length();
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string element = SYMBOL + str;
+	std::string padded = graPad(element);
+	const size_t strLen = padded.length();
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-void	graTextElement(int const &num) 
+void graTextElement(int const &num)
 {
-	std::string		element = SYMBOL + intToString(num);
-	std::string		padded = graPad(element);
-	const size_t	strLen = padded.length();
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string element = SYMBOL + intToString(num);
+	std::string padded = graPad(element);
+	const size_t strLen = padded.length();
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-
-void	graTime(std::string const &str)
+void graTime(std::string const &str)
 {
-	std::string		time = timeStamp();
+	std::string time = timeStamp();
 	if (!str.empty())
 		time = time + " " + str;
 	std::string padded = graPad(time);
-	const size_t	strLen = visLen(padded);
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	const size_t strLen = visLen(padded);
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-void	graTime()
+void graTime()
 {
-	std::string		time = timeStamp();
-	std::string 	padded = graPad(time);
-	const size_t	strLen = visLen(padded);
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string time = timeStamp();
+	std::string padded = graPad(time);
+	const size_t strLen = visLen(padded);
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cout << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }
 
-void	graError(std::string const &error)
+void graError(std::string const &error)
 {
-	std::string		str = ERROR_TAG + error;
-	std::string		padded = graPad(str);
-	const size_t	strLen = visLen(padded);
-	const size_t	restLen = LINELENGTH - strLen;
-	
+	std::string str = ERROR_TAG + error;
+	std::string padded = graPad(str);
+	const size_t strLen = visLen(padded);
+	const size_t restLen = LINELENGTH - strLen;
+
 	std::cerr << VERTICAL << padded << std::string(restLen, ' ') << VERTICAL << std::endl;
 }

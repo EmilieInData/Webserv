@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/04 16:29:26 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/05 11:22:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Response
 	int					_clientFd;
 	std::string			_response;
 	std::string			_location;
+	std::string			_method;
 	std::ostringstream	_output;
 	std::string			_contentLength;
 	
@@ -39,7 +40,7 @@ class Response
 	std::string	checkType();
 	void		setClientFd(int _clientFd);
 	void		setResponse(std::string response);
-	void		setContent(std::pair<std::string, std::string> fullPath);
+	void		setContent(std::pair<std::string, std::string> fullPath, std::string method);
 	void		prepResponse();
 	void		sendResponse();
 	std::string	getResponse();
