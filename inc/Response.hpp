@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 10:56:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/06 12:24:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ private:
 	std::string			_location;
 	std::string			_method;
 	std::ostringstream	_output;
+	std::string			_contentType;
 	std::string			_contentLength;
 
 	Response &operator=(Response const &copy);
@@ -44,6 +45,8 @@ public:
 						   std::string						   method);
 	void		prepResponse();
 	void		sendResponse();
+	std::string	getType();
+	std::string	getLength();
 	std::string getResponse();
 	void		printRawResponse();
 };

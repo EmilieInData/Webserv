@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:28 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 11:34:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/06 12:34:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,7 @@ void Header::setConnectionType()
 
 void Header::setContentLength()
 {
-	_contentLength =
-		"Content-Length: " + intToString(_response->getResponse().length()) + HEADNL;
+	_contentLength ="Content-Length: " + _response->getLength() + HEADNL;
 }
 
 void Header::setCacheControl()
@@ -80,8 +79,8 @@ void Header::setCacheControl()
 void Header::buildHeader()
 {
 	_header = _protocol + " " + _statusCode + HEADNL + _contentType + _contentLength +
-			  _connectionType + _cacheControl + HEADNL + HEADNL;
-	std::cout << GREEN << "[ HEADER ]\n\n" << _header << std::endl;
+			  _connectionType + _cacheControl + HEADNL;
+	// std::cout << GREEN << "[ HEADER ]\n\n" << _header << std::endl;
 }
 
 std::string Header::getHeader()

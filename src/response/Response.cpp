@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 11:06:30 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/06 12:26:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,8 @@ void Response::prepResponse()
 	std::string		   content = prepFile();
 	std::ostringstream output;
 	output << content.length();
-	std::string contentLength = output.str();
-	std::string contentType	  = checkType();
+	_contentLength = output.str();
+	_contentType   = checkType();
 
 	Header header(*this);
 	/* TODO the response here is hardcoded
@@ -140,8 +140,7 @@ void Response::sendResponse()
 
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
-		ssize_t sent =
-			send(_clientFd, data + totalSent, totalSize - totalSent, 0);
+		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0);
 		if (sent > 0)
 			totalSent += sent;
 		else if (sent == 0)
@@ -158,6 +157,16 @@ void Response::sendResponse()
 
 	if (totalSent != totalSize)
 		printBoxError("Warning, send incomplete");
+}
+
+std::string Response::getType()
+{
+	return _contentType;
+}
+
+std::string Response::getLength()
+{
+	return _contentLength;
 }
 
 std::string Response::getResponse()
