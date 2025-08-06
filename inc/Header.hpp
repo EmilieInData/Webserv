@@ -6,25 +6,29 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 17:18:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/06 11:35:50 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEADER_HPP
 #define HEADER_HPP
 
-#include "Response.hpp"
+#include "Utils.hpp"
+
+#define HEADNL "\r\n"
 
 /* TODO building a basic header class
 to compose the right one to put at
 the beginning of the response*/
 
+class Response;
+
 class Header
 {
 private:
-	Response	_response;
+	Response 	*_response;
 	std::string _header;
-	std::string	_statusCode;
+	std::string _statusCode;
 	std::string _contentType;
 	std::string _protocol;
 	std::string _contentLength;
@@ -36,10 +40,10 @@ private:
 	Header(Header const &copy);
 
 public:
-	Header(Response response);
+	Header(Response &response);
 	~Header();
 
-	void		setContentType();
+	void		setContentType();  //
 	void		setProtocol();
 	void		setStatusCode();
 	void		setContentLength();
@@ -65,7 +69,7 @@ cache control
 
 + content
 */
-/* 
+/*
 REFERENCE:
 
 _response =

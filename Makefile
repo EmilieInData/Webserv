@@ -22,7 +22,7 @@ SRC_FILES	= main  ServerManager Utils \
 
 TEST_FILES	= HttpParserTester
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri
-RSP_FILES	= Response
+RSP_FILES	= Response Header
 PRT_FILES	= PrintLog Graphics
 CONF_FILES	= ABlockBase LocationConf ParsingConf ServerData
 

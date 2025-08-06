@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 16:22:53 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/06 11:06:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+#include "Header.hpp"
 
 Response::Response() {}
 
@@ -106,20 +107,10 @@ void Response::prepResponse()
 	std::string contentLength = output.str();
 	std::string contentType	  = checkType();
 
+	Header header(*this);
 	/* TODO the response here is hardcoded
 	and for now it's just for testing */
-	_response =
-		"HTTP/1.1 200 OK\r\n"
-		"Content-Type: " +
-		contentType +
-		"\r\n"
-		"Content-Length: " +
-		contentLength +
-		"\r\n"
-		"Connection: close\r\n"
-		"Cache-Control: no-cache\r\n"
-		"\r\n" +
-		content;
+	_response = header.getHeader() + content;
 }
 
 void Response::printRawResponse()
