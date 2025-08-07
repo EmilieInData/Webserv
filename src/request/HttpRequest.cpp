@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/04 16:08:23 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 17:19:39 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,38 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullR
 		HttpParser::checkIfPathExist( serv.getLocations(), uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( uri->getPath()), serv.getAllowedMethods(), req_line->getMethod());
 
+		++it;
+	
+
+		//HEADERS
+		while ( it != ite && !(*it).empty()) {
+			std::vector<std::string>	tmp = HttpParser::split( *it, ':' );
+			std::vector<std::string>	value = HttpParser::split( tmp[1], ',' );
+
+			headers[ tmp[0] ] = value;
+
+			++it;
+		}
+
+		//PRINTHEADERS
+		std::map<std::string, std::vector<std::string> >::iterator	it_h, ite_h = headers.end();
+		std::vector<std::string>::iterator							it_v, ite_v;
+
+		for ( it_h = headers.begin(); it_h != ite_h; ++it_h ) {
+			std::cout << "key: " << it_h->first << "	 values: ";
+			ite_v = it_h->second.end();
+			for ( it_v = it_h->second.begin(); it_v != ite_v; ++it_v )
+				std::cout << *it_v << " ";
+			std::cout << std::endl;
+		}
+
+		//BODY
+		std::size_t found = fullRequest.rfind( "\r\n\r\n" );
+		body = fullRequest.substr( found + 4 , fullRequest.length() - found + 4);
+
+		std::cout << "Body: " << body << std::endl;
+
+
 	} catch ( std::invalid_argument e ) {
 		std::cout << e.what() << std::endl;
 	}
@@ -67,8 +99,19 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
 		if (uri) delete uri;
         uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
 		//anadir HOST PAIR 
-    }
+		//anadir header y body
+	}
     return *this;
+}
+
+
+std::map<std::string, std::vector<std::string> >::iterator HttpRequest::getHeader( std::string const & title ) { 
+	std::map<std::string, std::vector<std::string> >::iterator it = this->headers.find( title ); 
+
+	if ( it == this->headers.end())
+		std::cout << "Be careful! " << title << " header dont exist!" << std::endl;
+
+	return it;
 }
 
 std::string	HttpRequest::getHttpMethod() const { return this->req_line->getMethod(); }
