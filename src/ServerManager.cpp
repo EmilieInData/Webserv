@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 12:55:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 13:13:51 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			}
 		}
 	}
+	std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	return isComplete;
 }
 
