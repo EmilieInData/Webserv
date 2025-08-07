@@ -6,23 +6,32 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 12:26:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 17:39:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
-#include "Header.hpp"
+#include "HttpRequest.hpp"
 
-Response::Response() {}
+#define PIPE_READ_END 0
+#define PIPE_WRITE_END 1
+
+Response::Response(HttpRequest const &request) : _request(&request)
+{
+
+	_clientFd	   = -1;
+	_response	   = "";
+	_location	   = "";
+	_method		   = "";
+	_contentType   = "";
+	_contentLength = "";
+}
 
 Response::~Response() {}
 
 Response::Response(Response const &copy)
-	: _clientFd(copy._clientFd),
-	  _response(copy._response),
-	  _location(copy._location),
-	  _method(copy._method),
-	  _contentLength(copy._contentLength)
+	: _clientFd(copy._clientFd), _response(copy._response), _location(copy._location),
+	  _method(copy._method), _contentLength(copy._contentLength)
 {
 	_output << copy._output.str();
 }
@@ -32,11 +41,10 @@ void Response::setResponse(std::string response)
 	_response = response;
 }
 
-void Response::setContent(std::pair<std::string, std::string> fullPath,
-						  std::string						  method)
+void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
 	if (fullPath.second == "/" || fullPath.second.empty())
-		_location = fullPath.first + "/index.html";	 // TODO check AutoIndex
+		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
 	else
 		_location = fullPath.first + fullPath.second;
 
@@ -76,6 +84,57 @@ std::string Response::prepFile()
 	}
 }
 
+void Response::runScript()
+{
+	std::string query = _request->getQuery();
+	std::cout << RED << __func__ + " " + query << RESET << std::endl; // DBG
+
+	int pipeIn[2];
+	int pipeOut[2]
+
+	if (!pipe(pipeIn) || !pipe(pipeOut))
+	{
+		//TODO what error number here?
+		printBoxError("Pipe Error");
+		return ;
+	}
+
+	pid_t child = fork();
+
+	if (child < 0)
+	{
+		//TODO also here, what error?
+		printBoxError("Fork error");
+		close(pipeFd[0]);
+		close(pipeFd[1]);
+		return ();
+	}
+
+	else if (child == 0)
+	{
+		close(pipe_in[PIPE_WRITE]);
+		dup2(pipe_in[PIPE_READ], STDIN_FILENO);
+		close(pipe_in[PIPE_READ]);
+
+		// Redirect script's stdout to write to pipe_out
+		close(pipe_out[PIPE_READ]);
+		dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO);
+		close(pipe_out[PIPE_WRITE]);
+
+		std::string envVar	= "QUERY_STRING=" + query;
+		char	   *envChar = new char[envVar.length() + 1];
+		strcpy(envChar, envVar.c_str());
+
+		char *envServ[] = {envChar, NULL};
+		char *argv[] = {
+			const_cast<char*>("python3"),
+			const_cast<char*>(_location.c_str()),
+			NULL
+		};
+		execve("")
+	}
+}
+
 std::string Response::checkType()
 {
 	std::string extension;
@@ -95,6 +154,8 @@ std::string Response::checkType()
 		return "text/css";
 	else if (extension == ".js")
 		return "text/javascript";
+	else if (extension == ".py")
+		return "text/x-python";
 	else
 		return "application/octet-stream";
 }
@@ -108,9 +169,14 @@ void Response::prepResponse()
 	_contentType   = checkType();
 
 	Header header(*this);
+	if (_contentType == "text/x-python")
+	{
+		runScript();
+	}
 	/* TODO the response here is hardcoded
 	and for now it's just for testing */
-	_response = header.getHeader() + content;
+	else
+		_response = header.getHeader() + content;
 }
 
 void Response::printRawResponse()
@@ -140,6 +206,7 @@ void Response::sendResponse()
 
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
+
 		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0);
 		if (sent > 0)
 			totalSent += sent;
