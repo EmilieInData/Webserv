@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 12:14:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:29:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,8 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 
 bool ServerManager::servReceive(ClientConnection &connection)
 {
-	bool	  isComplete  = false;
-	
+	bool isComplete = false;
+
 	if (connection.clientFd >= 0)
 	{
 		printBoxMsg("New connection accepted");
@@ -143,7 +143,6 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			{
 				buffer[bytes] = '\0';
 				connection.fullRequest += buffer;
-
 				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos)
 					isComplete = true;
 			}
@@ -160,6 +159,32 @@ bool ServerManager::servReceive(ClientConnection &connection)
 	return isComplete;
 }
 
+void ServerManager::servRespond(ClientConnection &connection)
+{
+	try
+	{
+		std::pair<int, std::string> incoming =
+			getSocketData(_socketFd[connection.socketIndex]);
+		HttpRequest req		 = HttpRequest(incoming, connection.fullRequest, *this);
+		std::string fullPath = req.getFullPath().first + req.getFullPath().second;
+		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest,
+					 fullPath, req.getHttpMethod());
+		_response.setContent(req.getFullPath(), req.getHttpMethod());
+		_response.setClientFd(connection.clientFd);
+		_response.sendResponse();
+		_rspCount++;
+		printResponse(*this, incoming, _response.getResponse(), fullPath);
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << "Error processing request: " << e.what() << std::endl;
+		std::string errorResponse =
+			"HTTP/1.1 400 Bad Request\r\nContent-Length: "
+			"0\r\nConnection: close\r\n\r\n";
+		send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+	}
+}
+
 void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 {
 	ClientConnection connection;
@@ -173,41 +198,22 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 				servInput();
 				continue;
 			}
-			connection.clientFd = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr, &connection.clientLen);
-			
+
+			connection.socketIndex = i;
+			connection.clientFd =
+				accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
+					   &connection.clientLen);
+
 			if (servReceive(connection) && !connection.fullRequest.empty())
-			{
-				try
-				{
-					std::pair<int, std::string> incoming = getSocketData(_socketFd[i]);
-					HttpRequest req = HttpRequest(incoming, connection.fullRequest, *this);
-					std::string fullPath =
-						req.getFullPath().first + req.getFullPath().second;
-					printRequest(*this, _socketFd[i], connection.fullRequest, fullPath,
-								 req.getHttpMethod());
-					_response.setContent(req.getFullPath(), req.getHttpMethod());
-					_response.setClientFd(connection.clientFd);
-					_response.sendResponse();
-					_rspCount++;
-					printResponse(*this, incoming, _response.getResponse(), fullPath);
-				}
-				catch (const std::exception &e)
-				{
-					std::cerr << "Error processing request: " << e.what() << std::endl;
-					std::string errorResponse =
-						"HTTP/1.1 400 Bad Request\r\nContent-Length: "
-						"0\r\nConnection: close\r\n\r\n";
-					send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
-				}
-			}
+				servRespond(connection);
 			else
 			{
-				std::cerr << timeStamp() << "Incomplete or empty request received"
-						  << std::endl;
+				printBoxError("Incomplete or empty request received");
 				std::string errorResponse =
 					"HTTP/1.1 400 Bad Request\r\nContent-Length: "
 					"0\r\nConnection: close\r\n\r\n";
-				send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+				send(connection.clientFd, errorResponse.c_str(), errorResponse.length(),
+					 0);
 			}
 			close(connection.clientFd);
 		}
@@ -229,12 +235,11 @@ void ServerManager::servRun()
 		int check = poll(polls, socketsize + 1, 5000);
 		if (check < 0)
 		{
-			if (errno == EINTR)	 // FABIO here errno can be used because it's just for
-								 // signal managing
+			if (errno == EINTR)	 // FABIO here errno ok here i think
 				continue;
 			else
 			{
-				std::cerr << "Poll error" << std::endl;
+				printBoxError("Poll error");
 				break;
 			}
 		}

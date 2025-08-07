@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 12:04:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:29:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,14 @@
 
 struct ClientConnection
 {
-	std::string			fullRequest;
-	int					clientFd;
-	struct sockaddr_in	clientAddr;
-	socklen_t			clientLen;
-	
-	ClientConnection() : clientFd(-1), clientLen(sizeof(clientAddr)) {
+	std::string		   fullRequest;
+	int				   clientFd;
+	struct sockaddr_in clientAddr;
+	socklen_t		   clientLen;
+	size_t			   socketIndex;
+
+	ClientConnection() : clientFd(-1), clientLen(sizeof(clientAddr)), socketIndex(0)
+	{
 		std::memset(&clientAddr, 0, sizeof(clientAddr));
 	}
 };
@@ -66,6 +68,7 @@ public:
 	int									   getRspCount() const;
 	void								   servQuit();
 	void								   servInput();
+	void								   servRespond(ClientConnection &connection);
 	bool								   servReceive(ClientConnection &connection);
 	// TODO create servQuit() to stop all servers;
 };
