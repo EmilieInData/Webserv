@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 11:07:40 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:14:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,96 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 	return std::make_pair(portIn, ipStr);
 }
 
+bool ServerManager::servReceive(ClientConnection &connection)
+{
+	bool	  isComplete  = false;
+	
+	if (connection.clientFd >= 0)
+	{
+		printBoxMsg("New connection accepted");
+
+		char	  buffer[4096];	 // HACK i put 4096, but i don't know if it's right
+		int		  attempts	  = 0;
+		const int maxAttempts = 100;
+
+		while (!isComplete && attempts < maxAttempts)
+		{
+			ssize_t bytes = recv(connection.clientFd, buffer, sizeof(buffer) - 1, 0);
+			if (bytes > 0)
+			{
+				buffer[bytes] = '\0';
+				connection.fullRequest += buffer;
+
+				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos)
+					isComplete = true;
+			}
+			else if (bytes == 0)
+				return false;
+			else if (bytes < 0)
+			{
+				usleep(10000);	// wait and try again
+				attempts++;
+				continue;
+			}
+		}
+	}
+	return isComplete;
+}
+
+void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
+{
+	ClientConnection connection;
+
+	for (size_t i = 0; i < socketsize + 1; i++)
+	{
+		if (polls[i].revents & POLLIN)
+		{
+			if (polls[i].fd == _inputFd)
+			{
+				servInput();
+				continue;
+			}
+			connection.clientFd = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr, &connection.clientLen);
+			
+			if (servReceive(connection) && !connection.fullRequest.empty())
+			{
+				try
+				{
+					std::pair<int, std::string> incoming = getSocketData(_socketFd[i]);
+					HttpRequest req = HttpRequest(incoming, connection.fullRequest, *this);
+					std::string fullPath =
+						req.getFullPath().first + req.getFullPath().second;
+					printRequest(*this, _socketFd[i], connection.fullRequest, fullPath,
+								 req.getHttpMethod());
+					_response.setContent(req.getFullPath(), req.getHttpMethod());
+					_response.setClientFd(connection.clientFd);
+					_response.sendResponse();
+					_rspCount++;
+					printResponse(*this, incoming, _response.getResponse(), fullPath);
+				}
+				catch (const std::exception &e)
+				{
+					std::cerr << "Error processing request: " << e.what() << std::endl;
+					std::string errorResponse =
+						"HTTP/1.1 400 Bad Request\r\nContent-Length: "
+						"0\r\nConnection: close\r\n\r\n";
+					send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+				}
+			}
+			else
+			{
+				std::cerr << timeStamp() << "Incomplete or empty request received"
+						  << std::endl;
+				std::string errorResponse =
+					"HTTP/1.1 400 Bad Request\r\nContent-Length: "
+					"0\r\nConnection: close\r\n\r\n";
+				send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+			}
+			close(connection.clientFd);
+		}
+	}
+}
+
 void ServerManager::servRun()
 {
 	const size_t socketsize = _socketFd.size();
@@ -150,96 +240,7 @@ void ServerManager::servRun()
 		}
 		else if (check == 0)
 			continue;
-		for (size_t i = 0; i < socketsize + 1; i++)
-		{
-			if (polls[i].revents & POLLIN)
-			{
-				if (polls[i].fd == _inputFd)
-				{
-					servInput();
-					continue;
-				}
-				_reqCount++;
-				int				   clientFd;
-				struct sockaddr_in clientAddr;
-				socklen_t		   clientLen = sizeof(clientAddr);
-
-				clientFd =
-					accept(_socketFd[i], (struct sockaddr *)&clientAddr, &clientLen);
-				if (clientFd >= 0)
-				{
-					printBoxMsg("New connection accepted");
-
-					std::string fullRequest;  // TODO wrap everything into a
-											  // "receiveRequest" function
-					char buffer[4096];	// HACK i put 4096, but i don't know if it's right
-					bool isComplete		  = false;
-					int	 attempts		  = 0;
-					const int maxAttempts = 100;
-
-					while (!isComplete && attempts < maxAttempts)
-					{
-						ssize_t bytes = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-						if (bytes > 0)
-						{
-							buffer[bytes] = '\0';
-							fullRequest += buffer;
-
-							if (fullRequest.find("\r\n\r\n") != std::string::npos)
-								isComplete = true;
-						}
-						else if (bytes == 0)
-							break;
-						else if (bytes < 0)
-						{
-							usleep(10000);	// wait and try again
-							attempts++;
-							continue;
-						}
-					}
-
-					if (isComplete && !fullRequest.empty())
-					{
-						try
-						{
-							std::pair<int, std::string> incoming =
-								getSocketData(_socketFd[i]);
-							HttpRequest req = HttpRequest(incoming, fullRequest, *this);
-							std::string fullPath =
-								req.getFullPath().first + req.getFullPath().second;
-							printRequest(*this, _socketFd[i], fullRequest, fullPath,
-										 req.getHttpMethod());
-							_response.setContent(req.getFullPath(), req.getHttpMethod());
-							_response.setClientFd(clientFd);
-							_response.sendResponse();
-							_rspCount++;
-							printResponse(*this, incoming, _response.getResponse(),
-										  fullPath);
-						}
-						catch (const std::exception &e)
-						{
-							std::cerr << "Error processing request: " << e.what()
-									  << std::endl;
-							std::string errorResponse =
-								"HTTP/1.1 400 Bad Request\r\nContent-Length: "
-								"0\r\nConnection: close\r\n\r\n";
-							send(clientFd, errorResponse.c_str(), errorResponse.length(),
-								 0);
-						}
-					}
-					else
-					{
-						std::cerr << timeStamp() << "Incomplete or empty request received"
-								  << std::endl;
-						std::string errorResponse =
-							"HTTP/1.1 400 Bad Request\r\nContent-Length: "
-							"0\r\nConnection: close\r\n\r\n";
-						send(clientFd, errorResponse.c_str(), errorResponse.length(), 0);
-					}
-					close(clientFd);
-				}
-			}
-		}
+		servIncoming(polls, socketsize);
 	}
 	for (size_t i = 0; i < _socketFd.size(); i++)
 		close(_socketFd[i]);

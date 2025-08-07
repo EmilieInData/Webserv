@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:44:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:04:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,22 @@
 #include "ServerData.hpp"
 #include "Utils.hpp"
 
+struct ClientConnection
+{
+	std::string			fullRequest;
+	int					clientFd;
+	struct sockaddr_in	clientAddr;
+	socklen_t			clientLen;
+	
+	ClientConnection() : clientFd(-1), clientLen(sizeof(clientAddr)) {
+		std::memset(&clientAddr, 0, sizeof(clientAddr));
+	}
+};
+
 class Response;
 class ServerManager
 {
-  private:
+private:
 	bool								   _running;
 	int									   _inputFd;
 	std::string							   _input;
@@ -34,26 +46,27 @@ class ServerManager
 	int									   _reqCount;
 	int									   _rspCount;
 	std::set<std::pair<int, std::string> > _uniqueListens;
-
 	ServerManager();
 	ServerManager(ServerManager const &copy);
 	ServerManager &operator=(ServerManager const &copy);
 
-  public:
+public:
 	ServerManager(ParsingConf &parsData);
 	~ServerManager();
 
-	void					servSetup();
-	void					servRun();
-	void					servListen(std::pair<int, std::string> _listens);
-	std::vector<ServerData> getServersList() const;
-	struct pollfd		   *servPoll(size_t totalSocket);
-	std::pair<int, std::string>			   getSocketData(int socketFd);
+	void						servSetup();
+	void						servRun();
+	void						servListen(std::pair<int, std::string> _listens);
+	std::vector<ServerData>		getServersList() const;
+	struct pollfd			   *servPoll(size_t totalSocket);
+	std::pair<int, std::string> getSocketData(int socketFd);
+	void servIncoming(struct pollfd *polls, const size_t socketsize);
 	std::set<std::pair<int, std::string> > getUniqueListens();
 	int									   getReqCount() const;
 	int									   getRspCount() const;
 	void								   servQuit();
 	void								   servInput();
+	bool								   servReceive(ClientConnection &connection);
 	// TODO create servQuit() to stop all servers;
 };
 
