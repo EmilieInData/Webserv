@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:42:01 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 13:14:38 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ class ServerData;
 void printServerManager(ServerManager const &servMan);
 void printServersData(ServerData const &serv, size_t i);
 void printServersStatus(ServerManager &serv);
-void printRequest(ServerManager &serv, int socketFd, std::string request,
-				  std::string fullPath, std::string method);
+void printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath,
+				  std::string method);
 void printResponse(ServerManager &serv, std::pair<int, std::string> incoming,
 				   std::string fullResponse, std::string fullPath);
 void printBoxMsg(std::string const &str);
