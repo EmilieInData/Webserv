@@ -1,7 +1,7 @@
 NAME		= webserv
 
 CC			= c++ 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address  # -Wno-error=catch-value # FABIO added this flag for my computer at home
 DEP_FLAG	= -MMD -MP
 INCLUDE		= -I$(INC_DIR)
 
@@ -14,19 +14,23 @@ SRC_DIR		= src/
 OBJ_DIR		= obj/
 TEST_DIR	= tests/
 REQ_DIR		= request/
+RSP_DIR		= response/
+PRT_DIR		= printlog/
 CONF_DIR	= Parsing_configuration/
 
-SRC_FILES	= main  Server Utils \
+SRC_FILES	= main  ServerManager Utils \
 
 TEST_FILES	= HttpParserTester
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri
-
-CONF_FILES = ABlockBase LocationConf ParsingConf ServerConf
+RSP_FILES	= Response Header
+PRT_FILES	= PrintLog Graphics
+CONF_FILES	= ABlockBase LocationConf ParsingConf ServerData
 
 ALL_FILES	+= $(SRC_FILES)
 ALL_FILES	+= $(addprefix $(TEST_DIR), $(TEST_FILES))
 ALL_FILES	+= $(addprefix $(REQ_DIR), $(REQ_FILES))
-
+ALL_FILES	+= $(addprefix $(RSP_DIR), $(RSP_FILES))
+ALL_FILES	+= $(addprefix $(PRT_DIR), $(PRT_FILES))
 ALL_FILES	+= $(addprefix $(CONF_DIR), $(CONF_FILES))
 
 SRCS		= $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(ALL_FILES)))

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LocationConf.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:35:03 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 14:06:17 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:58:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@
 #include "Utils.hpp"
 #include "ABlockBase.hpp"
 
-class ServerConf;
+class ServerData;
 
 class LocationConf : public ABlockBase
 {
 	public:
 		LocationConf();
-		LocationConf(ServerConf const& S);
+		LocationConf(ServerData const& S);
 		~LocationConf();
 		LocationConf(LocationConf const& other);
 		LocationConf&								operator=(LocationConf const& other);

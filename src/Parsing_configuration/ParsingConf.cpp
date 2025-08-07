@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConf.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 17:20:41 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:10:20 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
 #include "ParsingConf.hpp"
-#include "ServerConf.hpp"
+#include "ServerData.hpp"
 #include "LocationConf.hpp"
 
 ParsingConf::ParsingConf() {}
@@ -26,7 +26,7 @@ void	ParsingConf::print_tokens(std::vector<std::string>& buffer)
 	return;
 }
 
-std::vector<ServerConf>&	ParsingConf::getServers()
+std::vector<ServerData>&	ParsingConf::getServers()
 {
 	return servers;
 }
@@ -204,11 +204,11 @@ void	ParsingConf::checkStructure(std::vector<std::string>& buffer)
 }
 
 size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
-	std::vector<ABlockBase*>& blocks, std::vector<ServerConf>::iterator& itServer)
+	std::vector<ABlockBase*>& blocks, std::vector<ServerData>::iterator& itServer)
 {
 	int	num = i;
 
-	servers.push_back(ServerConf());//creer les blocs server dans le contener
+	servers.push_back(ServerData());//creer les blocs server dans le contener
 	itServer = servers.end() - 1;
 	blocks.push_back(&(*itServer));
 	i = i + 2;
@@ -268,7 +268,7 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 }
 
 size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
-	std::vector<ABlockBase*>& blocks, std::vector<ServerConf>::iterator& itServer,
+	std::vector<ABlockBase*>& blocks, std::vector<ServerData>::iterator& itServer,
 	std::map<std::string, LocationConf>::iterator& itLocation)
 {
 	//std::cout << GREEN << " --> " << buffer[i] << " " << buffer[i + 1] << RESET << std::endl; // to borrow
@@ -317,7 +317,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 {
 	size_t											i = 0;
 	std::vector<ABlockBase*>						blocks;
-	std::vector<ServerConf>::iterator 				itServer;
+	std::vector<ServerData>::iterator 				itServer;
 	std::map<std::string, LocationConf>::iterator	itLocation;
 	
 	checkStructure(buffer); //parenthesis well closed, blocks well positionned
@@ -339,7 +339,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 		// else
 		// 	throw std::invalid_argument(" Parsing error, invalid directives\n");
 	}
-	print_structure();
+	// print_structure(); // TODO turned it off for now
 	return;
 }
 
@@ -347,7 +347,8 @@ void	ParsingConf::print_structure()
 {
 	for (size_t i  = 0; i < servers.size(); i++)
 	{
-		std::cout << PURPLE << "Listen:\n";
+		std::cout << GREEN << "\n[SERVER #" << i << "]" << std::endl;
+		std::cout << PINK << "Listen:\n";
 		for (size_t j = 0; j < servers[i].getListens().size(); j++)
 			std::cout << "port: " << servers[i].getListens()[j].first
 					  << "ip: " << servers[i].getListens()[j].second << "\n";

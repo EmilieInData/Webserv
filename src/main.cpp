@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 11:58:23 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:58:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,18 @@
 #include "ParsingConf.hpp"
 #include "HttpRequest.hpp"
 #include "HttpParserTester.hpp"
-#include "Server.hpp"
+#include "ServerManager.hpp"
 
 int main(int ac, char** av)
 {
-	if (ac != 2)
-		return (std::cerr << ERROR << PINK << "Error, one configuration file is required\n", 1);
+	if (ac > 2)
+		return (std::cerr << ERROR << PINK << "Too many arguments" << std::endl, 1);
 		
-	std::ifstream file(av[1]);
+	std::ifstream file;
+	if (ac == 1)
+		file.open(DEFAULTCONF); // FABIO it can also run without a specified cfg file
+	else
+		file.open(av[1]);
 	if (!file)
 		return (std::cerr << ERROR << PINK << "Error, file not open\n", 1);
 	
@@ -44,16 +48,10 @@ int main(int ac, char** av)
 	}
 	file.close();
 
-	Server testserv(P);
+	setupSignal(); // TODO this needs to be completed
 
-	// ----> print defaultErrorPages
-	// for (std::map<int, std::pair<std::string, std::string> >::const_iterator it = testserv.getDefaultErrorPages().begin(); it != testserv.getDefaultErrorPages().end(); it++)
-	// {
-	// 	std::cout << GREEN << it->first << " " << it->second.first << " " << it->second.second << "\n"; 
-	// }
-	
-	HttpRequest test = HttpRequest();
-	
+	ServerManager testserv(P);
+	printServerManager(testserv);
 	testserv.servSetup();
 	testserv.servRun();
 

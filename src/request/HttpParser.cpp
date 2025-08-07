@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:50:14 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:11:19 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
 #include "RequestLine.hpp"
-#include "ServerConf.hpp"
+#include "ServerData.hpp"
 #include "Utils.hpp"
 #include <iostream>
 #include <cctype>
@@ -262,14 +262,15 @@ bool	HttpParser::notImplementedMethod( std::string const & method ) {
 	return false;
 }
 
-ServerConf const &	HttpParser::checkIfServerExist( std::vector<ServerConf> const & servers, std::string const & host ) {
-	std::vector<ServerConf>::const_iterator	it, ite = servers.end();
-	std::vector<std::string>::const_iterator	it_name, ite_name; 
+ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming ) {
+	std::vector<ServerData>::const_iterator	it, ite = servers.end();
+	std::vector<std::pair<int, std::string> >::const_iterator	it_listen, ite_listen; 
 
 	for (it = servers.begin(); it != ite; ++it) {
-		const std::vector<std::string>& names = it->getServerName();
-		for (it_name = names.begin(); it_name != names.end(); ++it_name) {
-			if (*it_name == host)
+		const std::vector<std::pair<int, std::string> >& listens = it->getListens();
+		ite_listen = listens.end();
+		for (it_listen = listens.begin(); it_listen != ite_listen; ++it_listen) {
+			if (*it_listen == incoming)
 				return *it;
 		}
 	}	
@@ -280,7 +281,7 @@ ServerConf const &	HttpParser::checkIfServerExist( std::vector<ServerConf> const
 void	HttpParser::checkIfPathExist( std::map<std::string, LocationConf> & location, std::string const & path ) {
 	std::map<std::string, LocationConf>::iterator	it = location.find( path );
 
-	if ( it == location.end() ) throw std::invalid_argument( E_404 );
+	if ( it == location.end() ) throw std::invalid_argument( E_404 ); // TODO i believe this needs fixing
 
 	std::cout << "PATH EXIST IN SERVER: " << (*it).first << std::endl;
 }

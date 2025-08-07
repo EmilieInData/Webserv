@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   LocationConf.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/14 15:25:22 by esellier         ###   ########.fr       */
+/*   Updated: 2025/07/23 15:19:26 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/Utils.hpp"
 #include "../../inc/LocationConf.hpp"
-#include "../../inc/ServerConf.hpp"
+#include "../../inc/ServerData.hpp"
 #include "../../inc/ABlockBase.hpp"
 
 LocationConf::LocationConf() {}
 
-LocationConf::LocationConf(ServerConf const& S)
+LocationConf::LocationConf(ServerData const& S)
 {
 	_autoindex = S.getAutoindex();
 	_root = S.getRoot();
