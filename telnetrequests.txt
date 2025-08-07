@@ -26,3 +26,7 @@ Content-Length: 27
 
 name=John&email=john@test.com
 
+curl -X POST -F "file=@cat.png" http://localhost:9090/uploads/       
+
+
+curl -X POST -H "Content-Type: application/json" -d '{"test":"data"}' http://localhost:8080/uploads/
