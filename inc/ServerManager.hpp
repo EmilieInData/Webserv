@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 12:29:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 13:00:02 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ public:
 	std::vector<ServerData>		getServersList() const;
 	struct pollfd			   *servPoll(size_t totalSocket);
 	std::pair<int, std::string> getSocketData(int socketFd);
-	void servIncoming(struct pollfd *polls, const size_t socketsize);
+	void						servIncoming(struct pollfd *polls, const size_t socketsize);
 	std::set<std::pair<int, std::string> > getUniqueListens();
 	int									   getReqCount() const;
 	int									   getRspCount() const;

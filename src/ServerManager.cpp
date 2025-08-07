@@ -6,14 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 12:29:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:55:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
 
-ServerManager::ServerManager(ParsingConf &parsData)
-	: _running(false), _reqCount(0), _rspCount(0)
+ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
 	_serverData = parsData.servers;
 }
@@ -64,15 +63,13 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 
 	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
 	{
-		graError("Binding error for " + _listens.second + ":" +
-				 intToString(_listens.first));
+		graError("Binding error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
 
-	if (listen(newsocket, 10) < 0)	// change back to SOMAXCONN?
+	if (listen(newsocket, 10) < 0) // change back to SOMAXCONN?
 	{
-		graError("Listen error for " + _listens.second + ":" +
-				 intToString(_listens.first));
+		graError("Listen error for " + _listens.second + ":" + intToString(_listens.first));
 		close(newsocket);
 	}
 
@@ -83,9 +80,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 
 struct pollfd *ServerManager::servPoll(size_t totalSocket)
 {
-	struct pollfd *polls =
-		new pollfd[totalSocket +
-				   1];	// FABIO added listening socket for input in terminal
+	struct pollfd *polls = new pollfd[totalSocket + 1]; // FABIO added listening socket for terminal input
 
 	graTopLine();
 	graTime("Poll Setup");
@@ -99,7 +94,7 @@ struct pollfd *ServerManager::servPoll(size_t totalSocket)
 		graTextElement("Socket fd: " + intToString(polls[i].fd) +
 					   " setup to event: " + intToString(polls[i].events));
 	}
-	polls[totalSocket].fd	  = STDIN_FILENO;  // FABIO for input reading
+	polls[totalSocket].fd	  = STDIN_FILENO; // FABIO for input reading
 	polls[totalSocket].events = POLLIN;
 	_inputFd				  = polls[totalSocket].fd;
 	graBottomLine();
@@ -115,8 +110,7 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 	int	 portIn;
 
 	if (getsockname(socketFd, (struct sockaddr *)&socketIn, &socketInLen) < 0)
-		std::cerr << timeStamp() << "getsockname failed for socket num " << socketFd
-				  << std::endl;
+		std::cerr << timeStamp() << "getsockname failed for socket num " << socketFd << std::endl;
 
 	inet_ntop(AF_INET, &socketIn.sin_addr, ipStr, INET_ADDRSTRLEN);
 	portIn = ntohs(socketIn.sin_port);
@@ -132,7 +126,7 @@ bool ServerManager::servReceive(ClientConnection &connection)
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[4096];	 // HACK i put 4096, but i don't know if it's right
+		char	  buffer[4096]; // HACK i put 4096, but i don't know if it's right
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -150,7 +144,7 @@ bool ServerManager::servReceive(ClientConnection &connection)
 				return false;
 			else if (bytes < 0)
 			{
-				usleep(10000);	// wait and try again
+				usleep(10000); // wait and try again
 				attempts++;
 				continue;
 			}
@@ -163,12 +157,11 @@ void ServerManager::servRespond(ClientConnection &connection)
 {
 	try
 	{
-		std::pair<int, std::string> incoming =
-			getSocketData(_socketFd[connection.socketIndex]);
-		HttpRequest req		 = HttpRequest(incoming, connection.fullRequest, *this);
-		std::string fullPath = req.getFullPath().first + req.getFullPath().second;
-		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest,
-					 fullPath, req.getHttpMethod());
+		std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
+		HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
+		std::string					fullPath = req.getFullPath().first + req.getFullPath().second;
+		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
+					 req.getHttpMethod());
 		_response.setContent(req.getFullPath(), req.getHttpMethod());
 		_response.setClientFd(connection.clientFd);
 		_response.sendResponse();
@@ -178,9 +171,8 @@ void ServerManager::servRespond(ClientConnection &connection)
 	catch (const std::exception &e)
 	{
 		std::cerr << "Error processing request: " << e.what() << std::endl;
-		std::string errorResponse =
-			"HTTP/1.1 400 Bad Request\r\nContent-Length: "
-			"0\r\nConnection: close\r\n\r\n";
+		std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
+									"0\r\nConnection: close\r\n\r\n";
 		send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
 	}
 }
@@ -200,20 +192,17 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 			}
 
 			connection.socketIndex = i;
-			connection.clientFd =
-				accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
-					   &connection.clientLen);
+			connection.clientFd	   = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
+											&connection.clientLen);
 
 			if (servReceive(connection) && !connection.fullRequest.empty())
 				servRespond(connection);
 			else
 			{
 				printBoxError("Incomplete or empty request received");
-				std::string errorResponse =
-					"HTTP/1.1 400 Bad Request\r\nContent-Length: "
-					"0\r\nConnection: close\r\n\r\n";
-				send(connection.clientFd, errorResponse.c_str(), errorResponse.length(),
-					 0);
+				std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
+											"0\r\nConnection: close\r\n\r\n";
+				send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
 			}
 			close(connection.clientFd);
 		}
@@ -235,7 +224,7 @@ void ServerManager::servRun()
 		int check = poll(polls, socketsize + 1, 5000);
 		if (check < 0)
 		{
-			if (errno == EINTR)	 // FABIO here errno ok here i think
+			if (errno == EINTR) // FABIO here errno ok here i think
 				continue;
 			else
 			{
