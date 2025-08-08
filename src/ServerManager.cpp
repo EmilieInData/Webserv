@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 15:59:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 10:48:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void ServerManager::servRespond(ClientConnection &connection)
 		std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
 		HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
 		Response					resp(req);
-		std::string					fullPath = req.getFullPath().first + req.getFullPath().second;
+		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
 		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
 					 req.getHttpMethod());
 		resp.setContent(req.getFullPath(), req.getHttpMethod());
