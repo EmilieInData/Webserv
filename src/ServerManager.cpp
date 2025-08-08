@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 10:48:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:52:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	std::memset(&newaddr, 0, sizeof(newaddr));
 	newaddr.sin_family		= AF_INET;
 	newaddr.sin_port		= htons(_listens.first);
-	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str());
+	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); // TODO check if inet_addr can be used
 
 	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
 	{
@@ -137,7 +137,7 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			{
 				buffer[bytes] = '\0';
 				connection.fullRequest += buffer;
-				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos)
+				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
 					isComplete = true;
 			}
 			else if (bytes == 0)
@@ -150,7 +150,8 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			}
 		}
 	}
-	std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
+	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
+	printRaw(connection.fullRequest);
 	return isComplete;
 }
 
