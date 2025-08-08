@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 13:13:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:52:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	std::memset(&newaddr, 0, sizeof(newaddr));
 	newaddr.sin_family		= AF_INET;
 	newaddr.sin_port		= htons(_listens.first);
-	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str());
+	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); // TODO check if inet_addr can be used
 
 	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
 	{
@@ -137,7 +137,7 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			{
 				buffer[bytes] = '\0';
 				connection.fullRequest += buffer;
-				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos)
+				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
 					isComplete = true;
 			}
 			else if (bytes == 0)
@@ -150,7 +150,8 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			}
 		}
 	}
-	std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
+	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
+	printRaw(connection.fullRequest);
 	return isComplete;
 }
 
@@ -160,14 +161,15 @@ void ServerManager::servRespond(ClientConnection &connection)
 	{
 		std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
 		HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
-		std::string					fullPath = req.getFullPath().first + req.getFullPath().second;
+		Response					resp(req);
+		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
 		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
 					 req.getHttpMethod());
-		_response.setContent(req.getFullPath(), req.getHttpMethod());
-		_response.setClientFd(connection.clientFd);
-		_response.sendResponse();
+		resp.setContent(req.getFullPath(), req.getHttpMethod());
+		resp.setClientFd(connection.clientFd);
+		resp.sendResponse();
 		_rspCount++;
-		printResponse(*this, incoming, _response.getResponse(), fullPath);
+		printResponse(*this, incoming, resp.getResponse(), fullPath);
 	}
 	catch (const std::exception &e)
 	{
