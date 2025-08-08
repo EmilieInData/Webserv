@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 13:13:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 11:47:20 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,9 +161,9 @@ void ServerManager::servRespond(ClientConnection &connection)
 		std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
 		HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
 		std::string					fullPath = req.getFullPath().first + req.getFullPath().second;
-		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
-					 req.getHttpMethod());
-		_response.setContent(req.getFullPath(), req.getHttpMethod());
+//		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
+//					 req.getHttpMethod());
+//		_response.setContent(req.getFullPath(), req.getHttpMethod());
 		_response.setClientFd(connection.clientFd);
 		_response.sendResponse();
 		_rspCount++;

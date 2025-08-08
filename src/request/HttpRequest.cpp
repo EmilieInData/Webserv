@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/07 17:19:39 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 12:02:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullR
 	try {
 
 		// std::cout << message << std::endl;
-		std::string							tmp_host;
-		std::vector<std::string>			lines = HttpParser::parseHttpMessage( fullRequest, tmp_host );
-		std::vector<std::string>::iterator	it = lines.begin();
-		std::vector<std::string>::iterator	ite = lines.end();
+		std::string									tmp_host;
+		std::pair<std::vector<std::string>, std::string>	lines = HttpParser::parseHttpMessage( fullRequest, tmp_host );
+		std::vector<std::string>::iterator			it = lines.first.begin();
+		std::vector<std::string>::iterator			ite = lines.first.end();
 
 		host = HttpParser::parseHost( tmp_host ); // ACABAR EL PARSEO DE HOST CON FCT DE EMILIE  
 

@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/17 15:42:46 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 12:21:15 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	HttpParserTester::crWithoutLf() {
 		HttpParser::parseHttpMessage( http_mess, host );
 		std::cout << RED << "Valid message:    CR without LF accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  CR without LF in body don't accepted/ Test OK" << std::endl;
+		std::cout << GRE << e.what() << ":  CR without LF don't accepted/ Test OK" << std::endl;
 	}
 
 	try {
@@ -61,6 +61,15 @@ void	HttpParserTester::crWithoutLf() {
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  CR without LF in body don't accepted / Test FAIL" << std::endl;
 	}
+
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\r\rido=perez" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << GRE << "Valid message:    CRLF in body accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  CRLF in body don't accepted / Test FAIL" << std::endl;
+	}
+
 }
 
 void	HttpParserTester::emptyLinesBeforeReqLine() {

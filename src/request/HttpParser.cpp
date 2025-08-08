@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/04 16:11:19 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 12:22:03 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,36 @@ std::vector<std::string>	HttpParser::split( std::string const & str, char const 
 	return tokens;
 }
 
-std::vector<std::string>	HttpParser::crlfSplit( std::string const & str ) {
+std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) {
 	std::vector<std::string>	lines;
-	size_t						start = 0, end;
+	std::string					body;
+	size_t						start = 0, found_body, end;
 
-    while ((end = str.find( "\r\n", start)) != std::string::npos) {
-        lines.push_back(str.substr(start, end - start));
-        start = end + 2;
+	while ( ( found_body = str.find( "\r\n\r\n", start)) != std::string::npos ) {
+		std::string	tmp = str.substr( start, found_body - start );      
+		if ( tmp != "" ) {
+			 body = str.substr( found_body + 4, str.length() );
+			 break;
+		}
+        start = found_body + 4;
     }
-    return lines;
+	
+	start = 0;
+	
+	while ( (end = str.find( "\r\n", start)) != std::string::npos  &&  end <= found_body ) {
+        lines.push_back( str.substr( start, end - start ));
+        start = end + 2;
+    }	
+
+	//PRINT LINES
+	std::vector<std::string>::iterator	it, ite = lines.end();
+
+	for ( it = lines.begin(); it != ite; ++it )
+		std::cout << "LINE: " << *it << std::endl;
+
+	std::cout << "BODY: " << body <<std::endl;
+
+    return std::make_pair( lines, body );
 }
 
 std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
@@ -148,19 +169,20 @@ std::string	trimSpaceAndTab( std::string & str ) {
 	return str;
 }
 
-std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message, std::string & host_str ) {
+std::pair<std::vector<std::string>, std::string>	HttpParser::parseHttpMessage( 
+std::string const & message, std::string & host_str ) {
 
-	std::vector<std::string> lines = crlfSplit( message );
+	std::pair<std::vector<std::string>, std::string> lines = crlfSplit( message );
 
-	if ( lines.empty() || !lines.back().empty()) throw std::invalid_argument( E_400 );
+	if ( lines.first.empty() /*|| !lines.first.back().empty()*/) throw std::invalid_argument( E_400 );
 
 	std::vector<std::string>::iterator	it;
-	std::vector<std::string>::iterator	ite = lines.end();
+	std::vector<std::string>::iterator	ite = lines.first.end();
 	std::string::const_iterator			s_it, s_ite;
 
 	int header = 0, host = 0;
 
-	for ( it = lines.begin(); it != ite; ++it ) {
+	for ( it = lines.first.begin(); it != ite; ++it ) {
 		if ( header == 0 && (*it).empty()) continue;
 		if ( header > 0 && !(*it).empty()) 
 			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( E_400 );
