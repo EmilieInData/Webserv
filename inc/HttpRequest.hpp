@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/05 16:58:58 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/07 16:36:31 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ class ServerManager;
 class HttpRequest
 {
 private:
-	RequestLine						   *req_line;
-	Uri								   *uri;
-	std::pair<std::string, std::string> host;
-	std::pair<std::string, std::string> _fullPath;
-	//	RequestHeaders	headers;
-	//	RequestBody		body;
+	RequestLine											*req_line;
+	Uri													*uri;
+	std::pair<std::string, std::string>					 host;
+	std::pair<std::string, std::string>					 _fullPath;
+	std::map<std::string, std::vector<std::string> >	headers;
+	std::string	body;
 
 public:
 	HttpRequest();
@@ -52,7 +52,11 @@ public:
 	std::string							getQuery() const;
 	std::string							getHttpVersion() const;
 	std::pair<std::string, std::string> getFullPath() const;	// FABIO added this because I need full path for the response
-	void setFullPath(ServerData const &serv);
+	void								setFullPath(ServerData const &serv);
+	
+
+	//PROVISOIR
+	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
 
 #endif
