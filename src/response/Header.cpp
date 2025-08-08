@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:28 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 12:34:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:01:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Header::~Header() {};
 
 void Header::setContentType()
 {
-	_contentType = "Content-Type: " + _response->checkType() + HEADNL;
+	_contentType = "Content-Type: " + _response->getType() + HEADNL;
 }
 
 void Header::setProtocol()
