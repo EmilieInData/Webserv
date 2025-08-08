@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/07 16:36:31 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 14:19:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,11 @@ class HttpRequest
 private:
 	RequestLine											*req_line;
 	Uri													*uri;
-	std::pair<std::string, std::string>					 host;
-	std::pair<std::string, std::string>					 _fullPath;
+	std::pair<std::string, std::string>					host;
+	std::pair<std::string, std::string>					_fullPath;
 	std::map<std::string, std::vector<std::string> >	headers;
-	std::string	body;
+	std::string											body;
+	int													code;
 
 public:
 	HttpRequest();

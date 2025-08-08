@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 12:21:15 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:59:10 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,45 @@ void	HttpParserTester::sfWithoutCrlf() {
 	}
 }
 
+void	HttpParserTester::crlfTests() {
+	std::string host;
+
+	try {
+		std::string	http_mess( "\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << RED << "Valid message:		only CRLF string / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  only CRLF string / Test OK" << std::endl;
+	}
+
+	
+	try {
+		std::string	http_mess( "\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << RED << "Valid message:		two CRLF / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  two CRLF / Test OK" << std::endl;
+	}
+
+	try {
+		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << RED << "Valid message:		valid sintax without final crlf / Test FAIL" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  valid syntax without final crfl / Test OK" << std::endl;
+	}
+
+	try {
+		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << GRE << "Valid message:		valid sintax without body / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  valid syntax without final body / Test FAIL" << std::endl;
+	}
+
+
+}
+
 void	HttpParserTester::shouldHaveOneHost() {
 
 	std::string host;
@@ -152,6 +191,7 @@ void	HttpParserTester::parseHttpMessageTest() {
 	emptyLinesBeforeReqLine();
 	isspaceBeforeHeader();
 	sfWithoutCrlf();
+	crlfTests();
 	shouldHaveOneHost();
 
 	std::cout << std::endl;

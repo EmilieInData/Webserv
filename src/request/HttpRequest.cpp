@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 12:02:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:12:13 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,16 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 
 }
 
-HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullRequest, ServerManager &server) : req_line(NULL), uri(NULL) {
+HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullRequest, ServerManager &server) : 
+req_line( NULL ), uri( NULL ), code( 200 ) {
 	try {
 
 		// std::cout << message << std::endl;
 		std::string									tmp_host;
+
+		std::cout << "VAYAM" ;
+
+
 		std::pair<std::vector<std::string>, std::string>	lines = HttpParser::parseHttpMessage( fullRequest, tmp_host );
 		std::vector<std::string>::iterator			it = lines.first.begin();
 		std::vector<std::string>::iterator			ite = lines.first.end();
@@ -79,6 +84,13 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullR
 
 
 	} catch ( std::invalid_argument e ) {
+		char	code_str[4];
+
+		std::strncpy( code_str, e.what(), 3 );
+		code_str[3] = '\0';
+
+		code = std::atoi( code_str );
+		std::cout << "ERROR CODE: " << code << std::endl;
 		std::cout << e.what() << std::endl;
 	}
 }

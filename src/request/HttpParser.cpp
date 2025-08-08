@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 12:22:03 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:56:35 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,20 @@ std::vector<std::string>	HttpParser::split( std::string const & str, char const 
 std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) {
 	std::vector<std::string>	lines;
 	std::string					body;
-	size_t						start = 0, found_body, end;
+	size_t						start = 0, found_body, end, count = 0;
 
 	while ( ( found_body = str.find( "\r\n\r\n", start)) != std::string::npos ) {
-		std::string	tmp = str.substr( start, found_body - start );      
+		std::string	tmp = str.substr( start, found_body - start );
 		if ( tmp != "" ) {
 			 body = str.substr( found_body + 4, str.length() );
+			 count++;
 			 break;
 		}
         start = found_body + 4;
     }
 	
+	if ( count == 0 ) throw std::invalid_argument( E_400 );
+
 	start = 0;
 	
 	while ( (end = str.find( "\r\n", start)) != std::string::npos  &&  end <= found_body ) {
