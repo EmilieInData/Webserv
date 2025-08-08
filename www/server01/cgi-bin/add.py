@@ -11,41 +11,39 @@ query_string = os.environ.get('QUERY_STRING')
 
 # Parse the query string into a dictionary.
 if query_string:
-    pairs = query_string.split('&')
-    for pair in pairs:
-        if '=' in pair:
-            key, value = pair.split('=', 1)
-            params[key] = value
+	pairs = query_string.split('&')
+	for pair in pairs:
+		if '=' in pair:
+			key, value = pair.split('=', 1)
+			params[key] = value
 
 # Try to perform the addition.
 try:
-    val_a = int(params['a'])
-    val_b = int(params['b'])
-    result = val_a + val_b
+	val_a = int(params['a'])
+	val_b = int(params['b'])
+	result = val_a + val_b
 except (KeyError, ValueError):
-    # This block runs if parameters were missing or not valid numbers.
-    error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=5&b=10</strong>"
+	# This block runs if parameters were missing or not valid numbers.
+	error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=5&b=10</strong>"
 
 # --- HTML Output ---
 
-# 1. Print the required HTTP Header for an HTML page.
-print("Content-Type: text/html")
 # 2. Print the mandatory blank line.
 print()
 
 # 3. Print the HTML content.
 print("<html>")
 print("<head><title>CGI Big Number Adder</title></head>")
-print("<body>")
+print('<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">')
 
 # Check if an error occurred and display the appropriate message.
 if error_message:
-    print(f"<p>{error_message}</p>")
+	print(f"<p>{error_message}</p>")
 else:
-    # If successful, display the result with custom style.
-    print('<div style="font-size: 80px; font-weight: bold; color: red;">')
-    print(result)
-    print('</div>')
+	# If successful, display the result with custom style.
+	print('<div style="font-size: 400px; font-weight: bold; color: red; text-align: center;">')
+	print(result)
+	print('</div>')
 
 print("</body>")
 print("</html>")

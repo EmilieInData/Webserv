@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 12:30:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 14:58:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,12 @@ std::string Response::prepFile()
 	}
 }
 
-void Response::runScript(std::string const &cgiPath)
+std::string Response::runScript(std::string const &cgiPath)
 {
 	std::string query = _request->getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
+
+	std::string content;
 
 	int pipeIn[2];
 	int pipeOut[2];
@@ -96,7 +98,7 @@ void Response::runScript(std::string const &cgiPath)
 	{
 		//TODO what error number here?
 		printBoxError("Pipe Error");
-		return;
+		return "";
 	}
 
 	pid_t child = fork();
@@ -109,7 +111,7 @@ void Response::runScript(std::string const &cgiPath)
 		close(pipeOut[PIPE_READ]);
 		close(pipeIn[PIPE_WRITE]);
 		close(pipeIn[PIPE_READ]);
-		return;
+		return "";
 	}
 
 	/* TODO to implement more types of script,
@@ -182,12 +184,13 @@ void Response::runScript(std::string const &cgiPath)
 		}
 		else
 		{
-			// Script executed successfully, set the response with the output
-			_response = scriptOutput;
+			content = scriptOutput;
+			_contentType = "text/html";
 			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
 		}
 	}
+	return content;
 }
 
 std::string Response::checkType()
@@ -217,20 +220,19 @@ std::string Response::checkType()
 
 void Response::prepResponse()
 {
-	std::string		   content = prepFile();
+	std::string		   content;
+	_contentType   = checkType();
+
+	if (_contentType == "text/x-python")
+		content = runScript(_location);
+	else
+		content = prepFile();
+
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
-	_contentType   = checkType();
 
 	Header header(*this);
-	if (_contentType == "text/x-python")
-	{
-		runScript(_location);
-	}
-	/* TODO the response here is hardcoded
-	and for now it's just for testing */
-	else
 		_response = header.getHeader() + content;
 }
 

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 11:32:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/08 14:50:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ public:
 	void		sendResponse();
 	std::string getType();
 	std::string getLength();
-	void		runScript(std::string const &cgiPath);
+	std::string	runScript(std::string const &cgiPath);
 	std::string getResponse();
 	void		printRawResponse();
 };
