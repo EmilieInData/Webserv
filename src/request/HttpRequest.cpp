@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 14:26:46 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 17:37:27 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 
-HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) { 
+HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ), headers( NULL ) { 
 	HttpParserTester::parseHttpMessageTest();
 	HttpParserTester::parseRequestLineTest();
 	HttpParserTester::parseHostTest();
@@ -21,7 +21,7 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 }
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullRequest, ServerManager &server) : 
-req_line( NULL ), uri( NULL ), code( 200 ) {
+req_line( NULL ), uri( NULL ), headers( NULL ), code( 200 ) {
 	try {
 		std::string											tmp_host;
 		std::pair<std::vector<std::string>, std::string>	lines = HttpParser::parseHttpMessage( fullRequest, tmp_host );
@@ -47,8 +47,9 @@ req_line( NULL ), uri( NULL ), code( 200 ) {
 
 		++it;
 	
+		headers = new Headers( it, ite );
 
-		//HEADERS
+/*		//HEADERS
 		while ( it != ite && !(*it).empty()) {
 			std::vector<std::string>	tmp = HttpParser::split( *it, ':' );
 			std::vector<std::string>	value = HttpParser::split( tmp[1], ',' );
@@ -71,11 +72,11 @@ req_line( NULL ), uri( NULL ), code( 200 ) {
 		}
 
 		//BODY
-		std::size_t found = fullRequest.rfind( "\r\n\r\n" );
+		std::size_t found = fullRequest.rfind( "\r\n\r\n" );//Nooooooooooooooooooo
 		body = fullRequest.substr( found + 4 , fullRequest.length() - found + 4);
 
 		std::cout << "Body: " << body << std::endl;
-
+*/
 
 	} catch ( std::invalid_argument e ) {
 		char	code_str[4];
@@ -96,6 +97,8 @@ HttpRequest::~HttpRequest() {
 		delete req_line;
 	if ( uri )
 		delete uri;
+	if ( headers )
+		delete headers;
 }
 
 HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
@@ -104,14 +107,14 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
         req_line = rhs.req_line ? new RequestLine(*rhs.req_line) : NULL;
 		if (uri) delete uri;
         uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
-		//anadir HOST PAIR 
+		host = rhs.host; 
 		//anadir header 
 		//anadir body
 	}
     return *this;
 }
 
-
+/*
 std::map<std::string, std::vector<std::string> >::iterator HttpRequest::getHeader( std::string const & title ) { 
 	std::map<std::string, std::vector<std::string> >::iterator it = this->headers.find( title ); 
 
@@ -119,7 +122,7 @@ std::map<std::string, std::vector<std::string> >::iterator HttpRequest::getHeade
 		std::cout << "Be careful! " << title << " header dont exist!" << std::endl;
 
 	return it;
-}
+}*/
 
 std::string	HttpRequest::getHttpMethod() const { return this->req_line->getMethod(); }
 

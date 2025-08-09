@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 14:19:50 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 17:18:45 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,24 @@
 #include "ServerData.hpp"
 #include "ServerManager.hpp"
 #include "Uri.hpp"
+#include "Headers.hpp"
 
 class RequestLine;
 class Uri;
 class ServerManager;
+class Headers;
 
 class HttpRequest
 {
 private:
-	RequestLine											*req_line;
-	Uri													*uri;
-	std::pair<std::string, std::string>					host;
-	std::pair<std::string, std::string>					_fullPath;
-	std::map<std::string, std::vector<std::string> >	headers;
-	std::string											body;
-	int													code;
+	RequestLine							*req_line;
+	Uri									*uri;
+	std::pair<std::string, std::string>	host;
+	std::pair<std::string, std::string>	_fullPath;
+//	std::map<std::string, std::vector<std::string> >	headers;
+	Headers								*headers;
+	std::string							body;
+	int									code;
 
 public:
 	HttpRequest();
@@ -57,7 +60,7 @@ public:
 	
 
 	//PROVISOIR
-	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
+//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
 
 #endif

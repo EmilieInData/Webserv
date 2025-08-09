@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 14:50:07 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 17:19:30 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -352,26 +352,16 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	return  std::make_pair( first, second );
 }
 
-/*std::string *	HttpParser::mergeArray( std::string arr1[], std::string arr2[], int size ) {
-	std::string	merged[size];
-	
-	for (std::size_t i = 0; i < arr1->length(); ++i)
-		merged[i] = arr1[i];
-
-	for (std::size_t i = 0; i < arr2->length(); ++i)
-		merged[arr1->length() + i] = arr2[i];
-
-	return merged;
-}*/
 
 
-const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
-const int			HttpParser::one_h_count = 12;
-const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
-const int			HttpParser::many_h_count = 5;
-//const std::string	HttpParser::special_header[];
-//const int			HttpParser::special_h_count;
-//std::string	HttpParser::all_headers[] = HttpParser::mergeArray( HttpParser::one_header, HttpParser::many_header, all_h_count );
-const std::string	HttpParser::all_headers[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority", "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control" };
-const int			HttpParser::all_h_count = one_h_count + many_h_count;
+//const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
+//const int			HttpParser::one_h_count = 12;
+//const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
+//const int			HttpParser::many_h_count = 5;
+//const std::string	HttpParser::all_headers[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority", "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control" };
+//const int			HttpParser::all_h_count = one_h_count + many_h_count;
+
+//std::map<std::string, std::vector<std::string> >	HttpParser::parseHeader(  )
+
+
 
