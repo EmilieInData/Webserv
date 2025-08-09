@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 12:00:34 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:50:35 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,19 @@ private:
 	~HttpParser();
 
 	HttpParser &	operator=( HttpParser const & rhs );
+	
+//	static std::string *			mergeArray( std::string arr1[], std::string arr2[], int size ); 
+	
+	static const std::string	valid_method[];
+	static const int			valid_method_count;
+	static const std::string	one_header[];
+	static const int			one_h_count;
+	static const std::string	many_header[];
+	static const int			many_h_count;
+//	static const std::string	special_header[];
+//	static const int			special_h_count;
+	static const std::string	all_headers[];
+	static const int			all_h_count;
 
 public:
 	static std::vector<std::string>	split( std::string const & str, char const delimiter );

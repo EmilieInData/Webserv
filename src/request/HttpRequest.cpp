@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 15:12:13 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:26:46 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,10 @@ HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ) {
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, std::string fullRequest, ServerManager &server) : 
 req_line( NULL ), uri( NULL ), code( 200 ) {
 	try {
-
-		// std::cout << message << std::endl;
-		std::string									tmp_host;
-
-		std::cout << "VAYAM" ;
-
-
+		std::string											tmp_host;
 		std::pair<std::vector<std::string>, std::string>	lines = HttpParser::parseHttpMessage( fullRequest, tmp_host );
-		std::vector<std::string>::iterator			it = lines.first.begin();
-		std::vector<std::string>::iterator			ite = lines.first.end();
+		std::vector<std::string>::iterator					it = lines.first.begin();
+		std::vector<std::string>::iterator					ite = lines.first.end();
 
 		host = HttpParser::parseHost( tmp_host ); // ACABAR EL PARSEO DE HOST CON FCT DE EMILIE  
 
@@ -111,7 +105,8 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
 		if (uri) delete uri;
         uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
 		//anadir HOST PAIR 
-		//anadir header y body
+		//anadir header 
+		//anadir body
 	}
     return *this;
 }

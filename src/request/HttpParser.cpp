@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 15:56:35 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:50:07 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ std::string const & message, std::string & host_str ) {
 
 	std::pair<std::vector<std::string>, std::string> lines = crlfSplit( message );
 
-	if ( lines.first.empty() /*|| !lines.first.back().empty()*/) throw std::invalid_argument( E_400 );
+	if ( lines.first.empty()) throw std::invalid_argument( E_400 );
 
 	std::vector<std::string>::iterator	it;
 	std::vector<std::string>::iterator	ite = lines.first.end();
@@ -194,6 +194,7 @@ std::string const & message, std::string & host_str ) {
 			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
 		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 ) {
 			host_str = (*it).substr( 5, (*it).length() - 5 );
+			if ( trimSpaceAndTab( host_str ) == "" ) throw std::invalid_argument( E_400 ); 
 			host++;
 		}
 		header++;
@@ -278,10 +279,13 @@ std::string	HttpParser::parseFragment( std::string const & uri ) {
 
 }
 
-bool	HttpParser::notImplementedMethod( std::string const & method ) {
-	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+const std::string	HttpParser::valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+const int			HttpParser::valid_method_count = 8;
 
-	for ( int i = 0; i < 8; i++ )
+bool	HttpParser::notImplementedMethod( std::string const & method ) {
+//	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+
+	for ( int i = 0; i < valid_method_count; i++ )
 		if ( method == valid_method[i] ) 
 			return true;
 	return false;
@@ -347,3 +351,27 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	
 	return  std::make_pair( first, second );
 }
+
+/*std::string *	HttpParser::mergeArray( std::string arr1[], std::string arr2[], int size ) {
+	std::string	merged[size];
+	
+	for (std::size_t i = 0; i < arr1->length(); ++i)
+		merged[i] = arr1[i];
+
+	for (std::size_t i = 0; i < arr2->length(); ++i)
+		merged[arr1->length() + i] = arr2[i];
+
+	return merged;
+}*/
+
+
+const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
+const int			HttpParser::one_h_count = 12;
+const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
+const int			HttpParser::many_h_count = 5;
+//const std::string	HttpParser::special_header[];
+//const int			HttpParser::special_h_count;
+//std::string	HttpParser::all_headers[] = HttpParser::mergeArray( HttpParser::one_header, HttpParser::many_header, all_h_count );
+const std::string	HttpParser::all_headers[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority", "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control" };
+const int			HttpParser::all_h_count = one_h_count + many_h_count;
+

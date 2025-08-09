@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 15:59:10 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/09 10:10:30 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void	HttpParserTester::crlfTests() {
 		HttpParser::parseHttpMessage( http_mess, host );
 		std::cout << RED << "Valid message:		valid sintax without final crlf / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  valid syntax without final crfl / Test OK" << std::endl;
+		std::cout << GRE << e.what() << ":  invalid syntax without final crfl / Test OK" << std::endl;
 	}
 
 	try {
@@ -156,10 +156,16 @@ void	HttpParserTester::crlfTests() {
 		HttpParser::parseHttpMessage( http_mess, host );
 		std::cout << GRE << "Valid message:		valid sintax without body / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  valid syntax without final body / Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  invalid syntax without final body / Test FAIL" << std::endl;
 	}
 
-
+	try {
+		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\n\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		std::cout << GRE << "Valid message:		valid sintax with two double crlf / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  invalid syntax with two double crfl / Test FAIL" << std::endl;
+	}
 }
 
 void	HttpParserTester::shouldHaveOneHost() {
@@ -344,6 +350,27 @@ void	HttpParserTester::validHostSyntaxis() {
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " host don't accepted/ Test OK" << RESET << std::endl;
 	}
+
+	host = "   ";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
+		std::cout << RED << "valid host:	  " << host << " empty spaces host accepted / Test FAIL" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  " << host << " empty spaces host don't accepted/ Test OK" << RESET << std::endl;
+	}
+
+	host = "";
+	try {
+		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
+		HttpParser::parseHttpMessage( http_mess, host );
+		HttpParser::parseHost( host );
+		std::cout << RED << "valid host:	  " << host << " empty host accepted / Test FAIL" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  " << host << " empty host don't accepted/ Test OK" << RESET << std::endl;
+	}
+
 
 }
 
