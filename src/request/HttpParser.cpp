@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 17:19:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/10 15:35:10 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,8 +283,6 @@ const std::string	HttpParser::valid_method[] = { "GET", "POST", "PUT", "DELETE",
 const int			HttpParser::valid_method_count = 8;
 
 bool	HttpParser::notImplementedMethod( std::string const & method ) {
-//	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
-
 	for ( int i = 0; i < valid_method_count; i++ )
 		if ( method == valid_method[i] ) 
 			return true;
@@ -346,22 +344,65 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 		if ( second.empty()) throw std::invalid_argument( E_400 );
 		if ( !isInt( second )) throw std::invalid_argument( E_400 );
 	}
-
-
 	
 	return  std::make_pair( first, second );
 }
 
 
 
-//const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
-//const int			HttpParser::one_h_count = 12;
-//const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
-//const int			HttpParser::many_h_count = 5;
-//const std::string	HttpParser::all_headers[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority", "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control" };
-//const int			HttpParser::all_h_count = one_h_count + many_h_count;
+const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
+const int			HttpParser::one_h_count = 12;
+const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
+const int			HttpParser::many_h_count = 5;
 
-//std::map<std::string, std::vector<std::string> >	HttpParser::parseHeader(  )
+std::pair<std::string, std::string>	HttpParser::parseHeaderSyntaxis( std::string h ) {
+	
+		std::size_t found = h.find( ":" );
+		if ( found == std::string::npos ) throw std::invalid_argument( E_400 );
+		std::string	name = h.substr( 0, found );
+		std::string::iterator	it_n, ite_n = name.end();
+		for ( it_n = name.begin(); it_n != ite_n; ++it_n )
+			if ( !HttpParser::isTokenChar( *it_n )) throw std::invalid_argument( E_400 );
 
+		return make_pair( toLower( name ), h.substr( found + 1, h.length() - found + 1 ));
+}
 
+bool	HttpParser::oneValueHeader( std::string name ) {
+	for ( int i = 0; i < one_h_count; i++ )
+		if ( name == one_header[i] ) 
+			return true;
+	return false;
+}
 
+bool	HttpParser::manyValuesHeader( std::string name ) {
+	for ( int i = 0; i < many_h_count; i++ )
+		if ( name == many_header[i] ) 
+			return true;
+	return false;
+}
+
+bool	HttpParser::recognizeHeaderName( std::string name ) {
+	if ( oneValueHeader( name )) return true;
+	if ( manyValuesHeader( name )) return true;
+	return false;
+}
+
+std::vector<std::string>	HttpParser::parseValues( std::string n, std::string v ) {
+	std::vector<std::string>	values;
+
+	if ( oneValueHeader( n ) ) {
+		
+		values.push_back( trimSpaceAndTab( v ));
+		return values;
+	}
+	
+	values = split( v, ',' );
+
+	std::vector<std::string>::iterator	it, ite = values.end();
+
+	for ( it = values.begin(); it != ite; ++it )
+		trimSpaceAndTab( *it );
+
+	return values;
+
+}

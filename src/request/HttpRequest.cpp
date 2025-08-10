@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 17:37:27 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/10 14:00:43 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ req_line( NULL ), uri( NULL ), headers( NULL ), code( 200 ) {
 
 		std::cout << "Body: " << body << std::endl;
 */
+
+		body = lines.second;
 
 	} catch ( std::invalid_argument e ) {
 		char	code_str[4];

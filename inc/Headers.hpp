@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 17:29:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/10 13:00:04 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ class	Headers	{
 private:
 	std::map<std::string, std::vector<std::string> >	header;
 	
-	static const std::string	one_header[];
+/*	static const std::string	one_header[];
 	static const int			one_h_count;
 	static const std::string	many_header[];
 	static const int			many_h_count;
 	static const std::string	all_headers[];
 	static const int			all_h_count;
-
+*/
 	Headers();
 
 public:

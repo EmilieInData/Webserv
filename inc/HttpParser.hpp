@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/09 17:03:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/10 14:07:45 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ private:
 	
 	static const std::string	valid_method[];
 	static const int			valid_method_count;
-//	static const std::string	one_header[];
-//	static const int			one_h_count;
-//	static const std::string	many_header[];
-//	static const int			many_h_count;
+	static const std::string	one_header[];
+	static const int			one_h_count;
+	static const std::string	many_header[];
+	static const int			many_h_count;
 //	static const std::string	all_headers[];
 //	static const int			all_h_count;
 
@@ -65,9 +65,15 @@ public:
 	static void						checkIfPathExist( std::map<std::string, LocationConf> & loc, std::string const & path );
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
-	static std::pair<std::string, std::string>	parseHost( std::string const & str );
+	
+	static std::pair<std::string, std::string>				parseHost( std::string const & str );
 
 	static std::pair<std::vector<std::string>, std::string>	parseHttpMessage( std::string const & str, std::string & host );
+	
+	static std::pair<std::string, std::string>	parseHeaderSyntaxis( std::string h );
+	static bool									recognizeHeaderName( std::string name );
+	static bool									oneValueHeader( std::string name );
+	static bool									manyValuesHeader( std::string name );
+	static std::vector<std::string>				parseValues( std::string n, std::string v );
 };
-
 #endif
