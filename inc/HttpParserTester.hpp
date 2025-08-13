@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/08 15:38:46 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/13 17:37:42 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,9 @@ private:
 	static void sfWithoutCrlf();
 	static void	crlfTests();
 	static void shouldHaveOneHost();
-	
-
-
 
 	static void validHostSyntaxis();
 	static void trimSpacesAndTab();
-
-	
 
 	/*--------------Request Line------------------*/
 	static void	shouldHaveTwoSpaces();
@@ -49,12 +44,16 @@ private:
 	static void httpVersion();
 	static void	implementedMethod();
 
-
 	/*-------------------Uri----------------------*/
 	static void	invalidCharUri();
 	static void	invalidForm();
 	static void	validPercentEncoded();
 	static void	uriReconstruction();
+
+	/*------------------Headers-------------------*/
+	static void	parseHeaderSyntaxis();
+	static void	pushHeaderValues();
+	static void	pushMoreValues();
 
 	
 public:
@@ -62,6 +61,7 @@ public:
 	static void	parseRequestLineTest();
 	static void parseUriTest();
 	static void	parseHostTest();
+	static void	parseHeadersTest();
 };
 
 #endif
