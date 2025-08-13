@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/10 15:35:10 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/13 15:04:02 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,11 +387,10 @@ bool	HttpParser::recognizeHeaderName( std::string name ) {
 	return false;
 }
 
-std::vector<std::string>	HttpParser::parseValues( std::string n, std::string v ) {
+std::vector<std::string>	HttpParser::pushValues( std::string n, std::string v ) {
 	std::vector<std::string>	values;
 
 	if ( oneValueHeader( n ) ) {
-		
 		values.push_back( trimSpaceAndTab( v ));
 		return values;
 	}
@@ -404,5 +403,21 @@ std::vector<std::string>	HttpParser::parseValues( std::string n, std::string v )
 		trimSpaceAndTab( *it );
 
 	return values;
+}
+
+void	HttpParser::pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v ) {
+
+	if ( oneValueHeader( h->first )) {
+		if ( h->second.at( 0 ) == trimSpaceAndTab( v )) return; 
+		throw std::invalid_argument( E_400 );
+	}
+
+	std::vector<std::string>			more_values = split( v, ',' );
+	std::vector<std::string>::iterator	it, ite = more_values.end();
+
+	for ( it = more_values.begin(); it != ite; ++it )
+		trimSpaceAndTab( *it );
+
+	h->second.insert( h->second.end(), more_values.begin(), more_values.end());
 
 }

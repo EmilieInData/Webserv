@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/10 15:33:22 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/13 15:06:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,15 @@ Headers::Headers( std::vector<std::string>::iterator it, std::vector<std::string
 			continue;
 		}
 		
-		// if h name exists 
-			//if one value  
-				//verify the value is the same 
-				//SI NO IS the same throw exeption
-			//if many values 
-				//anadir a la lista de values 
+		std::map<std::string, std::vector<std::string> >::iterator	found = header.find( tmp.first );
 
+		if ( found != header.end()) {
+			HttpParser::pushMoreValues( found, tmp.second );
+			++it;
+			continue;
+		}
 		
-		header[ tmp.first ] = HttpParser::parseValues( tmp.first, tmp.second );
+		header[ tmp.first ] = HttpParser::pushValues( tmp.first, tmp.second );
 		
 		++it;
 	}

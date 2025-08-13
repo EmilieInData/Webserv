@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/10 14:07:45 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/13 15:08:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,6 @@ private:
 	static const int			one_h_count;
 	static const std::string	many_header[];
 	static const int			many_h_count;
-//	static const std::string	all_headers[];
-//	static const int			all_h_count;
 
 public:
 	static std::vector<std::string>	split( std::string const & str, char const delimiter );
@@ -74,6 +72,7 @@ public:
 	static bool									recognizeHeaderName( std::string name );
 	static bool									oneValueHeader( std::string name );
 	static bool									manyValuesHeader( std::string name );
-	static std::vector<std::string>				parseValues( std::string n, std::string v );
+	static std::vector<std::string>				pushValues( std::string n, std::string v );
+	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
 };
 #endif
