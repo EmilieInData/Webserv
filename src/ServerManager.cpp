@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 18:08:16 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/14 17:47:17 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 	return std::make_pair(portIn, ipStr);
 }
 
-bool ServerManager::servReceive(ClientConnection &connection)
+bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req )
 {
 	bool isComplete = false;
 
@@ -136,11 +136,16 @@ bool ServerManager::servReceive(ClientConnection &connection)
 			if (bytes > 0)
 			{
 				buffer[bytes] = '\0';
+			
+		//		req.sendBuffer( buffer, bytes ); //poner en param max_body_size
+
 				connection.fullRequest += buffer;
-				if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
-					isComplete = true;
+				req.sendBuffer( buffer, bytes );
+			if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
+			//if ( !req.getParsingState() )
+				isComplete = true;
 			}
-			else if (bytes == 0)
+			else if (bytes == 0) 
 				return false;
 			else if (bytes < 0)
 			{
@@ -155,12 +160,12 @@ bool ServerManager::servReceive(ClientConnection &connection)
 	return isComplete;
 }
 
-void ServerManager::servRespond(ClientConnection &connection)
+void ServerManager::servRespond(ClientConnection &connection, HttpRequest & req, std::pair<int, std::string> incoming)
 {
 	try
 	{
-		std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
-		HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
+	//	std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
+	//	HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
 		Response					resp(req);
 		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
 		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
@@ -197,11 +202,15 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 			connection.socketIndex = i;
 			connection.clientFd	   = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
 											&connection.clientLen);
+			
+			std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
 
-			if (servReceive(connection) && !connection.fullRequest.empty())
-				servRespond(connection);
-			else
-			{
+			HttpRequest		req = HttpRequest( incoming, *this );
+
+			if (servReceive(connection, req) && !connection.fullRequest.empty()) {
+				//HttpRequest req(incoming, connection.fullRequest, *this);
+				servRespond(connection, req, incoming);
+			} else {
 				printBoxError("Incomplete or empty request received");
 				std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
 											"0\r\nConnection: close\r\n\r\n";
