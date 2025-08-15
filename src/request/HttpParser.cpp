@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 16:40:23 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/15 12:31:02 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,6 +307,10 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 void	HttpParser::checkIfPathExist( std::map<std::string, LocationConf> & location, std::string const & path ) {
 	std::map<std::string, LocationConf>::iterator	it = location.find( path );
+
+	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+		std::cout << "LOCATION: " << itt->first << std::endl;
+
 
 	if ( it == location.end() ) throw std::invalid_argument( E_404 ); // TODO i believe this needs fixing
 

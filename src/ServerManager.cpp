@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/14 17:47:17 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/15 11:56:22 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,12 +137,11 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 			{
 				buffer[bytes] = '\0';
 			
-		//		req.sendBuffer( buffer, bytes ); //poner en param max_body_size
-
 				connection.fullRequest += buffer;
-				req.sendBuffer( buffer, bytes );
-			if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
-			//if ( !req.getParsingState() )
+				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
+				std::cout << "STATE: " << req.getParsingState() << std::endl;
+			//if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
+			if ( req.getParsingState() <= 0 )
 				isComplete = true;
 			}
 			else if (bytes == 0) 

@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 18:07:08 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/15 13:02:23 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include <fcntl.h>
 /*
 HttpRequest::HttpRequest() : req_line( NULL ), uri( NULL ), headers( NULL ) { 
 	HttpParserTester::parseHttpMessageTest();
@@ -134,8 +135,25 @@ void	HttpRequest::playParsing() {
 
 		ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
 		setFullPath(serv);
+		
+/*		std::cout << "GETPATH(): " << this->uri->getPath() << std::endl;
+		std::cout << "GETFULLPATH(): " << this->getFullPath().first << " " << this->getFullPath().second << std::endl;
+		std::cout << "INCOMING: " << this->incoming.first << " " << this->incoming.second << std::endl;
+		std::cout << "GETURI(): " << this->getRequestUri() << std::endl;
+		std::cout << "GETSERVERNAME(): " << serv.getServerName()[0] << " " << serv.getServerName()[1] << " " << serv.getServerName()[2] << std::endl;
+		//hacer algo con servername
+		std::string	path_location = "/www/server01" + this->uri->getPath();
+
+		HttpParser::checkIfPathExist( serv.getLocations(), path_location); // 404 not found si el uri no existe en servidor
+		HttpParser::notAllowedMethod( serv.getItLocations( path_location), serv.getAllowedMethods(), this->req_line->getMethod());
+*/
+//Hacer el check if path exists con access() ???? 
+//		std::string	path_location = "/www/server01" + this->uri->getPath();
+//		if ( access( path_location.c_str(), F_OK ) != 0 ) throw std::invalid_argument( E_404 );
 		HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor
 		HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod());
+
+
 
 		++it; 
 	
@@ -155,6 +173,7 @@ void	HttpRequest::playParsing() {
 		std::strncpy( code_str, e.what(), 3 );
 		code_str[3] = '\0';
 
+		this->state = ERR;
 		this->code = std::atoi( code_str );
 		std::cout << "ERROR CODE: " << this->code << std::endl;
 		std::cout << e.what() << std::endl;

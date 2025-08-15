@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 18:07:37 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/15 11:34:11 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #define	HEADERS		2
 #define BODY		3
 #define	DONE		0
+#define ERR			-1
 
 #include <iostream>
 #include <stdexcept>
