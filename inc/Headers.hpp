@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 13:09:02 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@ class	Headers	{
 private:
 	std::map<std::string, std::vector<std::string> >	header;
 		
-
 public:
 	Headers();
-//	Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite );
 	Headers( Headers const & src );
 	~Headers();
 	

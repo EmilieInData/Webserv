@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 17:57:18 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:23:17 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,10 @@ int main(int ac, char** av)
 
 	setupSignal(); // TODO this needs to be completed
 
-//	HttpRequest();
+	ServerManager	testserv(P);
 
-	ServerManager testserv(P);
+	HttpRequest		req(testserv); //run tests
+
 	printServerManager(testserv);
 	testserv.servSetup();
 	testserv.servRun();

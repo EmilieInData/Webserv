@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 13:09:02 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,6 @@
 
 Headers::Headers() {}
 
-/*Headers::Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite  ) { //este se puede borrar no sirve
-	//pase specifics headers:
-		//-content length only digit
-		//cookie many values separated by ':'
-		//user-agemt many values separated by space
-	while ( it != ite && !(*it).empty()) {
-			std::pair<std::string, std::string>	tmp = HttpParser::parseHeaderSyntaxis( *it );
-		
-		if ( !HttpParser::recognizeHeaderName( tmp.first )) {
-			++it;
-			continue;
-		}
-
-	//	std::cout << "HEADERNAME: " << tmp.first << std::endl;
-		
-		std::map<std::string, std::vector<std::string> >::iterator	found = header.find( tmp.first );
-
-		
-
-		if ( found != header.end()) {
-			HttpParser::pushMoreValues( found, tmp.second );
-			++it;
-			continue;
-		}
-		
-		header[ tmp.first ] = HttpParser::pushValues( tmp.first, tmp.second );
-		
-		++it;
-	}
-
-//	printHeader();
-}*/
-
 Headers::Headers( Headers const & src ) { *this = src; }
 
 Headers::~Headers() {}
@@ -59,7 +26,6 @@ Headers &	Headers::operator=( Headers const & rhs ) {
 		this->header = rhs.header;
 	return *this;
 }
-
 
 void	Headers::setHeader( std::string & str ) {
 	std::pair<std::string, std::string>	tmp = HttpParser::parseHeaderSyntaxis( str );
@@ -74,16 +40,11 @@ void	Headers::setHeader( std::string & str ) {
 	}
 		
 	this->header[ tmp.first ] = HttpParser::pushValues( tmp.first, tmp.second );
-		
-//	printHeader();
 }
 
 std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHeader( std::string const & name ) const { 
 	std::map<std::string, std::vector<std::string> >::const_iterator it = this->header.find( name ); 
-
-//	if ( it == this->header.end())
-//		throw std::invalid_argument( "Error: header dont exist!" );
-
+	
 	return it;
 }
 

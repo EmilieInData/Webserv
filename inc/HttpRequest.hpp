@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 14:45:52 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,12 @@ private:
 	std::pair<int, std::string>			incoming;
 	ServerManager &						server;	
 
+	HttpRequest();
+
 	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it );
 
 public:
-//	HttpRequest();
-//	HttpRequest( ServerManager & server );
+	HttpRequest( ServerManager & server );
 	HttpRequest(std::pair<int, std::string> incoming, ServerManager &server);// FABIO paired string with fd.
 	HttpRequest( HttpRequest const &src );
 	~HttpRequest();

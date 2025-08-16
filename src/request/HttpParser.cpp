@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 14:33:37 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::vector<std::string>	HttpParser::split( std::string const & str, char const 
 	return tokens;
 }
 
-std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) {
+std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) { //ya no sirve ?? BORRAR ?
 	std::vector<std::string>	lines;
 	std::string					body;
 	size_t						start = 0, found_body, end, count = 0;
