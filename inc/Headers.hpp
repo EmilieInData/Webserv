@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 14:24:28 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:09:02 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,11 @@
 class	Headers	{
 private:
 	std::map<std::string, std::vector<std::string> >	header;
-	
-/*	static const std::string	one_header[];
-	static const int			one_h_count;
-	static const std::string	many_header[];
-	static const int			many_h_count;
-	static const std::string	all_headers[];
-	static const int			all_h_count;
-*/
-	Headers();
+		
 
 public:
-	Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite );
+	Headers();
+//	Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite );
 	Headers( Headers const & src );
 	~Headers();
 	
@@ -42,6 +35,7 @@ public:
 	std::vector<std::string>											getHeaderValue( std::string const & name ) const;
 	std::string											getHeaderOnlyOneValue( std::string const & name, int index ) const; 
 	void												printHeader() const;
+	void												setHeader( std::string & str );
 };
 
 #endif

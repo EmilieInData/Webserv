@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/15 12:31:02 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 14:33:37 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,14 +194,14 @@ std::string const & message, std::string & host_str ) {
 			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
 		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 ) {
 			host_str = (*it).substr( 5, (*it).length() - 5 );
-			if ( trimSpaceAndTab( host_str ) == "" ) throw std::invalid_argument( E_400 ); 
+			if ( trimSpaceAndTab( host_str ) == "" ) throw std::invalid_argument( E_400 ); //ok
 			host++;
 		}
 		header++;
 		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 ); 
 																			 
 	}
-	if ( host != 1 ) throw std::invalid_argument( E_400 );
+	if ( host != 1 ) throw std::invalid_argument( E_400 ); //ok
 
 	return lines;
 }
@@ -214,6 +214,7 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	for ( s_it = line.begin(); s_it != s_ite; ++s_it )
 		if ( *s_it == ' ' ) spaces++;
 	if ( spaces != 2 ) throw std::invalid_argument( E_400 );
+
 
 	std::vector<std::string>	tokens = split( line, ' ' );
 	
@@ -362,9 +363,11 @@ const int			HttpParser::many_h_count = 5;
 std::pair<std::string, std::string>	HttpParser::parseHeaderSyntaxis( std::string h ) {
 	
 		std::size_t found = h.find( ":" );
+
 		if ( found == std::string::npos ) throw std::invalid_argument( E_400 );
 		std::string	name = h.substr( 0, found );
 		std::string::iterator	it_n, ite_n = name.end();
+
 		for ( it_n = name.begin(); it_n != ite_n; ++it_n )
 			if ( !HttpParser::isTokenChar( *it_n )) throw std::invalid_argument( E_400 );
 

@@ -6,18 +6,21 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/15 11:34:11 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 14:45:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPREQUEST_HPP
 #define HTTPREQUEST_HPP
 
-#define	REQ_LINE	1
-#define	HEADERS		2
-#define BODY		3
+#define SKIP		1
+#define	REQ_LINE	2
+#define	HEADERS		3
+#define BODY		4
 #define	DONE		0
 #define ERR			-1
+#define CRLF		"\r\n"
+#define TWO_CRLF	"\r\n\r\n"
 
 #include <iostream>
 #include <stdexcept>
@@ -48,7 +51,9 @@ private:
 	int									state;
 	std::string							fullRequest;
 	std::pair<int, std::string>			incoming;
-	ServerManager &						server;		
+	ServerManager &						server;	
+
+	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it );
 
 public:
 //	HttpRequest();
@@ -60,7 +65,7 @@ public:
 	HttpRequest &operator=(HttpRequest const &rhs);
 
 	void								sendBuffer( char *buffer, ssize_t bytes );
-	void								playParsing();
+	void								playParsing( std::string & tmp);
 
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;

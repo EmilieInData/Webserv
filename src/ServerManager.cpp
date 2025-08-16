@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/15 11:56:22 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/15 14:36:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[4096]; // HACK i put 4096, but i don't know if it's right
+		char	  buffer[1024]; // HACK i put 4096, but i don't know if it's right
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -137,7 +137,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 			{
 				buffer[bytes] = '\0';
 			
-				connection.fullRequest += buffer;
+			//	connection.fullRequest += buffer;
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
 				std::cout << "STATE: " << req.getParsingState() << std::endl;
 			//if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
@@ -155,7 +155,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 		}
 	}
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
-	printRaw(connection.fullRequest);
+	//printRaw(connection.fullRequest);
 	return isComplete;
 }
 
@@ -167,8 +167,8 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest & req,
 	//	HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
 		Response					resp(req);
 		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
-		printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
-					 req.getHttpMethod());
+	//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
+	//				 req.getHttpMethod());
 		resp.setContent(req.getFullPath(), req.getHttpMethod());
 		resp.setClientFd(connection.clientFd);
 		resp.sendResponse();
@@ -206,8 +206,7 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 
 			HttpRequest		req = HttpRequest( incoming, *this );
 
-			if (servReceive(connection, req) && !connection.fullRequest.empty()) {
-				//HttpRequest req(incoming, connection.fullRequest, *this);
+			if (servReceive(connection, req) /*&& !connection.fullRequest.empty()*/) {
 				servRespond(connection, req, incoming);
 			} else {
 				printBoxError("Incomplete or empty request received");

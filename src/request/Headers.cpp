@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/14 14:24:28 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:09:02 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 #include <string>
 #include <iostream>
 
-Headers::Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite  ) {
+Headers::Headers() {}
+
+/*Headers::Headers( std::vector<std::string>::iterator it, std::vector<std::string>::iterator ite  ) { //este se puede borrar no sirve
 	//pase specifics headers:
 		//-content length only digit
 		//cookie many values separated by ':'
@@ -45,8 +47,8 @@ Headers::Headers( std::vector<std::string>::iterator it, std::vector<std::string
 		++it;
 	}
 
-	printHeader();
-}
+//	printHeader();
+}*/
 
 Headers::Headers( Headers const & src ) { *this = src; }
 
@@ -59,7 +61,22 @@ Headers &	Headers::operator=( Headers const & rhs ) {
 }
 
 
+void	Headers::setHeader( std::string & str ) {
+	std::pair<std::string, std::string>	tmp = HttpParser::parseHeaderSyntaxis( str );
+		
+	if ( !HttpParser::recognizeHeaderName( tmp.first )) return;
+	
+	std::map<std::string, std::vector<std::string> >::iterator	found = this->header.find( tmp.first );
 
+	if ( found != this->header.end()) {
+		HttpParser::pushMoreValues( found, tmp.second );
+		return;
+	}
+		
+	this->header[ tmp.first ] = HttpParser::pushValues( tmp.first, tmp.second );
+		
+//	printHeader();
+}
 
 std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHeader( std::string const & name ) const { 
 	std::map<std::string, std::vector<std::string> >::const_iterator it = this->header.find( name ); 

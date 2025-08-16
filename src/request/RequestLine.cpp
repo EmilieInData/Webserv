@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 13:38:24 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/16 17:30:43 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 12:47:11 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 RequestLine::RequestLine( std::vector<std::string> const & line ) : method( line[0] ), req_target( line[1] ), version( line[2] ) {
 	if ( !HttpParser::notImplementedMethod( line[0] )) throw std::invalid_argument( E_501 );
+	
 	HttpParser::parseReqTarget( req_target );
 }
 

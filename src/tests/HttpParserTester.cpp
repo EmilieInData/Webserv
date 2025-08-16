@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/13 18:40:57 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:13:06 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -655,7 +655,7 @@ void	HttpParserTester::parseUriTest() {
 
 	std::cout << RESET << std::endl;
 }
-
+/*
 void	HttpParserTester::parseHeaderSyntaxis() {
 
 	std::vector<std::string>			lines;
@@ -784,4 +784,4 @@ void	HttpParserTester::parseHeadersTest() {
 
 	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
 }
-
+*/
