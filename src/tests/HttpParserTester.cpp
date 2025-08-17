@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 13:13:06 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:37:42 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -655,118 +655,148 @@ void	HttpParserTester::parseUriTest() {
 
 	std::cout << RESET << std::endl;
 }
-/*
+
 void	HttpParserTester::parseHeaderSyntaxis() {
 
-	std::vector<std::string>			lines;
-	lines.push_back( std::string( "Content-Length :45" ));
-	std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
+	std::string name( "Content-Length " );
+	std::string value( "45" );
+	std::string arg( name + ":" + value );
 
 	try {
-		Headers	h( it, ite );
-		std::cout << RED << "valid:		 '" << lines[0] << "' header accepted / Test FAIL" << std::endl;
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << RED << "valid:		 '" << name << "' header accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  '" << lines[0] << "' header name not accepted/ Test OK" << std::endl;
-	}
-	
-	lines[0] = std::string( "Content-Length:45" );
-	try {
-		Headers	h( it, ite );
-		std::cout << GRE << "valid:		  '" << lines[0] << "' header accepted / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << GRE << e.what() << ":  '" << name << "' header name not accepted/ Test OK" << std::endl;
 	}
 
-	lines[0] = std::string( "Content-Length:	 45	 " );
+	name = "Content-Length";
+	value = "45";
+	arg = name + ":" + value;
+
 	try {
-		Headers	h( it, ite );
-		std::cout << GRE << "valid:		  '" << lines[0] << "' header accepted / Test OK" << std::endl;
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << GRE << "valid:		  '" << name << "' header name accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << name << "' header name not accepted/ Test FAIL" << std::endl;
 	}
 
-	lines[0] = std::string( "User-Agent::::" );
+	name = "Content-Length";
+	value = "	45 ";
+	arg = name + ":" + value;
+
 	try {
-		Headers	h( it, ite );
-		std::cout << GRE << "valid:		  '" << lines[0] << "'value: '" << h.getHeaderOnlyOneValue( "user-agent", 0 ) << "' header accepted / Test OK" << std::endl;
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << GRE << "valid:		  '" << value << "' header value accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << value << "' header value not accepted/ Test FAIL" << std::endl;
+	}
+
+	name = "User-Agent";
+	value = ":::";
+	arg = name + ":" + value;
+
+	try {
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << GRE << "valid:		  '" << arg << "'value: '" << h.getHeaderOnlyOneValue( "user-agent", 0 ) << "' header accepted / Test OK" << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << RED << e.what() << ":  '" << arg << "' header not accepted/ Test FAIL" << std::endl;
 	}
 
 
-	lines[0] = std::string( "Content-Length@:45" );
+	name = "Content-Length@";
+	value = "45";
+	arg = name + ":" + value;
 
 	try {
-		Headers	h( it, ite );
-		std::cout << RED << "valid:		 '" << lines[0] << "' @ char accepted / Test FAIL" << std::endl;
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << RED << "valid:		 '" << name << "' @ char in name accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  '" << lines[0] << "' @ char not accepted/ Test OK" << std::endl;
+		std::cout << GRE << e.what() << ":  '" << name << "' @ char in name not accepted/ Test OK" << std::endl;
 	}
 
-	lines[0] = std::string( "Content-LengthA:45" );
+	name = "Content-LengthA";
+	value = "45";
+	arg = name + ":" + value;
+
 	try {
-		Headers	h( it, ite );
-		std::cout << GRE << "valid:		 '" << lines[0] << "' header ignored / Test OK" << std::endl;
+		Headers	h;
+		h.setHeader( arg );
+		std::cout << GRE << "valid:		 '" << name << "' header ignored / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << name << "' header not accepted/ Test FAIL" << std::endl;
 	}
 
 }
 
 void	HttpParserTester::pushHeaderValues() {
 
-	std::vector<std::string>			lines;
-	lines.push_back( std::string( "Content-Length:45,44,34,56" ));
-	std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
-	
-	lines[0] = std::string( "Content-Length:45,44,34,56" );
+	std::string name( "Content-Length" );
+	std::string value( "45,44,34,56" );
+	std::string arg( name + ":" + value );
+
 	try {
-		Headers	h( it, ite );
+		Headers	h;
+		h.setHeader( arg );
 		std::cout << GRE << "valid:		  '" << h.getHeaderOnlyOneValue( "content-length", 0 ) << "' only one value accepted by Content-Lenght/ Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << arg << "' header not accepted/ Test FAIL" << std::endl;
 	}
 	
-	lines[0] = std::string( "Accept:a b,c	, d " );
+	name = "Accept";
+	value = "a b,c	, d ";
+	arg = name + ":" + value;
+
 	try {
-		Headers	h( it, ite );
+		Headers	h;
+		h.setHeader( arg );
 		std::cout << GRE << "valid:		  '" << h.getHeaderOnlyOneValue( "accept", 0 ) << "' '" << h.getHeaderOnlyOneValue( "accept", 1 ) << "' '" <<h.getHeaderOnlyOneValue( "accept", 2 ) << "' many values accepted by Accept/ Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' header not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << arg << "' header not accepted/ Test FAIL" << std::endl;
 	}
 }
 
 void	HttpParserTester::pushMoreValues() {
 
+//	std::vector<std::string>			lines;
+//	lines.push_back( std::string( "Content-Length:45" ));
+//	lines.push_back( std::string( "Content-lEnGtH:46" ));
+//	std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
+	std::string argC( "Content-Length:45" );
+	std::string argC2( "Content-LENGTh:45" );
+	std::string argc( "CoNtEnT-LeNgTh:46" );
+	std::string argA( "Accept: text/html, image/png" );
+	std::string arga( "Accept: image/jpeg, image/gif" );
 
-	std::vector<std::string>			lines;
-	lines.push_back( std::string( "Content-Length:45" ));
-	lines.push_back( std::string( "Content-lEnGtH:46" ));
-	std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
+	Headers h;
+	h.setHeader( argC );
+	
+	h.setHeader( argA );
+
 
 	try {
-		Headers	h( it, ite );
-		std::cout << RED << "valid:		 '" << lines[0] << "' two Content-Length headers with diferent values accepted / Test FAIL" << std::endl;
+		h.setHeader( argc );
+		std::cout << RED << "valid:		 '" << argc << "' two Content-Length headers with diferent values accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  '" << lines[0] << "' '" << lines[1] << "' two Content-Length headers with diferent values not accepted/ Test OK" << std::endl;
+		std::cout << GRE << e.what() << ":  '" << argC << "' '" << argc << "' two Content-Length headers with diferent values not accepted/ Test OK" << std::endl;
 	}
 	
-	lines[1] = std::string( "Content-Length:45" );
 	try {
-		Headers	h( it, ite );
-		std::cout << GRE << "valid:		  '" << lines[0] << "' '" << lines[1]  << "' second Content-Length header with same values ignored/ Test OK" << std::endl;
+		h.setHeader( argC2 );
+		std::cout << GRE << "valid:		  '" << argC << "' '" << argC2  << "' second Content-Length header with same values ignored/ Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' two Content-Length headers with same values not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << argC << "' two Content-Length headers with same values not accepted/ Test FAIL" << std::endl;
 	}
 	
-	lines[0] = std::string( "Accept: text/html, image/png" );
-	lines[1] = std::string( "Accept: image/jpeg, image/gif" );
-		
 	try {
-		Headers	h( it, ite );
+		h.setHeader( arga );
 		std::cout << GRE << "valid:		  '" << h.getHeaderOnlyOneValue( "accept", 0 ) << "' '" << h.getHeaderOnlyOneValue( "accept", 1 ) << "' '" << h.getHeaderOnlyOneValue( "accept", 2 ) << "' '" << h.getHeaderOnlyOneValue( "accept", 3 ) << "' four values for Accept header accepted/ Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  '" << lines[0] << "' two Accept header with two values not accepted/ Test FAIL" << std::endl;
+		std::cout << RED << e.what() << ":  '" << argA << "' two Accept header with two values not accepted/ Test FAIL" << std::endl;
 	}
 
 
@@ -784,4 +814,4 @@ void	HttpParserTester::parseHeadersTest() {
 
 	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
 }
-*/
+

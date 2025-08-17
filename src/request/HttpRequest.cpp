@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:24:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/17 10:33:32 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL
 	HttpParserTester::parseRequestLineTest();
 	HttpParserTester::parseHostTest();
 	HttpParserTester::parseUriTest();
-//	HttpParserTester::parseHeadersTest();
+	HttpParserTester::parseHeadersTest();
 
 }
 
