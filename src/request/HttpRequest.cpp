@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/17 10:33:32 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:13:58 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,12 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 						this->uri = new Uri( req_line->getReqTarget(), this->host.first );
 						ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
 						setFullPath(serv);
-						HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor
-						HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod());
+			//			std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
+			//			std::cout << "PATH: " << this->uri->getPath() << std::endl;
+						setLocation( serv.getLocations(), this->_fullPath.second );
+
+						HttpParser::checkIfPathExist( this->_fullPath );//this->uri->getPath()); // 404 not found si el uri no existe en servidor
+					//	HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod());
 
 						if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() )
 							this->state = BODY;
@@ -116,6 +120,8 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 			found = fullRequest.find( CRLF );
 		}
 	} catch ( std::invalid_argument e ) {
+
+		//usar setStatusCode( error ) ????? refactor
 		char	code_str[4];
 
 		std::strncpy( code_str, e.what(), 3 );
@@ -174,7 +180,7 @@ void	HttpRequest::playParsing( std::string & tmp) {
 //Hacer el check if path exists con access() ???? 
 //		std::string	path_location = "/www/server01" + this->uri->getPath();
 //		if ( access( path_location.c_str(), F_OK ) != 0 ) throw std::invalid_argument( E_404 );
-		HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor //ok
+	//	HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor //ok
 		HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod()); //ok
 
 
@@ -202,6 +208,38 @@ void	HttpRequest::playParsing( std::string & tmp) {
 		std::cout << "ERROR CODE: " << this->code << std::endl;
 		std::cout << e.what() << std::endl;
 	}
+}
+
+void	HttpRequest::setStatusCode( std::string error ) {
+	char	code_str[4];
+
+	std::strncpy( code_str, error.c_str(), 3 );
+
+	code_str[3] = '\0';
+
+	this->state = ERR;
+
+	code = std::atoi( code_str );
+	std::cout << "ERROR CODE: " << code << std::endl;
+	std::cout << error << std::endl;
+}
+
+void HttpRequest::setLocation( std::map<std::string, LocationConf> & location, std::string const & path ) {
+	std::size_t found = path.rfind( "/" );
+
+//	if ( found == std::string::npos ) //BADREQUEST
+		
+	this->location = path.substr( 0, found + 1 );
+//	std::cout << "LOCATION REQ: " << this->location << std::endl;
+
+	std::map<std::string, LocationConf>::iterator	it = location.find( this->location );
+
+//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+
+	if ( it == location.end() ) throw std::invalid_argument( E_404 ); 
+
+//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
 void	HttpRequest::checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it ) {

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:13:58 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <iostream>
 #include <cctype>
 #include <cstring>
+#include <unistd.h>
+#include <fcntl.h>
 
 std::vector<std::string>	HttpParser::split( std::string const & str, char const delimiter ) {
 
@@ -172,7 +174,7 @@ std::string	trimSpaceAndTab( std::string & str ) {
 	return str;
 }
 
-std::pair<std::vector<std::string>, std::string>	HttpParser::parseHttpMessage( 
+std::pair<std::vector<std::string>, std::string>	HttpParser::parseHttpMessage( //ya no sirve borrar
 std::string const & message, std::string & host_str ) {
 
 	std::pair<std::vector<std::string>, std::string> lines = crlfSplit( message );
@@ -306,16 +308,15 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-void	HttpParser::checkIfPathExist( std::map<std::string, LocationConf> & location, std::string const & path ) {
-	std::map<std::string, LocationConf>::iterator	it = location.find( path );
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
+	std::string full( path.first + path.second );
 
-	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-		std::cout << "LOCATION: " << itt->first << std::endl;
+	std::cout << "FULL: " << full << std::endl;
+
+	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
 
 
-	if ( it == location.end() ) throw std::invalid_argument( E_404 ); // TODO i believe this needs fixing
-
-	std::cout << "PATH EXIST IN SERVER: " << (*it).first << std::endl;
+	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
 }
 
 

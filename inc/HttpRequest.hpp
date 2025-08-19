@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:03:37 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ private:
 	Uri									*uri;
 	std::pair<std::string, std::string>	host;
 	std::pair<std::string, std::string>	_fullPath;
+	std::string							location;
 	Headers								*headers;
 	std::string							body;
 	int									code;
@@ -68,6 +69,8 @@ public:
 	void								sendBuffer( char *buffer, ssize_t bytes );
 	void								playParsing( std::string & tmp);
 
+	void								setStatusCode( std::string error );
+	void								setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;
 	std::string							getPath() const;
