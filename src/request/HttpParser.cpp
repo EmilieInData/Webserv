@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/04 16:11:19 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,39 @@ std::vector<std::string>	HttpParser::split( std::string const & str, char const 
 	return tokens;
 }
 
-std::vector<std::string>	HttpParser::crlfSplit( std::string const & str ) {
+std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) { //ya no sirve ?? BORRAR ?
 	std::vector<std::string>	lines;
-	size_t						start = 0, end;
+	std::string					body;
+	size_t						start = 0, found_body, end, count = 0;
 
-    while ((end = str.find( "\r\n", start)) != std::string::npos) {
-        lines.push_back(str.substr(start, end - start));
-        start = end + 2;
+	while ( ( found_body = str.find( "\r\n\r\n", start)) != std::string::npos ) {
+		std::string	tmp = str.substr( start, found_body - start );
+		if ( tmp != "" ) {
+			 body = str.substr( found_body + 4, str.length() );
+			 count++;
+			 break;
+		}
+        start = found_body + 4;
     }
-    return lines;
+	
+	if ( count == 0 ) throw std::invalid_argument( E_400 );
+
+	start = 0;
+	
+	while ( (end = str.find( "\r\n", start)) != std::string::npos  &&  end <= found_body ) {
+        lines.push_back( str.substr( start, end - start ));
+        start = end + 2;
+    }	
+
+	//PRINT LINES
+	std::vector<std::string>::iterator	it, ite = lines.end();
+
+	for ( it = lines.begin(); it != ite; ++it )
+		std::cout << "LINE: " << *it << std::endl;
+
+	std::cout << "BODY: " << body <<std::endl;
+
+    return std::make_pair( lines, body );
 }
 
 std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
@@ -148,19 +172,20 @@ std::string	trimSpaceAndTab( std::string & str ) {
 	return str;
 }
 
-std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & message, std::string & host_str ) {
+std::pair<std::vector<std::string>, std::string>	HttpParser::parseHttpMessage( 
+std::string const & message, std::string & host_str ) {
 
-	std::vector<std::string> lines = crlfSplit( message );
+	std::pair<std::vector<std::string>, std::string> lines = crlfSplit( message );
 
-	if ( lines.empty() || !lines.back().empty()) throw std::invalid_argument( E_400 );
+	if ( lines.first.empty()) throw std::invalid_argument( E_400 );
 
 	std::vector<std::string>::iterator	it;
-	std::vector<std::string>::iterator	ite = lines.end();
+	std::vector<std::string>::iterator	ite = lines.first.end();
 	std::string::const_iterator			s_it, s_ite;
 
 	int header = 0, host = 0;
 
-	for ( it = lines.begin(); it != ite; ++it ) {
+	for ( it = lines.first.begin(); it != ite; ++it ) {
 		if ( header == 0 && (*it).empty()) continue;
 		if ( header > 0 && !(*it).empty()) 
 			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( E_400 );
@@ -169,13 +194,14 @@ std::vector<std::string>	HttpParser::parseHttpMessage( std::string const & messa
 			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
 		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 ) {
 			host_str = (*it).substr( 5, (*it).length() - 5 );
+			if ( trimSpaceAndTab( host_str ) == "" ) throw std::invalid_argument( E_400 ); //ok
 			host++;
 		}
 		header++;
 		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 ); 
 																			 
 	}
-	if ( host != 1 ) throw std::invalid_argument( E_400 );
+	if ( host != 1 ) throw std::invalid_argument( E_400 ); //ok
 
 	return lines;
 }
@@ -188,6 +214,7 @@ RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
 	for ( s_it = line.begin(); s_it != s_ite; ++s_it )
 		if ( *s_it == ' ' ) spaces++;
 	if ( spaces != 2 ) throw std::invalid_argument( E_400 );
+
 
 	std::vector<std::string>	tokens = split( line, ' ' );
 	
@@ -253,10 +280,11 @@ std::string	HttpParser::parseFragment( std::string const & uri ) {
 
 }
 
-bool	HttpParser::notImplementedMethod( std::string const & method ) {
-	const char *	valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+const std::string	HttpParser::valid_method[] = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT" };
+const int			HttpParser::valid_method_count = 8;
 
-	for ( int i = 0; i < 8; i++ )
+bool	HttpParser::notImplementedMethod( std::string const & method ) {
+	for ( int i = 0; i < valid_method_count; i++ )
 		if ( method == valid_method[i] ) 
 			return true;
 	return false;
@@ -280,6 +308,10 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 void	HttpParser::checkIfPathExist( std::map<std::string, LocationConf> & location, std::string const & path ) {
 	std::map<std::string, LocationConf>::iterator	it = location.find( path );
+
+	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+		std::cout << "LOCATION: " << itt->first << std::endl;
+
 
 	if ( it == location.end() ) throw std::invalid_argument( E_404 ); // TODO i believe this needs fixing
 
@@ -317,8 +349,82 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 		if ( second.empty()) throw std::invalid_argument( E_400 );
 		if ( !isInt( second )) throw std::invalid_argument( E_400 );
 	}
-
-
 	
 	return  std::make_pair( first, second );
+}
+
+
+
+const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
+const int			HttpParser::one_h_count = 12;
+const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
+const int			HttpParser::many_h_count = 5;
+
+std::pair<std::string, std::string>	HttpParser::parseHeaderSyntaxis( std::string h ) {
+	
+		std::size_t found = h.find( ":" );
+
+		if ( found == std::string::npos ) throw std::invalid_argument( E_400 );
+		std::string	name = h.substr( 0, found );
+		std::string::iterator	it_n, ite_n = name.end();
+
+		for ( it_n = name.begin(); it_n != ite_n; ++it_n )
+			if ( !HttpParser::isTokenChar( *it_n )) throw std::invalid_argument( E_400 );
+
+		return make_pair( toLower( name ), h.substr( found + 1, h.length() - found + 1 ));
+}
+
+bool	HttpParser::oneValueHeader( std::string name ) {
+	for ( int i = 0; i < one_h_count; i++ )
+		if ( name == one_header[i] ) 
+			return true;
+	return false;
+}
+
+bool	HttpParser::manyValuesHeader( std::string name ) {
+	for ( int i = 0; i < many_h_count; i++ )
+		if ( name == many_header[i] ) 
+			return true;
+	return false;
+}
+
+bool	HttpParser::recognizeHeaderName( std::string name ) {
+	if ( oneValueHeader( name )) return true;
+	if ( manyValuesHeader( name )) return true;
+	return false;
+}
+
+std::vector<std::string>	HttpParser::pushValues( std::string n, std::string v ) {
+	std::vector<std::string>	values;
+
+	if ( oneValueHeader( n ) ) {
+		values.push_back( trimSpaceAndTab( v ));
+		return values;
+	}
+	
+	values = split( v, ',' );
+
+	std::vector<std::string>::iterator	it, ite = values.end();
+
+	for ( it = values.begin(); it != ite; ++it )
+		trimSpaceAndTab( *it );
+
+	return values;
+}
+
+void	HttpParser::pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v ) {
+
+	if ( oneValueHeader( h->first )) {
+		if ( h->second.at( 0 ) == trimSpaceAndTab( v )) return; 
+		throw std::invalid_argument( E_400 );
+	}
+
+	std::vector<std::string>			more_values = split( v, ',' );
+	std::vector<std::string>::iterator	it, ite = more_values.end();
+
+	for ( it = more_values.begin(); it != ite; ++it )
+		trimSpaceAndTab( *it );
+
+	h->second.insert( h->second.end(), more_values.begin(), more_values.end());
+
 }

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:42:14 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/10 16:31:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include "Utils.hpp"
 
-#define LINELENGTH 60
+#define LINELENGTH 100
 #define PADDING 1
 
 #define WEBSERV_BANNER                                               \

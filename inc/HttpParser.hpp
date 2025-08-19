@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/30 15:59:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:40:23 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,17 @@ private:
 	~HttpParser();
 
 	HttpParser &	operator=( HttpParser const & rhs );
+	
+	static const std::string	valid_method[];
+	static const int			valid_method_count;
+	static const std::string	one_header[];
+	static const int			one_h_count;
+	static const std::string	many_header[];
+	static const int			many_h_count;
 
 public:
 	static std::vector<std::string>	split( std::string const & str, char const delimiter );
-	static std::vector<std::string>	crlfSplit( std::string const & str );
+	static std::pair<std::vector<std::string>, std::string>	crlfSplit( std::string const & str );
 	static std::vector<std::string>	isspaceSplit( std::string const & str );
 	static bool						isAsciiPrintable( std::string const & str );
 	static bool						isUnreservedForUri( char c );
@@ -56,9 +63,16 @@ public:
 	static void						checkIfPathExist( std::map<std::string, LocationConf> & loc, std::string const & path );
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
-	static std::pair<std::string, std::string>	parseHost( std::string const & str );
+	
+	static std::pair<std::string, std::string>				parseHost( std::string const & str );
 
-	static std::vector<std::string>	parseHttpMessage( std::string const & str, std::string & host );
+	static std::pair<std::vector<std::string>, std::string>	parseHttpMessage( std::string const & str, std::string & host );
+	
+	static std::pair<std::string, std::string>	parseHeaderSyntaxis( std::string h );
+	static bool									recognizeHeaderName( std::string name );
+	static bool									oneValueHeader( std::string name );
+	static bool									manyValuesHeader( std::string name );
+	static std::vector<std::string>				pushValues( std::string n, std::string v );
+	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
 };
-
 #endif
