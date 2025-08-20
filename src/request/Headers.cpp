@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:20:13 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,19 @@ void	Headers::printHeader() const {
 			std::cout << *it_v << " ";
 		std::cout << std::endl;
 	}
+}
+
+void	Headers::setCookieValues() {
+	if ( getHeader( "cookie" ) == this->header.end()) return; 
+	
+	std::vector<std::string>			more_values = HttpParser::split( getHeaderOnlyOneValue( "cookie", 0 ), ';' );
+	std::vector<std::string>::iterator	it, ite = more_values.end();
+
+	for ( it = more_values.begin(); it != ite; ++it )
+		HttpParser::trimSpaceAndTab( *it );
+
+	std::vector<std::string> cookie = this->getHeaderValue("cookie");
+	std::vector<std::string>::iterator	it_cookie = cookie.begin();
+
+	cookie.insert( it_cookie , more_values.begin(), more_values.end());
 }

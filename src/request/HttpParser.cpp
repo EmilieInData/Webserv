@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 11:14:28 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:08:01 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ std::string	HttpParser::toLower( std::string const & str ) {
 	return result;
 }
 
-std::string	trimSpaceAndTab( std::string & str ) {
+std::string	HttpParser::trimSpaceAndTab( std::string & str ) {
 	std::string::reverse_iterator	rit, rite = str.rend();
 
 	for ( rit = str.rbegin(); rit != rite; ++rit ) {
@@ -354,8 +354,6 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	return  std::make_pair( first, second );
 }
 
-
-
 const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
 const int			HttpParser::one_h_count = 12;
 const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
@@ -429,3 +427,13 @@ void	HttpParser::pushMoreValues( std::map<std::string, std::vector<std::string> 
 	h->second.insert( h->second.end(), more_values.begin(), more_values.end());
 
 }
+
+int	HttpParser::parseContentLengthHeader( std::string const & v ) {
+	if ( v.empty()) throw std::invalid_argument( E_400 );
+	if ( v.at( 0 ) == 0 && v.length() == 1 ) return 0;
+	int tmp	= atoi( v.c_str());
+	if ( tmp <= 0 ) throw std::invalid_argument( E_400 );
+	return tmp;
+}
+
+
