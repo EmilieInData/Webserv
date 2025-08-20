@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/20 14:52:56 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:14:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[20]; // HACK i put 4096, but i don't know if it's right
+		char	  buffer[1024]; // HACK i put 4096, but i don't know if it's right
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -155,15 +155,8 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 				isComplete = true;
 			}
 			else if (bytes == 0) {
-			/*	if ( req.getParsingState() == BODY ) {
-					req.setStatusCode( E_400 );
-					return true;
-				}
-				return false;*/
 				std::cout << "BYTES = 0" << std::endl;
-		//		req.setStatusCode( E_400 );
 				return false;
-
 			}
 			else if (bytes < 0)
 			{

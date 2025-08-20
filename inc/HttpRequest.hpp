@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/19 20:03:37 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:03:46 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ private:
 	std::string							location;
 	Headers								*headers;
 	std::string							body;
+	std::size_t							body_len;
 	int									code;
 	int									state;
 	std::string							fullRequest;
@@ -57,6 +58,9 @@ private:
 	HttpRequest();
 
 	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it );
+	void	finalHeadersParsingRoutine();
+	void	setFullPath(ServerData const &serv);
+	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 
 public:
 	HttpRequest( ServerManager & server );
@@ -67,17 +71,13 @@ public:
 	HttpRequest &operator=(HttpRequest const &rhs);
 
 	void								sendBuffer( char *buffer, ssize_t bytes );
-	void								playParsing( std::string & tmp);
-
 	void								setStatusCode( std::string error );
-	void								setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;
 	std::string							getPath() const;
 	std::string							getQuery() const;
 	std::string							getHttpVersion() const;
 	std::pair<std::string, std::string> getFullPath() const;	// FABIO added this because I need full path for the response
-	void								setFullPath(ServerData const &serv);
 	int									getStatusCode() const;
 	int									getParsingState() const;
 	

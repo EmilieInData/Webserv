@@ -6,12 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 13:46:59 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:12:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include <fcntl.h>
+//#include <fcntl.h>
+#include <stdlib.h>
 
 HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL ), headers( NULL ), server( server ) { 
 	HttpParserTester::parseHttpMessageTest();
@@ -56,6 +57,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
 		this->state = rhs.state;
 		this->fullRequest = rhs.fullRequest;
 		this->incoming = rhs.incoming;
+		this->location = rhs.location;
 	}
     return *this;
 }
@@ -67,10 +69,8 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 	
 	std::size_t	found = fullRequest.find( CRLF );
 //	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
-//	if ( found == std::string::npos ) throw std::invalid_argument( E_400 );
 
-	static int			i = 0;
-
+	static int	i = 0;
 	
 	try {
 		while ( found != std::string::npos ) {
@@ -91,55 +91,57 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 					break;
 				case HEADERS:
 					if ( tmp.empty()) {
-						this->headers->printHeader();
-						checkHost( this->headers->getHeader( "host" ));
-						this->uri = new Uri( req_line->getReqTarget(), this->host.first );
-						ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
-						setFullPath(serv);
-			//			std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
-			//			std::cout << "PATH: " << this->uri->getPath() << std::endl;
-						setLocation( serv.getLocations(), this->_fullPath.second );
-
-						HttpParser::checkIfPathExist( this->_fullPath );//this->uri->getPath()); // 404 not found si el uri no existe en servidor
-						HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
-
-						if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() )
-							this->state = BODY;
-						else
-							this->state = DONE;
+						finalHeadersParsingRoutine();
 						break;
 					}
 					this->headers->setHeader( tmp );
 					this->state = HEADERS;
 					break;
-				case BODY:
-					std::cout << "BODY HERE !" << std::endl;
-					this->state = DONE;
-					break;
 			}
 			found = fullRequest.find( CRLF );
 		}
+		
+		if ( this->state == BODY ) {
+			this->body += this->fullRequest;
+			std::cout << this->fullRequest << std::endl;
+			this->body_len = atoi( this->headers->getHeaderOnlyOneValue( "content-length", 0 ).c_str());//poner esto en parsing de content-leng header
+			std::cout << "BODY_LEN: " << this->body_len << std::endl;
+			if ( this->body.length() >= this->body_len ) {
+				if ( this->body.length() > this->body_len )
+					this->body.erase( this->body_len, this->body.length());
+				std::cout << this->body << std::endl;
+				this->state = DONE;
+			}
+
+
+
+		}
+
 	} catch ( std::invalid_argument e ) {
-
 		this->setStatusCode( e.what());
-		//usar setStatusCode( error ) ????? refactor
-	/*	char	code_str[4];
-
-		std::strncpy( code_str, e.what(), 3 );
-		code_str[3] = '\0';
-
-		this->state = ERR;
-
-		code = std::atoi( code_str );
-		std::cout << "ERROR CODE: " << code << std::endl;
-		std::cout << e.what() << std::endl;*/
 	}
-	
 
 	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
+}
+
+void	HttpRequest::finalHeadersParsingRoutine() {
+	this->headers->printHeader();
+	checkHost( this->headers->getHeader( "host" ));
+	this->uri = new Uri( req_line->getReqTarget(), this->host.first );
+	ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
+	setFullPath(serv);
+//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
+//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
+	setLocation( serv.getLocations(), this->_fullPath.second );
+	HttpParser::checkIfPathExist( this->_fullPath );
+	HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
+	if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() )
+		this->state = BODY;
+	else
+		this->state = DONE;
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {
