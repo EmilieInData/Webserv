@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 16:12:44 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:17:24 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,13 +103,10 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		
 		if ( this->state == BODY ) {
 			this->body += this->fullRequest;
-			std::cout << this->fullRequest << std::endl;
 			this->body_len = atoi( this->headers->getHeaderOnlyOneValue( "content-length", 0 ).c_str());//poner esto en parsing de content-leng header
-			std::cout << "BODY_LEN: " << this->body_len << std::endl;
 			if ( this->body.length() >= this->body_len ) {
 				if ( this->body.length() > this->body_len )
 					this->body.erase( this->body_len, this->body.length());
-				std::cout << this->body << std::endl;
 				this->state = DONE;
 			}
 
