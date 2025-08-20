@@ -6,11 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/19 18:35:27 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:39:57 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
+#include <time.h>
+#include <fcntl.h>
 
 ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
@@ -130,32 +132,59 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
+		time_t	start, check;
+		time(&start);
+
+	//	usar time_t
+
+	//si tiempo pasado > 1 sec y sate Req_line    badrequest, setSatusCode( E__400 )
+	//si tiempo > client_header_timout y state HEADERS    badrequest
+	//si tiempo > client_body_timeout y State body y no llega a content lengt     badrequest
+
 		while (!isComplete && attempts < maxAttempts)
 		{
 			ssize_t bytes = recv(connection.clientFd, buffer, sizeof(buffer) - 1, 0);
+			
+			int flags = fcntl(connection.clientFd, F_GETFL, 0);   // poner recv en modo no bloqueante
+			fcntl(connection.clientFd, F_SETFL, flags | O_NONBLOCK);//idem
+
 			if (bytes > 0)
 			{
 				buffer[bytes] = '\0';
-			
+				
 			//	connection.fullRequest += buffer;
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
+
 				std::cout << "STATE: " << req.getParsingState() << std::endl;
 			//if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
 			if ( req.getParsingState() <= 0 )
 				isComplete = true;
 			}
 			else if (bytes == 0) {
-				if ( req.getParsingState() == BODY ) {
+			/*	if ( req.getParsingState() == BODY ) {
 					req.setStatusCode( E_400 );
 					return true;
 				}
+				return false;*/
+				std::cout << "BYTES = 0" << std::endl;
+		//		req.setStatusCode( E_400 );
 				return false;
+
 			}
 			else if (bytes < 0)
 			{
+			/*	std::cout << "BYTES < 0" << std::endl;
 				usleep(10000); // wait and try again
 				attempts++;
-				continue;
+				continue;*/
+				time(&check);		
+				if ( req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE && difftime( check, start ) > 0.5 ) 
+					req.setStatusCode( E_400 );
+				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 )//set client_header_timout in serv
+					req.setStatusCode( E_408 );	
+				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 )//set client_body_timeout in serv
+					req.setStatusCode( E_408 );					
+				isComplete = true;
 			}
 		}
 	}

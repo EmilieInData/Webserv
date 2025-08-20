@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/19 20:13:58 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:40:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #define E_400 "400 Bad Request"
 #define E_404 "404 Not Found"
 #define E_405 "405 Method Not Allowed"
+#define E_408 "408 Request Timeout"
 #define E_414 "414 URI Too Long"
 #define E_421 "421 Misdirected Request"
 #define E_501 "501 Not Implemented"

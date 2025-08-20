@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/19 20:13:58 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 11:14:28 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,12 +311,12 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
 	std::string full( path.first + path.second );
 
-	std::cout << "FULL: " << full << std::endl;
+//	std::cout << "FULL: " << full << std::endl;
 
 	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
 
 
-	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
+//	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
 }
 
 
