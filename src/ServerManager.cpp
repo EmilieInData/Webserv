@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/20 13:39:57 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/20 14:52:56 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,12 +135,6 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 		time_t	start, check;
 		time(&start);
 
-	//	usar time_t
-
-	//si tiempo pasado > 1 sec y sate Req_line    badrequest, setSatusCode( E__400 )
-	//si tiempo > client_header_timout y state HEADERS    badrequest
-	//si tiempo > client_body_timeout y State body y no llega a content lengt     badrequest
-
 		while (!isComplete && attempts < maxAttempts)
 		{
 			ssize_t bytes = recv(connection.clientFd, buffer, sizeof(buffer) - 1, 0);
@@ -173,18 +167,24 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 			}
 			else if (bytes < 0)
 			{
-			/*	std::cout << "BYTES < 0" << std::endl;
-				usleep(10000); // wait and try again
+			//	std::cout << "BYTES < 0" << std::endl;
+			/*	usleep(10000); // wait and try again
 				attempts++;
 				continue;*/
+
 				time(&check);		
-				if ( req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE && difftime( check, start ) > 0.5 ) 
-					req.setStatusCode( E_400 );
-				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 )//set client_header_timout in serv
+				if ( req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE && difftime( check, start ) > 0.5 ) {
+					isComplete = true;
+					req.setStatusCode( E_400 ); 
+				}
+				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 ){//set client_header_timout in serv
+					isComplete = true;
 					req.setStatusCode( E_408 );	
-				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 )//set client_body_timeout in serv
+				}
+				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 ) {//set client_body_timeout in serv ?
+					isComplete = true;
 					req.setStatusCode( E_408 );					
-				isComplete = true;
+				}
 			}
 		}
 	}
