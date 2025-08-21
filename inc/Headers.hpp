@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 18:03:18 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:04:27 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ public:
 	std::map<std::string, std::vector<std::string> >::const_iterator	getHeader( std::string const & name ) const;
 	std::map<std::string, std::vector<std::string> >::const_iterator	getHeaderEnd() const;
 	std::vector<std::string>											getHeaderValue( std::string const & name ) const;
+	std::vector<std::string> &											getHeaderValue( std::string const & name );
 	std::string											getHeaderOnlyOneValue( std::string const & name, int index ) const; 
 	void												printHeader() const;
 	void												setHeader( std::string & str );

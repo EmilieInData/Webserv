@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 18:03:18 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:33:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,7 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		
 		if ( this->state == BODY ) {
 			this->body += this->fullRequest;
-		//	this->body_len = atoi( this->headers->getHeaderOnlyOneValue( "content-length", 0 ).c_str());//poner esto en parsing de content-leng header
-			if ( this->body.length() >= this->body_len ) {
+				if ( this->body.length() >= this->body_len ) {
 				if ( this->body.length() > this->body_len )
 					this->body.erase( this->body_len, this->body.length());
 				this->state = DONE;
@@ -154,7 +153,7 @@ void	HttpRequest::setStatusCode( std::string error ) {
 
 	this->state = ERR;
 
-	code = std::atoi( code_str );
+	this->code = std::atoi( code_str );
 	std::cout << "ERROR CODE: " << code << std::endl;
 	std::cout << error << std::endl;
 }
