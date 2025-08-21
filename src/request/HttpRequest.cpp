@@ -6,12 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/17 10:33:32 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:33:44 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include <fcntl.h>
+//#include <fcntl.h>
+#include <stdlib.h>
 
 HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL ), headers( NULL ), server( server ) { 
 	HttpParserTester::parseHttpMessageTest();
@@ -56,6 +57,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
 		this->state = rhs.state;
 		this->fullRequest = rhs.fullRequest;
 		this->incoming = rhs.incoming;
+		this->location = rhs.location;
 	}
     return *this;
 }
@@ -67,10 +69,8 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 	
 	std::size_t	found = fullRequest.find( CRLF );
 //	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
-	if ( found == std::string::npos ) return; // opcional ?
 
-	static int			i = 0;
-
+	static int	i = 0;
 	
 	try {
 		while ( found != std::string::npos ) {
@@ -91,43 +91,31 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 					break;
 				case HEADERS:
 					if ( tmp.empty()) {
-						this->headers->printHeader();
-						checkHost( this->headers->getHeader( "host" ));
-						this->uri = new Uri( req_line->getReqTarget(), this->host.first );
-						ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
-						setFullPath(serv);
-						HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor
-						HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod());
-
-						if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() )
-							this->state = BODY;
-						else
-							this->state = DONE;
+						finalHeadersParsingRoutine();
 						break;
 					}
 					this->headers->setHeader( tmp );
 					this->state = HEADERS;
 					break;
-				case BODY:
-					std::cout << "BODY HERE !" << std::endl;
-					this->state = DONE;
-					break;
 			}
 			found = fullRequest.find( CRLF );
 		}
+		
+		if ( this->state == BODY ) {
+			this->body += this->fullRequest;
+				if ( this->body.length() >= this->body_len ) {
+				if ( this->body.length() > this->body_len )
+					this->body.erase( this->body_len, this->body.length());
+				this->state = DONE;
+			}
+
+
+
+		}
+
 	} catch ( std::invalid_argument e ) {
-		char	code_str[4];
-
-		std::strncpy( code_str, e.what(), 3 );
-		code_str[3] = '\0';
-
-		this->state = ERR;
-
-		code = std::atoi( code_str );
-		std::cout << "ERROR CODE: " << code << std::endl;
-		std::cout << e.what() << std::endl;
+		this->setStatusCode( e.what());
 	}
-	
 
 	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
@@ -135,73 +123,57 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 
 }
 
-void	HttpRequest::playParsing( std::string & tmp) {
-
-	try {
-		std::string											tmp_host;
-		std::pair<std::vector<std::string>, std::string>	lines = HttpParser::parseHttpMessage( tmp, tmp_host);
-		std::vector<std::string>::iterator					it = lines.first.begin();
-		std::vector<std::string>::iterator					ite = lines.first.end();
-
-		this->host = HttpParser::parseHost( tmp_host ); // ACABAR EL PARSEO DE HOST CON FCT DE EMILIE //ok 
-
-		// std::cout << "tmp_host: \"" << tmp_host << "\" /host pair first: \"" << host.first;
-		// std::cout << "\", second: \"" << host.second <<  "\"" << std::endl;
-
-		while ( it != ite && (*it).empty() ) //OK
-			++it;
-
-
-	//	this->state = REQ_LINE;
-		this->req_line = new RequestLine( HttpParser::parseRequestLine( *it )); //ok
-
-		this->uri = new Uri( req_line->getReqTarget(), host.first ); //ok
-
-		ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );//ok
-		setFullPath(serv);//ok
-		
-/*		std::cout << "GETPATH(): " << this->uri->getPath() << std::endl;
-		std::cout << "GETFULLPATH(): " << this->getFullPath().first << " " << this->getFullPath().second << std::endl;
-		std::cout << "INCOMING: " << this->incoming.first << " " << this->incoming.second << std::endl;
-		std::cout << "GETURI(): " << this->getRequestUri() << std::endl;
-		std::cout << "GETSERVERNAME(): " << serv.getServerName()[0] << " " << serv.getServerName()[1] << " " << serv.getServerName()[2] << std::endl;
-		//hacer algo con servername
-		std::string	path_location = "/www/server01" + this->uri->getPath();
-
-		HttpParser::checkIfPathExist( serv.getLocations(), path_location); // 404 not found si el uri no existe en servidor
-		HttpParser::notAllowedMethod( serv.getItLocations( path_location), serv.getAllowedMethods(), this->req_line->getMethod());
-*/
-//Hacer el check if path exists con access() ???? 
-//		std::string	path_location = "/www/server01" + this->uri->getPath();
-//		if ( access( path_location.c_str(), F_OK ) != 0 ) throw std::invalid_argument( E_404 );
-		HttpParser::checkIfPathExist( serv.getLocations(), this->uri->getPath()); // 404 not found si el uri no existe en servidor //ok
-		HttpParser::notAllowedMethod( serv.getItLocations( this->uri->getPath()), serv.getAllowedMethods(), this->req_line->getMethod()); //ok
-
-
-
-		++it; 
-	
-		this->state = HEADERS; //OK
-		this->headers = new Headers( ); //ok
-
-		if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) { //ok
-			this->state = BODY;
-			this->body = lines.second;
-		}
-		
-		this->state = DONE; //OK
-
-	} catch ( std::invalid_argument e ) {
-		char	code_str[4];
-
-		std::strncpy( code_str, e.what(), 3 );
-		code_str[3] = '\0';
-
-		this->state = ERR;
-		this->code = std::atoi( code_str );
-		std::cout << "ERROR CODE: " << this->code << std::endl;
-		std::cout << e.what() << std::endl;
+void	HttpRequest::finalHeadersParsingRoutine() {
+	if ( this->headers->getHeader( "cookie" ) != this->headers->getHeaderEnd() ) 
+		this->headers->setCookieValues();
+	this->headers->printHeader();
+	checkHost( this->headers->getHeader( "host" ));
+	this->uri = new Uri( req_line->getReqTarget(), this->host.first );
+	ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
+	setFullPath(serv);
+//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
+//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
+	setLocation( serv.getLocations(), this->_fullPath.second );
+	HttpParser::checkIfPathExist( this->_fullPath );
+	HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
+	if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
+		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ));
+		this->state = BODY;
 	}
+	else
+		this->state = DONE;
+}
+
+void	HttpRequest::setStatusCode( std::string error ) {
+	char	code_str[4];
+
+	std::strncpy( code_str, error.c_str(), 3 );
+
+	code_str[3] = '\0';
+
+	this->state = ERR;
+
+	this->code = std::atoi( code_str );
+	std::cout << "ERROR CODE: " << code << std::endl;
+	std::cout << error << std::endl;
+}
+
+void HttpRequest::setLocation( std::map<std::string, LocationConf> & location, std::string const & path ) {
+	std::size_t found = path.rfind( "/" );
+
+//	if ( found == std::string::npos ) //BADREQUEST
+		
+	this->location = path.substr( 0, found + 1 );
+//	std::cout << "LOCATION REQ: " << this->location << std::endl;
+
+	std::map<std::string, LocationConf>::iterator	it = location.find( this->location );
+
+//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+
+	if ( it == location.end() ) throw std::invalid_argument( E_404 ); 
+
+//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
 void	HttpRequest::checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it ) {

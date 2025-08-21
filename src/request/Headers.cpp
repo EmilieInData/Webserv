@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:21:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:11:45 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,9 @@ std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHea
 
 std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHeaderEnd() const { return this->header.end(); }
 
-std::vector<std::string>	Headers::getHeaderValue(  std::string const & name ) const {
+std::vector<std::string> &	Headers::getHeaderValue( std::string const & name ) { return this->header[name]; }
+
+std::vector<std::string> 	Headers::getHeaderValue( std::string const & name ) const {
 	std::map<std::string, std::vector<std::string> >::const_iterator it = this->header.find( name ); 
 
 	if ( it == this->header.end())
@@ -78,4 +80,19 @@ void	Headers::printHeader() const {
 			std::cout << *it_v << " ";
 		std::cout << std::endl;
 	}
+}
+
+void	Headers::setCookieValues() {
+	if ( getHeader( "cookie" ) == this->header.end()) return; 
+	
+	std::vector<std::string>			more_values = HttpParser::split( getHeaderOnlyOneValue( "cookie", 0 ), ';' );
+	std::vector<std::string>::iterator	it, ite = more_values.end();
+
+	for ( it = more_values.begin(); it != ite; ++it )
+		HttpParser::trimSpaceAndTab( *it );
+
+	std::vector<std::string> & cookie = this->getHeaderValue( "cookie" );
+
+	cookie.insert( cookie.begin() , more_values.begin(), more_values.end());
+	cookie.pop_back();
 }

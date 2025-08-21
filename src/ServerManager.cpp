@@ -6,11 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/16 16:24:55 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:23:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
+#include <time.h>
+#include <fcntl.h>
 
 ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
@@ -126,31 +128,50 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[1024]; // HACK i put 4096, but i don't know if it's right
+		char	  buffer[1042];
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
+
+		time_t	start, check;
+		time(&start);
 
 		while (!isComplete && attempts < maxAttempts)
 		{
 			ssize_t bytes = recv(connection.clientFd, buffer, sizeof(buffer) - 1, 0);
+			
+			int flags = fcntl(connection.clientFd, F_GETFL, 0); 
+			fcntl(connection.clientFd, F_SETFL, flags | O_NONBLOCK);
+
 			if (bytes > 0)
 			{
 				buffer[bytes] = '\0';
-			
-			//	connection.fullRequest += buffer;
+				
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
+
 				std::cout << "STATE: " << req.getParsingState() << std::endl;
-			//if (connection.fullRequest.find("\r\n\r\n") != std::string::npos) // TODO check what happens with other bodies in POST
+			
 			if ( req.getParsingState() <= 0 )
 				isComplete = true;
 			}
-			else if (bytes == 0) 
+			else if (bytes == 0) {
+				std::cout << "BYTES = 0" << std::endl;
 				return false;
+			}
 			else if (bytes < 0)
 			{
-				usleep(10000); // wait and try again
-				attempts++;
-				continue;
+				time(&check);		
+				if ( req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE && difftime( check, start ) > 0.5 ) {
+					isComplete = true;
+					req.setStatusCode( E_400 ); 
+				}
+				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 ){//set client_header_timout in serv
+					isComplete = true;
+					req.setStatusCode( E_408 );	
+				}
+				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 ) {//set client_body_timeout in serv ?
+					isComplete = true;
+					req.setStatusCode( E_408 );					
+				}
 			}
 		}
 	}
@@ -163,8 +184,6 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest & req,
 {
 	try
 	{
-	//	std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
-	//	HttpRequest					req		 = HttpRequest(incoming, connection.fullRequest, *this);
 		Response					resp(req);
 		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
 	//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
