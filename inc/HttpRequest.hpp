@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 12:38:02 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:44:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ public:
 		getFullPath() const; // FABIO added this because I need full path for the response
 	int getStatusCode() const;
 	int getParsingState() const;
-
+	Multibody fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
