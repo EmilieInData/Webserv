@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:45:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 10:02:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ void printRequest(ServerManager &serv, int socketFd, std::string request,
 
 void printRaw(std::string const &text)
 {
+	std::cout << GREEN;
 	for (size_t i = 0; i < text.size(); i++)
 	{
 		if (text[i] == '\r')
@@ -147,6 +148,7 @@ void printRaw(std::string const &text)
 		else
 			std::cout << text[i];
 	}
+	std::cout << RESET << std::endl;
 }
 
 void printResponse(ServerManager &serv, std::pair<int, std::string> incoming,

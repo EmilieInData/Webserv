@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/21 16:23:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 10:29:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[1042];
+		char	  buffer[1000042];
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -144,10 +144,10 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 
 			if (bytes > 0)
 			{
+				connection.fullRequest.append(buffer, bytes); // DBG to remove
 				buffer[bytes] = '\0';
 				
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
-
 				std::cout << "STATE: " << req.getParsingState() << std::endl;
 			
 			if ( req.getParsingState() <= 0 )
@@ -177,6 +177,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	}
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	//printRaw(connection.fullRequest);
+	printRaw(connection.fullRequest); // DBG to remove
 	return isComplete;
 }
 
@@ -216,7 +217,7 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 				servInput();
 				continue;
 			}
-
+			_reqCount++;
 			connection.socketIndex = i;
 			connection.clientFd	   = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
 											&connection.clientLen);

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/14 17:47:17 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 10:05:36 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 
 struct ClientConnection
 {
-	std::string		   fullRequest;
+	std::string		   fullRequest; // TODO remove this as it's not used anymore
 	int				   clientFd;
 	struct sockaddr_in clientAddr;
 	socklen_t		   clientLen;
