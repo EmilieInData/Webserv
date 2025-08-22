@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 18:08:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 09:25:20 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -428,11 +428,12 @@ void	HttpParser::pushMoreValues( std::map<std::string, std::vector<std::string> 
 
 }
 
-int	HttpParser::parseContentLengthHeader( std::string const & v ) {
+int	HttpParser::parseContentLengthHeader( std::string const & v, std::size_t body_max ) {
 	if ( v.empty()) throw std::invalid_argument( E_400 );
 	if ( v.at( 0 ) == 0 && v.length() == 1 ) return 0;
-	int tmp	= atoi( v.c_str());
+	std::size_t tmp	= atoi( v.c_str());
 	if ( tmp <= 0 ) throw std::invalid_argument( E_400 );
+	if ( tmp > body_max ) throw std::invalid_argument ( E_413 );
 	return tmp;
 }
 

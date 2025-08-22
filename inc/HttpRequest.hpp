@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 16:03:46 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 09:24:30 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ private:
 	Headers								*headers;
 	std::string							body;
 	std::size_t							body_len;
+	std::size_t							max_body_size;
 	int									code;
 	int									state;
 	std::string							fullRequest;

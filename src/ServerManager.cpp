@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/21 16:23:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 09:27:16 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 
 			HttpRequest		req = HttpRequest( incoming, *this );
 
-			if (servReceive(connection, req) /*&& !connection.fullRequest.empty()*/) {
+			if (servReceive(connection, req)) {
 				servRespond(connection, req, incoming);
 			} else {
 				printBoxError("Incomplete or empty request received");
