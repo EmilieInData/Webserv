@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 14:58:00 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:53:22 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,15 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
-	if (fullPath.second == "/" || fullPath.second.empty())
+	// TODO HERE EMILIE/FABIO
+	std::cout << PINK << "FULLPATH FIRST : " << fullPath.first << "\nFULLPATH SECOND : " << fullPath.second << std::endl;
+	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/")
+		_location = fullPath.first + "/redirect/index.html"; // TODO check redirect
+	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
 	else
 		_location = fullPath.first + fullPath.second;
-
+	std::cout << _location << RESET << std::endl;
 	_method = method;
 }
 

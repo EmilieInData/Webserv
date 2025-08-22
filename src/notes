@@ -116,6 +116,14 @@
 //500 internal server error
 //501 Not Implemented -> Cleo
 
+
+--> Allowed Methods <--
+
+// seulement dans des blocs locations
+// GET POST DELETE seulement autorises
+// nginx accepte les repititions d'arg, moi NON
+
+
 --> TO DO
 
 //garder l'adresse ip en type ip et non std::string // a ver
