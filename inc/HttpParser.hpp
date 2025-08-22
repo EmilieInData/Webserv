@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 09:24:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:37:25 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,6 @@ public:
 	static std::vector<std::string>				pushValues( std::string n, std::string v );
 	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
 	static int									parseContentLengthHeader( std::string const & v, std::size_t body_max );
+	static std::string							parseContentTypeBoundary( std::vector<std::string> const & v );
 };
 #endif
