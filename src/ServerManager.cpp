@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/22 09:27:16 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 09:35:10 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,11 +164,11 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 					isComplete = true;
 					req.setStatusCode( E_400 ); 
 				}
-				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 ){//set client_header_timout in serv
+				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > CLIENT_HEADER_TIMEOUT ) {
 					isComplete = true;
 					req.setStatusCode( E_408 );	
 				}
-				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 ) {//set client_body_timeout in serv ?
+				else if ( req.getParsingState() == BODY && difftime( check, start ) > CLIENT_BODY_TIMEOUT ) {
 					isComplete = true;
 					req.setStatusCode( E_408 );					
 				}
