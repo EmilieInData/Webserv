@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 13:04:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:51:52 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,14 +208,14 @@ int	HttpRequest::getStatusCode() const { return this->code; }
 
 int	HttpRequest::getParsingState() const { return this->state; }
 
-MultiBody	HttpRequest::Headers const &header, std::string const &bodyContent)
-{
-	/* TODO for testing right now:
-		create a random header
-		pass a body content
-		the function will work with a 
-		push_back() to the vector of
-		bodies in the req class.
-		in the function also put dbg/print
-		messages to see if it works*/
-}
+// MultiBody	HttpRequest::Headers const &header, std::string const &bodyContent)
+// {
+// 	/* TODO for testing right now:
+// 		create a random header
+// 		pass a body content
+// 		the function will work with a 
+// 		push_back() to the vector of
+// 		bodies in the req class.
+// 		in the function also put dbg/print
+// 		messages to see if it works*/
+// }
