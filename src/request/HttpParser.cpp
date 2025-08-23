@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 13:02:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/23 09:55:56 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,8 +354,8 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	return  std::make_pair( first, second );
 }
 
-const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "cookie" };
-const int			HttpParser::one_h_count = 4;
+const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "content-disposition", "cookie" };
+const int			HttpParser::one_h_count = 5;
 const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
 const int			HttpParser::many_h_count = 5;
 

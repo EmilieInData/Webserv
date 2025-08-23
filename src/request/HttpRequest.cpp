@@ -6,12 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 14:51:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/23 12:17:28 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-//#include <fcntl.h>
 #include <stdlib.h>
 
 HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL ), headers( NULL ), server( server ) { 
@@ -24,7 +23,7 @@ HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL
 }
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server) : 
-req_line( NULL ), uri( NULL ), headers( NULL ), boundary( "" ), code( 200 ), state( SKIP ), 
+req_line( NULL ), uri( NULL ), headers( NULL ), boundary( "" ), boundary_flag( false ), code( 200 ), state( SKIP ), 
 incoming( incoming ), server( server ) {
 	headers = new Headers();
 }
@@ -106,19 +105,49 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		if ( this->state == BODY ) {
 
 			if ( !this->boundary.empty()) {
-				this->body += this->fullRequest;
-				std::size_t	f = fullRequest.find( CRLF );
-				static int j = 0;
-			while ( f != std::string::npos ) {
-				std::string tmp = fullRequest.substr( 0, f );
-				fullRequest.erase( 0, f + 2 );
-				
-				if ( j < 5 )
-					std::cout << "BODYTMP " << j++ << ": " << tmp << std::endl;
-				f = fullRequest.find( CRLF );
-			}
+			//	static int j = 0;
+				static int k = -1;
+				while ( found != std::string::npos ) {
+					std::string tmp = fullRequest.substr( 0, found );
+					fullRequest.erase( 0, found + 2 );
+					
+					switch ( this->body_state ) {
+						case BOUNDARY:
+							if ( this->boundary_flag == true && tmp != "--" + this->boundary ) {
+								this->boundary_flag = false;
+								throw std::invalid_argument( E_400 ); //si el primer boundary no corresponde: error 
+							}
+							//create new struct body
+							this->boundary_flag = false;
+							k++;
+							std::cout << std::endl << GREEN <<"              NEWBODY " << k << RESET << std::endl;
+							//std::cout << "BOUNDARY: " << tmp << std::endl;
+							this->body_state = HEADERS2;
+							break;	
+						case HEADERS2:
+							if ( tmp.empty()) {
+								this->body_state = BODY2;
+								break;
+							}
+							std::cout << "HEADER " << k << ": " << tmp << std::endl; //structbody->header->setHeader( tmp )
+							this->body_state = HEADERS2;
+							break;
+					}
 
 
+
+					if ( this->body_state == BODY2 ) {
+						std::cout << "BODY   " << k << ": " << tmp.substr( 0, 70 ) << std::endl;
+						if ( tmp == "--" + this->boundary )
+							this->body_state = BOUNDARY;
+					}
+				//	std::cout << "BODYTMP " << j++ << ": " << tmp.substr( 0, 70 ) << std::endl;
+					if ( tmp == "--" + this->boundary + "--" ) {
+						this->state = DONE;
+						break;
+					}
+					found = fullRequest.find( CRLF );
+				}
 			}
 			else {
 				this->body += this->fullRequest;
@@ -159,6 +188,8 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd()) {
 		this->boundary = HttpParser::parseContentTypeBoundary( this->headers->getHeaderValue( "content-type"));
 		this->state = BODY;
+		this->body_state = BOUNDARY;
+		this->boundary_flag = true;
 	}
 	else if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
 		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ), this->max_body_size );

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/22 14:42:28 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/23 11:07:01 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[4042];
+		char	  buffer[10];
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -148,11 +148,12 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 			
 				connection.fullRequest = buffer;
 			//	printRaw( connection.fullRequest );
-				std::cout << std::endl;
+			//	std::cout << std::endl;
 
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
 
-				std::cout << "STATE: " << req.getParsingState() << std::endl;
+				if ( req.getParsingState() == DONE )
+					std::cout << "STATE: " << req.getParsingState() << std::endl;
 			
 			if ( req.getParsingState() <= 0 )
 				isComplete = true;
