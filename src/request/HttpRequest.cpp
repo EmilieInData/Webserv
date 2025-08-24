@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/24 14:55:37 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 15:56:04 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,10 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		}
 		
 		if ( this->state == BODY ) {
-
 			if ( !this->boundary.empty()) {
 			//	static int j = 0;
 				static int k = -1;
-				while ( found != std::string::npos ) {
+				while ( found != std::string::npos && this->body_state != BODY2) {
 					std::string tmp = fullRequest.substr( 0, found );
 					fullRequest.erase( 0, found + 2 );
 					
@@ -129,29 +128,33 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 								this->body_state = BODY2;
 								break;
 							}
-							std::cout << "HEADER " << k << ": " << tmp << std::endl; //structbody->header->setHeader( tmp )
+							std::cout << "HEADER " << k << ": " << tmp.substr( 0, 70 ) << std::endl; //structbody->header->setHeader( tmp )
 							this->body_state = HEADERS2;
 							break;
 					}
 
-
-
-					if ( this->body_state == BODY2 ) {
-						std::cout << "BODY   " << k << ": " << tmp.substr( 0, 70 ) << std::endl;
-						if ( tmp == "--" + this->boundary )
-							this->body_state = BOUNDARY;
-					}
-				//	std::cout << "BODYTMP " << j++ << ": " << tmp.substr( 0, 70 ) << std::endl;
-					if ( tmp == "--" + this->boundary + "--" ) {
-						this->state = DONE;
-						break;
-					}
-					found = fullRequest.find( CRLF );
+				found = fullRequest.find( CRLF );
+				}
+				
+				this->body = this->fullRequest;
+			
+				std::size_t	f = this->body.find( "\r\n--" + this->boundary + "--\r\n" ); //ULTIMO BODY
+				if ( f != std::string::npos ) {
+					this->body = this->body.erase( f, this->body.length()); // a poner en la struct del ultimo body
+					std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
+					this->state = DONE;
+				}
+				std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
+				if ( f2 != std::string::npos ) {
+					this->body = this->body.erase( f2, this->body.length() ); //a poner en la struct
+					std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
+					this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
+					this->body_state = BOUNDARY;
 				}
 			}
 			else {
 				this->body = this->fullRequest;
-				std::cout << "BODY: " << this->body << std::endl;
+			//	std::cout << "BODY: " << this->body << std::endl;
 			//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
 					if ( this->body.length() >= this->body_len ) {
 					if ( this->body.length() > this->body_len )
