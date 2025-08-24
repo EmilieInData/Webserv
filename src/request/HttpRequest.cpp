@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/23 12:17:28 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 14:47:00 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL
 }
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server) : 
-req_line( NULL ), uri( NULL ), headers( NULL ), boundary( "" ), boundary_flag( false ), code( 200 ), state( SKIP ), 
-incoming( incoming ), server( server ) {
+req_line( NULL ), uri( NULL ), headers( NULL ), body( "" ), body_len( 0 ), boundary( "" ), boundary_flag( false ), 
+code( 200 ), state( SKIP ), incoming( incoming ), server( server ) {
 	headers = new Headers();
 }
 
@@ -150,7 +150,9 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 				}
 			}
 			else {
-				this->body += this->fullRequest;
+				this->body = this->fullRequest;
+				std::cout << "BODY: " << this->body << std::endl;
+			//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
 					if ( this->body.length() >= this->body_len ) {
 					if ( this->body.length() > this->body_len )
 						this->body.erase( this->body_len, this->body.length());
@@ -163,7 +165,7 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		this->setStatusCode( e.what());
 	}
 
-//	std::cout << "STATE IN FCT: " << this->state << std::endl;
+	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
@@ -188,10 +190,12 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd()) {
 		this->boundary = HttpParser::parseContentTypeBoundary( this->headers->getHeaderValue( "content-type"));
 		this->state = BODY;
-		this->body_state = BOUNDARY;
-		this->boundary_flag = true;
+		if ( this->boundary.empty()) {
+			this->body_state = BOUNDARY;
+			this->boundary_flag = true;
+		}
 	}
-	else if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
+	if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
 		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ), this->max_body_size );
 		this->state = BODY;
 	}
