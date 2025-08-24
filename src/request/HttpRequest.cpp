@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/24 15:56:04 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 16:06:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 	
 	try {
 		while ( found != std::string::npos && this->state != BODY ) {
-			std::string tmp = fullRequest.substr( 0, found );
-			fullRequest.erase( 0, found + 2 );
+			std::string tmp = this->fullRequest.substr( 0, found );
+			this->fullRequest.erase( 0, found + 2 );
 			
 		//	if ( i < 15) 
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
@@ -104,11 +104,11 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		
 		if ( this->state == BODY ) {
 			if ( !this->boundary.empty()) {
-			//	static int j = 0;
-				static int k = -1;
+				manyBodiesRoutine( found );
+		/*		static int k = -1;
 				while ( found != std::string::npos && this->body_state != BODY2) {
-					std::string tmp = fullRequest.substr( 0, found );
-					fullRequest.erase( 0, found + 2 );
+					std::string tmp = this->fullRequest.substr( 0, found );
+					this->fullRequest.erase( 0, found + 2 );
 					
 					switch ( this->body_state ) {
 						case BOUNDARY:
@@ -150,7 +150,7 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 					std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
 					this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
 					this->body_state = BOUNDARY;
-				}
+				}*/
 			}
 			else {
 				this->body = this->fullRequest;
@@ -204,6 +204,55 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 	}
 	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ||this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd())		return;
 	this->state = DONE;
+}
+
+void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
+	static int k = -1;
+	while ( found != std::string::npos && this->body_state != BODY2) {
+		std::string tmp = this->fullRequest.substr( 0, found );
+		this->fullRequest.erase( 0, found + 2 );
+		
+		switch ( this->body_state ) {
+			case BOUNDARY:
+				if ( this->boundary_flag == true && tmp != "--" + this->boundary ) {
+					this->boundary_flag = false;
+					throw std::invalid_argument( E_400 ); //si el primer boundary no corresponde: error 
+				}
+				//create new struct body
+				this->boundary_flag = false;
+				k++;
+				std::cout << std::endl << GREEN <<"              NEWBODY " << k << RESET << std::endl;
+				//std::cout << "BOUNDARY: " << tmp << std::endl;
+				this->body_state = HEADERS2;
+				break;	
+			case HEADERS2:
+				if ( tmp.empty()) {
+					this->body_state = BODY2;
+					break;
+				}
+				std::cout << "HEADER " << k << ": " << tmp.substr( 0, 70 ) << std::endl; //structbody->header->setHeader( tmp )
+				this->body_state = HEADERS2;
+				break;
+		}
+
+	found = this->fullRequest.find( CRLF );
+	}
+	
+	this->body = this->fullRequest;
+
+	std::size_t	f = this->body.find( "\r\n--" + this->boundary + "--\r\n" ); //ULTIMO BODY
+	if ( f != std::string::npos ) {
+		this->body = this->body.erase( f, this->body.length()); // a poner en la struct del ultimo body
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
+		this->state = DONE;
+	}
+	std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
+	if ( f2 != std::string::npos ) {
+		this->body = this->body.erase( f2, this->body.length() ); //a poner en la struct
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
+		this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
+		this->body_state = BOUNDARY;
+	}
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {

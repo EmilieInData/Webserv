@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/23 12:16:52 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 16:06:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ private:
 	void	finalHeadersParsingRoutine();
 	void	setFullPath(ServerData const &serv);
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
+	void	manyBodiesRoutine( std::size_t found );
 
 public:
 	HttpRequest( ServerManager & server );
