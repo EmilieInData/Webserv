@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/24 14:47:00 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 14:55:37 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		this->setStatusCode( e.what());
 	}
 
-	std::cout << "STATE IN FCT: " << this->state << std::endl;
+//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
@@ -189,8 +189,8 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 	HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
 	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd()) {
 		this->boundary = HttpParser::parseContentTypeBoundary( this->headers->getHeaderValue( "content-type"));
-		this->state = BODY;
-		if ( this->boundary.empty()) {
+		if ( !this->boundary.empty()) {
+			this->state = BODY;
 			this->body_state = BOUNDARY;
 			this->boundary_flag = true;
 		}
@@ -199,8 +199,8 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ), this->max_body_size );
 		this->state = BODY;
 	}
-	else
-		this->state = DONE;
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ||this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd())		return;
+	this->state = DONE;
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {
