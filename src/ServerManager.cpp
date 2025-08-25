@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 10:34:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:05:55 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,6 +184,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	//printRaw(connection.fullRequest);
 	printRaw(connection.fullRequest); // DBG to remove
+	req.printBodies();
 	return isComplete;
 }
 
