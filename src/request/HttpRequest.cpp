@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 13:49:40 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 15:13:51 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,10 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		
 		if ( this->state == BODY ) {
 			if ( !this->boundary.empty())
+			 {
 				manyBodiesRoutine( found );
+				printBodies(); // DBG this is only for debug/test
+			}
 			else {
 				this->body = this->fullRequest;
 			//	std::cout << "BODY: " << this->body << std::endl;
@@ -125,6 +128,11 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
+}
+
+void	HttpRequest::printBodies()
+{
+	for (std::vector<MultiBody>_const)
 }
 
 void	HttpRequest::finalHeadersParsingRoutine() {
