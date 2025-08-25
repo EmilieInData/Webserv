@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 11:42:58 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 12:47:13 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ std::string Response::prepFile()
 
 std::string Response::runScript(std::string const &cgiPath)
 {
-	size_t lastDot = cgiPath.find_last_of('.');
+	size_t		lastDot	   = cgiPath.find_last_of('.');
 	std::string scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
 	std::string query = _request->getQuery();
@@ -134,13 +134,19 @@ std::string Response::runScript(std::string const &cgiPath)
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
-		std::string envVar = "QUERY_STRING=" +
-							 query; // TODO should pass everything the script might need in form of variable
-		char *envChar = new char[envVar.length() + 1];
-		strcpy(envChar, envVar.c_str());
+		/* TODO wrap env creation
+		into its owh function*/
 
-		char *envServ[] = {envChar, NULL};
-		
+		std::string varQuery  = "QUERY_STRING=" + query;
+		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
+		char	   *envQuery  = new char[varQuery.length() + 1];
+		strcpy(envQuery, varQuery.c_str());
+
+		char *envMethod = new char[varMethod.length() + 1];
+		strcpy(envMethod, varMethod.c_str());
+
+		char *envServ[] = {envQuery, envMethod, NULL};
+
 		if (scriptType == ".py")
 			runPath = "/usr/bin/python3";
 		else if (scriptType == ".php")
@@ -150,7 +156,7 @@ std::string Response::runScript(std::string const &cgiPath)
 		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
-		delete[] envChar;
+		delete[] envQuery;
 		exit(1);
 	}
 	else
@@ -193,7 +199,7 @@ std::string Response::runScript(std::string const &cgiPath)
 		}
 		else
 		{
-			content = scriptOutput;
+			content		 = scriptOutput;
 			_contentType = "text/html";
 			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
@@ -227,8 +233,8 @@ std::string Response::checkType()
 
 void Response::prepResponse()
 {
-	std::string		   content;
-	_contentType   = checkType();
+	std::string content;
+	_contentType = checkType();
 
 	if (_contentType == "cgi-script")
 		content = runScript(_location);
@@ -240,7 +246,7 @@ void Response::prepResponse()
 	_contentLength = output.str();
 
 	Header header(*this);
-		_response = header.getHeader() + content;
+	_response = header.getHeader() + content;
 }
 
 void Response::printRawResponse()
