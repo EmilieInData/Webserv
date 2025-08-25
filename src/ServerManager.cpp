@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/22 14:39:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 10:34:51 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[1000042];
+		char	  buffer[10];
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -146,9 +146,15 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 			{
 				connection.fullRequest.append(buffer, bytes); // DBG to remove
 				buffer[bytes] = '\0';
-				
+			
+				connection.fullRequest = buffer;
+			//	printRaw( connection.fullRequest );
+			//	std::cout << std::endl;
+
 				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
-				std::cout << "STATE: " << req.getParsingState() << std::endl;
+
+				if ( req.getParsingState() == DONE )
+					std::cout << "STATE: " << req.getParsingState() << std::endl;
 			
 			if ( req.getParsingState() <= 0 )
 				isComplete = true;
@@ -164,11 +170,11 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 					isComplete = true;
 					req.setStatusCode( E_400 ); 
 				}
-				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > 5.0 ){//set client_header_timout in serv
+				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > CLIENT_HEADER_TIMEOUT ) {
 					isComplete = true;
 					req.setStatusCode( E_408 );	
 				}
-				else if ( req.getParsingState() == BODY && difftime( check, start ) > 5.0 ) {//set client_body_timeout in serv ?
+				else if ( req.getParsingState() == BODY && difftime( check, start ) > CLIENT_BODY_TIMEOUT ) {
 					isComplete = true;
 					req.setStatusCode( E_408 );					
 				}
@@ -226,7 +232,7 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 
 			HttpRequest		req = HttpRequest( incoming, *this );
 
-			if (servReceive(connection, req) /*&& !connection.fullRequest.empty()*/) {
+			if (servReceive(connection, req)) {
 				servRespond(connection, req, incoming);
 			} else {
 				printBoxError("Incomplete or empty request received");

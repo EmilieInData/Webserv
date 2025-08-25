@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/08 11:44:41 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/23 09:58:06 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,9 @@ class ServerManager;
 #define PURPLE "\033[38;5;62m"
 #define GREY "\033[38;5;236m"
 #define RED "\033[31m"
+
+#define CLIENT_HEADER_TIMEOUT	5
+#define CLIENT_BODY_TIMEOUT		5
 
 // listen
 bool		isInt(std::string const &value);
