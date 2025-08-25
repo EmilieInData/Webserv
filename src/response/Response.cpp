@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/08 14:58:00 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:22:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,9 @@ std::string Response::prepFile()
 
 std::string Response::runScript(std::string const &cgiPath)
 {
+	size_t lastDot = cgiPath.find_last_of('.');
+	std::string scriptType = cgiPath.substr(lastDot);
+	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
 	std::string query = _request->getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 
@@ -210,10 +213,8 @@ std::string Response::checkType()
 		return "image/gif";
 	else if (extension == ".css")
 		return "text/css";
-	else if (extension == ".js")
-		return "text/javascript";
-	else if (extension == ".py")
-		return "text/x-python";
+	else if (extension == ".py" || extension == ".php") // TODO check if valid
+		return "cgi-script";
 	else
 		return "application/octet-stream";
 }
@@ -223,7 +224,7 @@ void Response::prepResponse()
 	std::string		   content;
 	_contentType   = checkType();
 
-	if (_contentType == "text/x-python")
+	if (_contentType == "cgi-script")
 		content = runScript(_location);
 	else
 		content = prepFile();
