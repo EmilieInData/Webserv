@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/22 10:05:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 16:23:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ private:
 	bool								   _running;
 	int									   _inputFd;
 	std::string							   _input;
-	// Response							   _response;
+	// Response							   _response; // TODO remove this
 	std::vector<ServerData>				   _serverData;
 	std::vector<int>					   _socketFd;
 	std::vector<struct sockaddr_in>		   _servAddr;

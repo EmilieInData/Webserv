@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 15:17:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 16:24:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,17 @@ void Response::setClientFd(int clientFd)
 std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
-
+	/* 
+	if isFolder(location)
+	{
+		if (rights not ok)
+			error
+		if (autoindex off)
+			error
+		generate Auto Index page
+	}
+	*/
+	
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);

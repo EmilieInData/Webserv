@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 10:35:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 16:56:37 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ struct MultiBody // TODO delete unused constructor when we know which one we nee
 	Headers		bodyHeader;
 	std::string bodyContent;
 
-	MultiBody() {} // Constructs automatically and empty
+	MultiBody() {
+		std::cout << "[Body created]" << std::endl;
+	} // Constructs automatically and empty
 
 	MultiBody(const Headers &header, const std::string &content) // Constructs with passed parameters
 		: bodyHeader(header), bodyContent(content)
@@ -97,6 +99,7 @@ public:
 
 	void		sendBuffer(char *buffer, ssize_t bytes);
 	void		setStatusCode(std::string error);
+	void		printBodies(); // DBG this can be deleted, it's just for testing
 	std::string getHttpMethod() const;
 	std::string getRequestUri() const;
 	std::string getPath() const;

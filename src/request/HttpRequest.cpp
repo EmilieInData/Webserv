@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 15:13:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 16:55:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,26 +104,23 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		
 		if ( this->state == BODY ) {
 			if ( !this->boundary.empty())
-			 {
 				manyBodiesRoutine( found );
-				printBodies(); // DBG this is only for debug/test
-			}
 			else {
 				this->body = this->fullRequest;
-			//	std::cout << "BODY: " << this->body << std::endl;
-			//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
+				//	std::cout << "BODY: " << this->body << std::endl;
+				//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
 				if ( this->body.length() >= this->body_len ) {
 					if ( this->body.length() > this->body_len )
-						this->body.erase( this->body_len, this->body.length());
+					this->body.erase( this->body_len, this->body.length());
 					this->state = DONE;
 				}
 			}
 		}
-
+		
 	} catch ( std::invalid_argument e ) {
 		this->setStatusCode( e.what());
 	}
-
+	
 //	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
@@ -132,7 +129,16 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 
 void	HttpRequest::printBodies()
 {
-	for (std::vector<MultiBody>_const)
+	std::cout << "Bodies size: " << _bodies.size() << std::endl;
+	/*
+	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	{
+		std::cout << GREEN << "Body content" << std::endl;
+		_bodies[i].bodyHeader.printHeader();
+		std::cout << _bodies[i].bodyContent << std::endl;
+		std::cout << RESET << std::endl;
+	}
+	*/
 }
 
 void	HttpRequest::finalHeadersParsingRoutine() {
