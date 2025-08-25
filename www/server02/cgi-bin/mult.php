@@ -1,20 +1,16 @@
 #!/usr/bin/php
 <?php
 // --- Script Logic ---
-
-// Set default values.
 $result = null;
 $error_message = null;
 $params = [];
 
-// Check for parameters in both GET and POST requests.
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $params = $_POST;
-} else {
-    $params = $_GET;
+// Manually parse the query string from the environment variable.
+if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
+    parse_str($_SERVER['QUERY_STRING'], $params);
 }
 
-// Check if parameters 'a' and 'b' are provided and are numeric.
+// Check if the parsed parameters 'a' and 'b' exist and are numeric.
 if (isset($params['a']) && isset($params['b']) && is_numeric($params['a']) && is_numeric($params['b'])) {
     // Perform the multiplication.
     $val_a = (float)$params['a'];
@@ -22,15 +18,12 @@ if (isset($params['a']) && isset($params['b']) && is_numeric($params['a']) && is
     $result = $val_a * $val_b;
 } else {
     // Set an error message if parameters are missing or invalid.
-    $error_message = "Error: Please provide two numbers. Example: <strong>?a=7&b=6</strong>";
+    $error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=8&b=7</strong>";
 }
 
-// --- HTTP Header ---
+// --- HTTP Header & Output ---
 
-// The Content-Type header is mandatory for the server to understand the response.
 header("Content-Type: text/html");
-// The blank line below is also mandatory and separates headers from the body.
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +36,7 @@ header("Content-Type: text/html");
 <?php if ($error_message): ?>
     <p><?php echo $error_message; ?></p>
 <?php else: ?>
-    <div style="font-size: 200px; font-weight: bold; color: #4CAF50; text-align: center;">
+    <div style="font-size: 400px; font-weight: bold; color: blue; text-align: center;">
         <?php echo $result; ?>
     </div>
 <?php endif; ?>

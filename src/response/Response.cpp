@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 11:22:42 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:42:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ std::string Response::runScript(std::string const &cgiPath)
 
 	else if (child == 0)
 	{
+		std::string runPath;
 		close(pipeIn[PIPE_WRITE]);
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
 		close(pipeIn[PIPE_READ]);
@@ -139,9 +140,14 @@ std::string Response::runScript(std::string const &cgiPath)
 		strcpy(envChar, envVar.c_str());
 
 		char *envServ[] = {envChar, NULL};
-		char *argv[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>(cgiPath.c_str()),
+		
+		if (scriptType == ".py")
+			runPath = "/usr/bin/python3";
+		else if (scriptType == ".php")
+			runPath = "/usr/bin/php";
+		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
 						NULL};
-		execve("/usr/bin/python3", argv, envServ);
+		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
 		delete[] envChar;
