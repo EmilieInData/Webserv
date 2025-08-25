@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 17:07:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:14:57 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,15 +147,13 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 void HttpRequest::printBodies()
 {
 	std::cout << "Bodies size: " << _bodies.size() << std::endl;
-	/*
 	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
 	{
 		std::cout << GREEN << "Body content" << std::endl;
-		_bodies[i].bodyHeader.printHeader();
-		std::cout << _bodies[i].bodyContent << std::endl;
+		it->bodyHeader.printHeader();
+		std::cout << it->bodyContent << std::endl;
 		std::cout << RESET << std::endl;
 	}
-	*/
 }
 
 void HttpRequest::finalHeadersParsingRoutine()
@@ -202,7 +200,8 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	static int		 k = -1;
+	/* FABIO I changed to bool because it was creating bodies in a loop */
+	bool		 k = false;
 	static MultiBody newBody;
 
 	while (found != std::string::npos && this->body_state != BODY2)
@@ -218,14 +217,13 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 				this->boundary_flag = false;
 				throw std::invalid_argument(E_400);
 			}
-			// Save the previous body before creating a new one
-			if (k >= 0)
+
+			if (k == false)
 			{
 				this->_bodies.push_back(newBody);
+				k = true;
 			}
-			newBody				= MultiBody(); // Reset for new body
 			this->boundary_flag = false;
-			k++;
 			std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
 			this->body_state = HEADERS2;
 			break;
