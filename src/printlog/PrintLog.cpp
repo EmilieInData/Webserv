@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/05 15:45:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:50:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,7 @@ void printServerLocations(ServerData const &serv)
 	graTextHeader("Locations");
 
 	std::map<std::string, LocationConf>::iterator it;
-	std::map<std::string, LocationConf>::iterator ite =
-		serv.getLocations().end();
+	std::map<std::string, LocationConf>::iterator ite = serv.getLocations().end();
 
 	for (it = serv.getLocations().begin(); it != ite; it++)
 	{
@@ -97,8 +96,7 @@ void printServersStatus(ServerManager &serv)
 	graTextElement(intToString(serv.getRspCount()));
 	graTextHeader("Listening Sockets");
 
-	const std::set<std::pair<int, std::string> > &listens =
-		serv.getUniqueListens();
+	const std::set<std::pair<int, std::string> >		  &listens = serv.getUniqueListens();
 	std::set<std::pair<int, std::string> >::const_iterator it;
 	std::set<std::pair<int, std::string> >::const_iterator ite = listens.end();
 
@@ -111,8 +109,8 @@ void printServersStatus(ServerManager &serv)
 	number of connections happened etc... */
 }
 
-void printRequest(ServerManager &serv, int socketFd, std::string request,
-				  std::string fullPath, std::string method)
+void printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath,
+				  std::string method)
 {
 	std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
 	graTopLine();
@@ -138,15 +136,27 @@ void printRequest(ServerManager &serv, int socketFd, std::string request,
 
 void printRaw(std::string const &text)
 {
+	bool bits = false;
+	std::cout << GREEN;
 	for (size_t i = 0; i < text.size(); i++)
 	{
 		if (text[i] == '\r')
 			std::cout << "\\r";
 		else if (text[i] == '\n')
 			std::cout << "\\n\n";
-		else
+		else if (text[i] >= 32 && text[i] <= 126)
 			std::cout << text[i];
+		else
+		{
+			if (bits == false)
+			{
+				std::cout << "bit content" << std::endl;
+				bits = true;
+			}
+			continue;
+		}
 	}
+	std::cout << RESET << std::endl;
 }
 
 void printResponse(ServerManager &serv, std::pair<int, std::string> incoming,

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/23 11:07:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:05:55 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 
 			if (bytes > 0)
 			{
+				connection.fullRequest.append(buffer, bytes); // DBG to remove
 				buffer[bytes] = '\0';
 			
 				connection.fullRequest = buffer;
@@ -182,6 +183,8 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	}
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	//printRaw(connection.fullRequest);
+	printRaw(connection.fullRequest); // DBG to remove
+	req.printBodies();
 	return isComplete;
 }
 
@@ -221,7 +224,7 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 				servInput();
 				continue;
 			}
-
+			_reqCount++;
 			connection.socketIndex = i;
 			connection.clientFd	   = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
 											&connection.clientLen);
