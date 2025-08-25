@@ -6,12 +6,13 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 14:47:05 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/25 18:57:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
+#include "Utils.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -19,12 +20,13 @@
 Response::Response(HttpRequest const &request) : _request(&request)
 {
 
-	_clientFd	   = -1;
-	_response	   = "";
-	_location	   = "";
-	_method		   = "";
-	_contentType   = "";
-	_contentLength = "";
+	_clientFd	   	= -1;
+	_response	   	= "";
+	_location	   	= "";
+	_method			= "";
+	_contentType	= "";
+	_contentLength	= "";
+	_autoindex		= _request->getAutoindex();
 }
 
 Response::~Response() {}
@@ -43,12 +45,14 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
+	std::cout << PINK << fullPath.second << RESET << std::endl; // TO BORROW
 	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/")
 		_location = fullPath.first + "/redirect/index.html";
 	else if (fullPath.second == "/" || fullPath.second.empty())
-		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
+		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
+	std::cout << PINK << _location << RESET << std::endl; // TO BORROW
 	_method = method;
 }
 
@@ -60,29 +64,64 @@ void Response::setClientFd(int clientFd)
 std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
-
+	//check if _location is empty first? TODO
+	
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
 		if (!file.is_open())
-			return "";
-
+			return ""; //TO DO ERROR MESSAGE?
 		std::ostringstream buffer;
 		buffer << file.rdbuf();
 		file.close();
 		return buffer.str();
 	}
+    else if (isFolder(_location))
+    {
+		// if (not exist) //find location bloc, done by cleo in http request
+		// 	//error
+		DIR *dir = opendir(_location.c_str());
+		if (!dir)
+			return "";//return error to open directory
+	    if (access(_location.c_str(), R_OK) != 0)
+		{
+			closedir(dir);
+    	    return "";//return error miss right to read what's inside
+		}
+		if (this->getAutoindex() == false)
+            return ""; //return error not allowed to read inside
+        return doAutoindex(_location, dir);
+	}
 	else
 	{
 		std::ifstream page(_location.c_str());
 		if (!page.is_open())
-			return "";
-
+			return ""; //TO DO ERROR MESSAGE?
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
 		page.close();
 		return pageContent.str();
 	}
+}
+
+std::string Response::doAutoindex(std::string str, DIR *dir)
+{
+	std::ostringstream html;
+	struct dirent *entry;
+				
+	html << "<html>\n<head><title>What's inside " << str << " ?</title></head>\n<body>\n";
+	html << "<h1>What's inside " << str << " ?</h1>\n<ul>\n";
+	
+	while ((entry = readdir(dir)) != NULL)
+	{
+		// Ignore "." & ".."
+		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..")
+			continue;
+		html << "  <li>" << entry->d_name << "</li>\n";
+	}
+	html << "</ul>\n</body>\n</html>\n";
+	closedir(dir);
+	return html.str();
 }
 
 std::string Response::runScript(std::string const &cgiPath)
@@ -224,7 +263,7 @@ void Response::prepResponse()
 	std::string		   content;
 	_contentType   = checkType();
 
-	if (_contentType == "text/x-python")
+	if (_contentType == "text/x-python")//do with PHP ?
 		content = runScript(_location);
 	else
 		content = prepFile();
@@ -297,4 +336,9 @@ std::string Response::getLength()
 std::string Response::getResponse()
 {
 	return _response;
+}
+
+bool	Response::getAutoindex() const
+{
+	return _autoindex;
 }

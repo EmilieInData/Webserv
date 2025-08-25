@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/23 09:58:06 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/25 18:04:01 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@
 #include <unistd.h>
 #include <utility>
 #include <vector>
+#include <sys/types.h>
+#include <dirent.h>
+
 
 #include "PrintLog.hpp"
 
@@ -91,5 +94,6 @@ std::string intToString(const int &num);
 
 // check file extension
 bool isBinary(std::string location);
+bool isFolder(std::string location);
 
 #endif

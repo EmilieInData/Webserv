@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/24 16:06:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:44:13 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ private:
 	std::pair<std::string, std::string>	host;
 	std::pair<std::string, std::string>	_fullPath;
 	std::string							location;
+	bool 								_autoindex; //ADD by Emilie
 	Headers								*headers;
 	std::string							body;
 	std::size_t							body_len;
@@ -89,6 +90,7 @@ public:
 	std::pair<std::string, std::string> getFullPath() const;	// FABIO added this because I need full path for the response
 	int									getStatusCode() const;
 	int									getParsingState() const;
+	bool								getAutoindex() const;
 	
 
 	//PROVISOIR

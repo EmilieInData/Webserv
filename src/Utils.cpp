@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/04 17:05:39 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 16:43:04 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,4 +344,13 @@ bool	isBinary(std::string location)
 					 extension == ".png" || extension == ".gif" || 
 					 extension == ".ico");
 }
+
+bool isFolder(std::string location)
+{
+	char c = location[location.size() -1];
+	if (c == '/')
+		return true;
+	return false;
+}
+
 // vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}
