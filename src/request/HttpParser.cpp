@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 18:08:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/23 09:55:56 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,8 +354,8 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	return  std::make_pair( first, second );
 }
 
-const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "authorization", "user-agent", "cookie", "referer", "sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site", "sec-fetch-user", "priority" };
-const int			HttpParser::one_h_count = 12;
+const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "content-disposition", "cookie" };
+const int			HttpParser::one_h_count = 5;
 const std::string	HttpParser::many_header[] = { "accept", "accept-encoding", "accept-lenguage", "connection", "cache-control"};
 const int			HttpParser::many_h_count = 5;
 
@@ -428,12 +428,28 @@ void	HttpParser::pushMoreValues( std::map<std::string, std::vector<std::string> 
 
 }
 
-int	HttpParser::parseContentLengthHeader( std::string const & v ) {
+int	HttpParser::parseContentLengthHeader( std::string const & v, std::size_t body_max ) {
 	if ( v.empty()) throw std::invalid_argument( E_400 );
 	if ( v.at( 0 ) == 0 && v.length() == 1 ) return 0;
-	int tmp	= atoi( v.c_str());
+	std::size_t tmp	= atoi( v.c_str());
 	if ( tmp <= 0 ) throw std::invalid_argument( E_400 );
+	if ( tmp > body_max ) throw std::invalid_argument ( E_413 );
 	return tmp;
 }
 
+std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const & v ) {
+	if ( v.at( 0 ) != "multipart/form-data" ) return "";
+		
+	if ( v.at( 1 ).empty()) throw std::invalid_argument( E_400 );
+
+	std::size_t	found = v.at( 1 ).find( "boundary=" );
+
+	if ( found == std::string::npos ) throw std::invalid_argument( E_400 );
+
+	std::string boundary = v[1].substr( 9, v[1].length());
+
+	//std::cout << "BOUNDARIE: " << boundary << std::endl;
+
+	return boundary;
+}
 

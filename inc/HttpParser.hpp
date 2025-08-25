@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 18:08:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:37:25 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #define E_404 "404 Not Found"
 #define E_405 "405 Method Not Allowed"
 #define E_408 "408 Request Timeout"
+#define E_413 "413 Payload Too Large"
 #define E_414 "414 URI Too Long"
 #define E_421 "421 Misdirected Request"
 #define E_501 "501 Not Implemented"
@@ -76,6 +77,7 @@ public:
 	static bool									manyValuesHeader( std::string name );
 	static std::vector<std::string>				pushValues( std::string n, std::string v );
 	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
-	static int									parseContentLengthHeader( std::string const & v );
+	static int									parseContentLengthHeader( std::string const & v, std::size_t body_max );
+	static std::string							parseContentTypeBoundary( std::vector<std::string> const & v );
 };
 #endif

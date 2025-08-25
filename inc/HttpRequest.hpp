@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/20 16:03:46 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 16:06:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #define	REQ_LINE	2
 #define	HEADERS		3
 #define BODY		4
+#define BOUNDARY	5
+#define HEADERS2	6
+#define BODY2		7
 #define	DONE		0
 #define ERR			-1
 #define CRLF		"\r\n"
@@ -32,6 +35,7 @@
 #include "ServerManager.hpp"
 #include "Uri.hpp"
 #include "Headers.hpp"
+#include "Utils.hpp"
 
 class RequestLine;
 class Uri;
@@ -49,8 +53,12 @@ private:
 	Headers								*headers;
 	std::string							body;
 	std::size_t							body_len;
+	std::size_t							max_body_size;
+	std::string							boundary;
+	bool								boundary_flag;
 	int									code;
 	int									state;
+	int									body_state;
 	std::string							fullRequest;
 	std::pair<int, std::string>			incoming;
 	ServerManager &						server;	
@@ -61,6 +69,7 @@ private:
 	void	finalHeadersParsingRoutine();
 	void	setFullPath(ServerData const &serv);
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
+	void	manyBodiesRoutine( std::size_t found );
 
 public:
 	HttpRequest( ServerManager & server );

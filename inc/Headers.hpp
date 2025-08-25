@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/21 14:04:27 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 11:55:56 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ public:
 	std::string											getHeaderOnlyOneValue( std::string const & name, int index ) const; 
 	void												printHeader() const;
 	void												setHeader( std::string & str );
-	void												setCookieValues();
+	void												setManyValuesHeader( std::string name );
 };
 
 #endif

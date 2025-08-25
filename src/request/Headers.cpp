@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/21 14:11:45 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/22 11:55:53 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,16 +82,16 @@ void	Headers::printHeader() const {
 	}
 }
 
-void	Headers::setCookieValues() {
-	if ( getHeader( "cookie" ) == this->header.end()) return; 
+void	Headers::setManyValuesHeader( std::string name ) {
+	if ( getHeader( name ) == this->header.end()) return; 
 	
-	std::vector<std::string>			more_values = HttpParser::split( getHeaderOnlyOneValue( "cookie", 0 ), ';' );
+	std::vector<std::string>			more_values = HttpParser::split( getHeaderOnlyOneValue( name , 0 ), ';' );
 	std::vector<std::string>::iterator	it, ite = more_values.end();
 
 	for ( it = more_values.begin(); it != ite; ++it )
 		HttpParser::trimSpaceAndTab( *it );
 
-	std::vector<std::string> & cookie = this->getHeaderValue( "cookie" );
+	std::vector<std::string> & cookie = this->getHeaderValue( name );
 
 	cookie.insert( cookie.begin() , more_values.begin(), more_values.end());
 	cookie.pop_back();

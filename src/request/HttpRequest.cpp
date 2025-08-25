@@ -6,12 +6,11 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/21 15:33:44 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/24 16:14:34 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-//#include <fcntl.h>
 #include <stdlib.h>
 
 HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL ), headers( NULL ), server( server ) { 
@@ -24,7 +23,8 @@ HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL
 }
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server) : 
-req_line( NULL ), uri( NULL ), headers( NULL ), code( 200 ), state( SKIP ), incoming( incoming ), server( server ) {
+req_line( NULL ), uri( NULL ), headers( NULL ), body( "" ), body_len( 0 ), boundary( "" ), boundary_flag( false ), 
+code( 200 ), state( SKIP ), incoming( incoming ), server( server ) {
 	headers = new Headers();
 }
 
@@ -73,10 +73,11 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 	static int	i = 0;
 	
 	try {
-		while ( found != std::string::npos ) {
-			std::string tmp = fullRequest.substr( 0, found );
-			fullRequest.erase( 0, found + 2 );
-
+		while ( found != std::string::npos && this->state != BODY ) {
+			std::string tmp = this->fullRequest.substr( 0, found );
+			this->fullRequest.erase( 0, found + 2 );
+			
+		//	if ( i < 15) 
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
 			//si no es body verifier que les char sont printable
 
@@ -102,22 +103,25 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 		}
 		
 		if ( this->state == BODY ) {
-			this->body += this->fullRequest;
+			if ( !this->boundary.empty())
+				manyBodiesRoutine( found );
+			else {
+				this->body = this->fullRequest;
+			//	std::cout << "BODY: " << this->body << std::endl;
+			//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
 				if ( this->body.length() >= this->body_len ) {
-				if ( this->body.length() > this->body_len )
-					this->body.erase( this->body_len, this->body.length());
-				this->state = DONE;
+					if ( this->body.length() > this->body_len )
+						this->body.erase( this->body_len, this->body.length());
+					this->state = DONE;
+				}
 			}
-
-
-
 		}
 
 	} catch ( std::invalid_argument e ) {
 		this->setStatusCode( e.what());
 	}
 
-	std::cout << "STATE IN FCT: " << this->state << std::endl;
+//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 //	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
@@ -125,23 +129,82 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 
 void	HttpRequest::finalHeadersParsingRoutine() {
 	if ( this->headers->getHeader( "cookie" ) != this->headers->getHeaderEnd() ) 
-		this->headers->setCookieValues();
+		this->headers->setManyValuesHeader( "cookie" );
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ) 
+		this->headers->setManyValuesHeader( "content-type" );
 	this->headers->printHeader();
 	checkHost( this->headers->getHeader( "host" ));
 	this->uri = new Uri( req_line->getReqTarget(), this->host.first );
 	ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
 	setFullPath(serv);
+	this->max_body_size = serv.getBodySize();
 //	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 //	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation( serv.getLocations(), this->_fullPath.second );
 	HttpParser::checkIfPathExist( this->_fullPath );
 	HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd()) {
+		this->boundary = HttpParser::parseContentTypeBoundary( this->headers->getHeaderValue( "content-type"));
+		if ( !this->boundary.empty()) {
+			this->state = BODY;
+			this->body_state = BOUNDARY;
+			this->boundary_flag = true;
+		}
+	}
 	if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
-		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ));
+		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ), this->max_body_size );
 		this->state = BODY;
 	}
-	else
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ||this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd())		return;
+	this->state = DONE;
+}
+
+void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
+	static int k = -1;
+	while ( found != std::string::npos && this->body_state != BODY2) {
+		std::string tmp = this->fullRequest.substr( 0, found );
+		this->fullRequest.erase( 0, found + 2 );
+		
+		switch ( this->body_state ) {
+			case BOUNDARY:
+				if ( this->boundary_flag == true && tmp != "--" + this->boundary ) {
+					this->boundary_flag = false;
+					throw std::invalid_argument( E_400 ); //si el primer boundary no corresponde: error 
+				}
+				//FABIO create new struct body
+				this->boundary_flag = false;
+				k++;
+				std::cout << std::endl << GREEN <<"              NEWBODY " << k << RESET << std::endl;
+				this->body_state = HEADERS2;
+				break;	
+			case HEADERS2:
+				if ( tmp.empty()) {
+					this->body_state = BODY2;
+					break;
+				}
+				std::cout << "HEADER " << k << ": " << tmp.substr( 0, 70 ) << std::endl; // FABIO structbody->header->setHeader( tmp )
+				this->body_state = HEADERS2;
+				break;
+		}
+
+	found = this->fullRequest.find( CRLF );
+	}
+	
+	this->body = this->fullRequest;
+
+	std::size_t	f = this->body.find( "\r\n--" + this->boundary + "--\r\n" ); //ULTIMO BODY
+	if ( f != std::string::npos ) {
+		this->body = this->body.erase( f, this->body.length()); // FABIO poner body en la struct del ultimo body
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
 		this->state = DONE;
+	}
+	std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
+	if ( f2 != std::string::npos ) {
+		this->body = this->body.erase( f2, this->body.length() ); //FABIO poner body  en la struct
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
+		this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
+		this->body_state = BOUNDARY;
+	}
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {
