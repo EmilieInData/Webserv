@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 12:47:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 15:17:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,12 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
-	if (fullPath.second == "/" || fullPath.second.empty())
+	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/")
+		_location = fullPath.first + "/redirect/index.html";
+	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
 	else
 		_location = fullPath.first + fullPath.second;
-
 	_method = method;
 }
 
