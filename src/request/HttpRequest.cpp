@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 10:35:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:49:40 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 
 void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 	static int k = -1;
+	MultiBody newBody;
 	while ( found != std::string::npos && this->body_state != BODY2) {
 		std::string tmp = this->fullRequest.substr( 0, found );
 		this->fullRequest.erase( 0, found + 2 );
@@ -183,6 +184,7 @@ void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 					break;
 				}
 				std::cout << "HEADER " << k << ": " << tmp.substr( 0, 70 ) << std::endl; // FABIO structbody->header->setHeader( tmp )
+				newBody.bodyHeader.setHeader(tmp);
 				this->body_state = HEADERS2;
 				break;
 		}
@@ -195,16 +197,19 @@ void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 	std::size_t	f = this->body.find( "\r\n--" + this->boundary + "--\r\n" ); //ULTIMO BODY
 	if ( f != std::string::npos ) {
 		this->body = this->body.erase( f, this->body.length()); // FABIO poner body en la struct del ultimo body
+		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
 		this->state = DONE;
 	}
 	std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
 	if ( f2 != std::string::npos ) {
 		this->body = this->body.erase( f2, this->body.length() ); //FABIO poner body  en la struct
+		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
 		this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
 		this->body_state = BOUNDARY;
 	}
+	this->_bodies.push_back(newBody);
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {
