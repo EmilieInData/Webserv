@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ABlockBase.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/30 17:10:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:51:00 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,13 @@
 ABlockBase::ABlockBase()
 {
 	_autoindex = false;
-	_root = "/var/www/html";
+	_root = "/www";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
 	// _returnDirective = ""; //To define ??
-
-	// _errorPage[404] = "/404.html";
-	// _errorPage[500] = "/50x.html";
-	// _errorPage[501] = "/50x.html";
-	// _errorPage[400] = "/4xx.html";
-	// _errorPage[401] = "/4xx.html";
-	// _errorPage[403] = "/4xx.html";
-	// _errorPage[405] = "/4xx.html";
-	// _errorPage[410] = "/4xx.html";
-	// _errorPage[413] = "/4xx.html";
-	// _errorPage[414] = "/4xx.html";
-
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
-
-	// _cgiPass[".py"] = "/usr/bin/python3";
-	//_cgiPass[".php"] = "/usr/bin/php-cgi";
+	_cgiPass[".py"] = "/usr/bin/python3";
 }
   
 ABlockBase::~ABlockBase() {} 
@@ -131,7 +117,7 @@ size_t	ABlockBase::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 
 size_t	ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
 {
-	if ( i >= buffer.size() || buffer[i].empty()) //a voir si utile pour chaque directive ?
+	if ( i >= buffer.size() || buffer[i].empty())
 		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
 	// if (buffer[i][0] != '/') // FABIO paused it to use relative paths for testing
 	// 	throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
@@ -156,7 +142,7 @@ size_t	ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i)
 	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
 		throw std::invalid_argument(" Parsing error, miss 'index' arguments\n");
 	if (!_index.empty())
-		_index.clear(); //supprimer l'arg par defaut
+		_index.clear();
 	while (i < buffer.size())
 	{
 		if (buffer[i] == ";")
@@ -201,12 +187,12 @@ size_t	ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer, size_t i
 	if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
 		|| buffer[i] == "{" || buffer[i] == "}")
 		throw std::invalid_argument(" Parsing error, miss 'allow_methods' arguments\n");
-	_allowedMethods.clear(); // vider l'arg/les args car redefini
+	_allowedMethods.clear();
 	for (; i < buffer.size(); i++)
 	{
 		if (buffer[i] == "GET" || buffer[i] == "POST" || buffer[i] == "DELETE")
 		{
-			for(size_t j = 0; j < _allowedMethods.size(); j++) //checker doublons mm si ok nginx
+			for(size_t j = 0; j < _allowedMethods.size(); j++)
 			{
 				if (_allowedMethods[j] == buffer[i])
 					throw std::invalid_argument(" Parsing error, 'allow_methods' argument duplicated\n");
@@ -233,7 +219,7 @@ size_t	ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t
 		|| buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty()
 		|| buffer[i + 1] == "{" || buffer[i + 1] == "}")
 		throw std::invalid_argument(" Parsing error, miss 'return' directive arguments\n");
-	_returnDirective.clear(); // vider l'arg/les args car redefini
+	_returnDirective.clear();
 	if (isInt(buffer[i]))
 		num = strToInt(buffer[i]);
 	if (!isInt(buffer[i]) || num < 100 || num > 599)
@@ -264,14 +250,14 @@ size_t	ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i)
 		throw std::invalid_argument(" Parsing error, miss 'error_page' arguments\n");
 	for(; i < buffer.size(); i++)
 	{
-		if (isErrorPage(buffer[i])) //verifier les pages authorisees
+		if (isErrorPage(buffer[i]))
 		{
 			for(size_t j = 0; j < num.size(); j++)
 			{
 				if (num[j] == strToInt(buffer[i]))
 					throw std::invalid_argument(" Parsing error, 'error_page' number duplicated\n");
 			}
-			num.push_back(strToInt(buffer[i])); //stocker les pages dans un array de int au cas ou il en a plusieurs
+			num.push_back(strToInt(buffer[i]));
 		}
 		else if (buffer[i] == ";")
 			break;
