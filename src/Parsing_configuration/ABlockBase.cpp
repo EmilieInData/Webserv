@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/22 12:51:00 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:31:36 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ ABlockBase::ABlockBase()
 	_root = "/www";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
-	// _returnDirective = ""; //To define ??
+	_returnDirective.push_back("301");
+	_returnDirective.push_back("/redirect/index.html");
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
 	_cgiPass[".py"] = "/usr/bin/python3";
@@ -88,7 +89,7 @@ bool	ABlockBase::checkFlag(std::string const& value)
 		if (_flag[i] == value)
 			return true;
 	}
-	_flag.push_back(value); //mettre le flag de la directive
+	_flag.push_back(value);
 	return false;
 }
 

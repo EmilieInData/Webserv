@@ -126,8 +126,6 @@
 
 --> TO DO
 
-//garder l'adresse ip en type ip et non std::string // a ver
-
 ///checker si une ligne est si grande que la fonction me la retourne en deux fois ? 
 
 --> TO ASK
@@ -135,11 +133,8 @@
 
 --> TO KNOW
 
-//chemin absolu = /blabla
-//chemin relatif = ./blabla
+//chemin absolu (du home)= /blabla
+//chemin relatif (de la ou on est)= ./blabla ou /blabla
 
 //test char no printable 
 // printf "server\x01{}\n" > ../conf/test.conf
-
-//si il manque des arguments au fichier comme listen par ex,
-//les messages d'erreurs sont au lancement du server pas au parsing
