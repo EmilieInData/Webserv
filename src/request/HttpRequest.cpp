@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/26 12:02:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 12:22:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,15 +130,13 @@ void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 void	HttpRequest::printBodies()
 {
 	std::cout << "Bodies size: " << _bodies.size() << std::endl;
-	/*
-	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
-	{
-		std::cout << GREEN << "Body content" << std::endl;
-		_bodies[i].bodyHeader.printHeader();
-		std::cout << _bodies[i].bodyContent << std::endl;
-		std::cout << RESET << std::endl;
-	}
-	*/
+	// for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	// {
+	// 	std::cout << GREEN << "Body content" << std::endl;
+	// 	it->bodyHeader.printHeader();
+	// 	std::cout << it->bodyContent << std::endl;
+	// 	std::cout << RESET << std::endl;
+	// }
 }
 
 void	HttpRequest::finalHeadersParsingRoutine() {
@@ -175,8 +173,8 @@ void	HttpRequest::finalHeadersParsingRoutine() {
 
 void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 	static int k = -1;
-	bool makeNew = true;
-	MultiBody newBody;
+	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
+	static MultiBody newBody;
 
 	while ( found != std::string::npos && this->body_state != BODY2) {
 		std::string tmp = this->fullRequest.substr( 0, found );
@@ -219,6 +217,8 @@ void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 		this->body = this->body.erase( f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
+		this->_bodies.push_back(newBody);
+		makeNew = true;
 		this->state = DONE;
 	}
 	std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
@@ -226,11 +226,11 @@ void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
 		this->body = this->body.erase( f2, this->body.length() ); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
+		this->_bodies.push_back(newBody);
+		makeNew = true;
 		this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
 		this->body_state = BOUNDARY;
 	}
-	this->_bodies.push_back(newBody);
-	makeNew = true;
 }
 
 void	HttpRequest::setStatusCode( std::string error ) {

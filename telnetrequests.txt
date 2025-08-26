@@ -38,6 +38,8 @@ http://localhost:9093/cgi-bin/mult.php?a=5&b=1
 
 -------------varios bodies---------------
 
+curl -X POST -F "file3=@cat.jpg" http://localhost:9090/uploads/
+
 curl -X POST -F "description=una foto de mis mascotas" -F "file1=@cat.jpg" -F "file2=@cat.jpg" http://localhost:9090/uploads/
 
 curl -X POST -F "description=una foto de mis mascotas" -F "file1=@cat.png" -F "file2=@cat.png" http://localhost:9090/uploads/
