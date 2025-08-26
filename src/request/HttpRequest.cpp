@@ -6,368 +6,303 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 17:14:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 12:02:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include <stdlib.h>
 
-HttpRequest::HttpRequest(ServerManager &server)
-	: req_line(NULL), uri(NULL), headers(NULL), server(server)
-{
+HttpRequest::HttpRequest( ServerManager & server ) : req_line( NULL ), uri( NULL ), headers( NULL ), server( server ) { 
 	HttpParserTester::parseHttpMessageTest();
 	HttpParserTester::parseRequestLineTest();
 	HttpParserTester::parseHostTest();
 	HttpParserTester::parseUriTest();
 	HttpParserTester::parseHeadersTest();
+
 }
 
-HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
-	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
-{
+HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server) : 
+req_line( NULL ), uri( NULL ), headers( NULL ), body( "" ), body_len( 0 ), boundary( "" ), boundary_flag( false ), 
+code( 200 ), state( SKIP ), incoming( incoming ), server( server ) {
 	headers = new Headers();
 }
 
-HttpRequest::HttpRequest(HttpRequest const &src) : server(src.server)
-{
-	*this = src;
-}
+HttpRequest::HttpRequest( HttpRequest const & src ) : server( src.server ) { *this = src; }
 
-HttpRequest::~HttpRequest()
-{
-	if (req_line)
+HttpRequest::~HttpRequest() {
+	if ( req_line )
 		delete req_line;
-	if (uri)
+	if ( uri )
 		delete uri;
-	if (headers)
+	if ( headers )
 		delete headers;
 }
 
-HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
-{
-	if (this != &rhs)
-	{
-		if (this->req_line)
+HttpRequest& HttpRequest::operator=(const HttpRequest& rhs) {
+    if (this != &rhs) {
+        if (this->req_line) 
 			delete this->req_line;
-		this->req_line = rhs.req_line ? new RequestLine(*rhs.req_line) : NULL;
-		if (this->uri)
+        this->req_line = rhs.req_line ? new RequestLine(*rhs.req_line) : NULL;
+		if (this->uri) 
 			delete this->uri;
-		this->uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
-		if (this->headers)
+        this->uri = rhs.uri ? new Uri(*rhs.uri) : NULL;
+		if (this->headers) 
 			delete this->headers;
-		this->headers	  = rhs.headers ? new Headers(*rhs.headers) : NULL;
-		this->host		  = rhs.host;
-		this->_fullPath	  = rhs._fullPath;
-		this->body		  = rhs.body;
-		this->code		  = rhs.code;
-		this->state		  = rhs.state;
+		this->headers = rhs.headers ? new Headers(*rhs.headers) : NULL;
+		this->host = rhs.host;
+		this->_fullPath = rhs._fullPath;
+		this->body = rhs.body;
+		this->code = rhs.code;
+		this->state = rhs.state;
 		this->fullRequest = rhs.fullRequest;
-		this->incoming	  = rhs.incoming;
-		this->location	  = rhs.location;
+		this->incoming = rhs.incoming;
+		this->location = rhs.location;
 	}
-	return *this;
+    return *this;
 }
 
-void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
-{
+void	HttpRequest::sendBuffer( char * buffer, ssize_t bytes ) {
 
-	for (int i = 0; i < bytes; i++)
-		this->fullRequest.push_back(buffer[i]);
+	for ( int i = 0; i < bytes; i++ )
+		this->fullRequest.push_back( buffer[i] );
+	
+	std::size_t	found = fullRequest.find( CRLF );
+//	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
 
-	std::size_t found = fullRequest.find(CRLF);
-	//	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
-
-	static int i = 0;
-
-	try
-	{
-		while (found != std::string::npos && this->state != BODY)
-		{
-			std::string tmp = this->fullRequest.substr(0, found);
-			this->fullRequest.erase(0, found + 2);
-
-			//	if ( i < 15)
+	static int	i = 0;
+	
+	try {
+		while ( found != std::string::npos && this->state != BODY ) {
+			std::string tmp = this->fullRequest.substr( 0, found );
+			this->fullRequest.erase( 0, found + 2 );
+			
+		//	if ( i < 15) 
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
 			//si no es body verifier que les char sont printable
 
-			switch (this->state)
-			{
-			case SKIP:
-				if (tmp.empty())
+			switch( this->state ) {
+				case SKIP:
+					if ( tmp.empty())
+						break;
+					else this->state = REQ_LINE;
+				case REQ_LINE:
+					this->req_line = new RequestLine( HttpParser::parseRequestLine( tmp ));
+					this->state = HEADERS;
 					break;
-				else
-					this->state = REQ_LINE;
-			case REQ_LINE:
-				this->req_line = new RequestLine(HttpParser::parseRequestLine(tmp));
-				this->state	   = HEADERS;
-				break;
-			case HEADERS:
-				if (tmp.empty())
-				{
-					finalHeadersParsingRoutine();
+				case HEADERS:
+					if ( tmp.empty()) {
+						finalHeadersParsingRoutine();
+						break;
+					}
+					this->headers->setHeader( tmp );
+					this->state = HEADERS;
 					break;
-				}
-				this->headers->setHeader(tmp);
-				this->state = HEADERS;
-				break;
 			}
-			found = fullRequest.find(CRLF);
+			found = fullRequest.find( CRLF );
 		}
-
-		if (this->state == BODY)
-		{
-			if (!this->boundary.empty())
-				manyBodiesRoutine(found);
-			else
-			{
+		
+		if ( this->state == BODY ) {
+			if ( !this->boundary.empty()) // TODO create newBody here and pass it to routine?
+				manyBodiesRoutine( found );
+			else {
 				this->body = this->fullRequest;
 				//	std::cout << "BODY: " << this->body << std::endl;
 				//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
-				if (this->body.length() >= this->body_len)
-				{
-					if (this->body.length() > this->body_len)
-						this->body.erase(this->body_len, this->body.length());
+				if ( this->body.length() >= this->body_len ) {
+					if ( this->body.length() > this->body_len )
+					this->body.erase( this->body_len, this->body.length());
 					this->state = DONE;
 				}
 			}
 		}
+		
+	} catch ( std::invalid_argument e ) {
+		this->setStatusCode( e.what());
 	}
-	catch (std::invalid_argument e)
-	{
-		this->setStatusCode(e.what());
-	}
+	
+//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
-	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
+//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 
-	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 }
 
-void HttpRequest::printBodies()
+void	HttpRequest::printBodies()
 {
 	std::cout << "Bodies size: " << _bodies.size() << std::endl;
+	/*
 	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
 	{
 		std::cout << GREEN << "Body content" << std::endl;
-		it->bodyHeader.printHeader();
-		std::cout << it->bodyContent << std::endl;
+		_bodies[i].bodyHeader.printHeader();
+		std::cout << _bodies[i].bodyContent << std::endl;
 		std::cout << RESET << std::endl;
 	}
+	*/
 }
 
-void HttpRequest::finalHeadersParsingRoutine()
-{
-	if (this->headers->getHeader("cookie") != this->headers->getHeaderEnd())
-		this->headers->setManyValuesHeader("cookie");
-	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
-		this->headers->setManyValuesHeader("content-type");
+void	HttpRequest::finalHeadersParsingRoutine() {
+	if ( this->headers->getHeader( "cookie" ) != this->headers->getHeaderEnd() ) 
+		this->headers->setManyValuesHeader( "cookie" );
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ) 
+		this->headers->setManyValuesHeader( "content-type" );
 	this->headers->printHeader();
-	checkHost(this->headers->getHeader("host"));
-	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
-	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
+	checkHost( this->headers->getHeader( "host" ));
+	this->uri = new Uri( req_line->getReqTarget(), this->host.first );
+	ServerData serv = HttpParser::checkIfServerExist( this->server.getServersList(), this->incoming );
 	setFullPath(serv);
 	this->max_body_size = serv.getBodySize();
-	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
-	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
-	setLocation(serv.getLocations(), this->_fullPath.second);
-	HttpParser::checkIfPathExist(this->_fullPath);
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
-								 this->req_line->getMethod());
-	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
-	{
-		this->boundary = HttpParser::parseContentTypeBoundary(
-			this->headers->getHeaderValue("content-type"));
-		if (!this->boundary.empty())
-		{
-			this->state			= BODY;
-			this->body_state	= BOUNDARY;
+//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
+//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
+	setLocation( serv.getLocations(), this->_fullPath.second );
+	HttpParser::checkIfPathExist( this->_fullPath );
+	HttpParser::notAllowedMethod( serv.getItLocations( this->location ), serv.getAllowedMethods(), this->req_line->getMethod());
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd()) {
+		this->boundary = HttpParser::parseContentTypeBoundary( this->headers->getHeaderValue( "content-type"));
+		if ( !this->boundary.empty()) {
+			this->state = BODY;
+			this->body_state = BOUNDARY;
 			this->boundary_flag = true;
 		}
 	}
-	if (this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
-	{
-		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length",
-																								   0),
-															  this->max_body_size);
+	if ( this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd() ) {
+		this->body_len = HttpParser::parseContentLengthHeader( this->headers->getHeaderOnlyOneValue( "content-length", 0 ), this->max_body_size );
 		this->state = BODY;
 	}
-	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd() ||
-		this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
-		return;
+	if ( this->headers->getHeader( "content-type" ) != this->headers->getHeaderEnd() ||this->headers->getHeader( "content-length" ) != this->headers->getHeaderEnd())		return;
 	this->state = DONE;
 }
 
-void HttpRequest::manyBodiesRoutine(std::size_t found)
-{
-	/* FABIO I changed to bool because it was creating bodies in a loop */
-	bool		 k = false;
-	static MultiBody newBody;
+void	HttpRequest::manyBodiesRoutine( std::size_t found ) {
+	static int k = -1;
+	bool makeNew = true;
+	MultiBody newBody;
 
-	while (found != std::string::npos && this->body_state != BODY2)
-	{
-		std::string tmp = this->fullRequest.substr(0, found);
-		this->fullRequest.erase(0, found + 2);
-
-		switch (this->body_state)
+	while ( found != std::string::npos && this->body_state != BODY2) {
+		std::string tmp = this->fullRequest.substr( 0, found );
+		this->fullRequest.erase( 0, found + 2 );
+		if (makeNew)
 		{
-		case BOUNDARY:
-			if (this->boundary_flag == true && tmp != "--" + this->boundary)
-			{
-				this->boundary_flag = false;
-				throw std::invalid_argument(E_400);
-			}
-
-			if (k == false)
-			{
-				this->_bodies.push_back(newBody);
-				k = true;
-			}
-			this->boundary_flag = false;
-			std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
-			this->body_state = HEADERS2;
-			break;
-		case HEADERS2:
-			if (tmp.empty())
-			{
-				this->body_state = BODY2;
-				break;
-			}
-			std::cout << "HEADER " << k << ": " << tmp.substr(0, 70) << std::endl;
-			// Set header for current MultiBody
-			newBody.bodyHeader.setHeader(tmp);
-			this->body_state = HEADERS2;
-			break;
+			newBody = MultiBody();
+			makeNew = false;	
 		}
-		found = this->fullRequest.find(CRLF);
-	}
+			switch ( this->body_state ) {
+			case BOUNDARY:
+				if ( this->boundary_flag == true && tmp != "--" + this->boundary ) {
+					this->boundary_flag = false;
+					throw std::invalid_argument( E_400 ); //si el primer boundary no corresponde: error 
+				}
+				//FABIO create new struct body
+				this->boundary_flag = false;
+				k++;
+				std::cout << std::endl << GREEN <<"              NEWBODY " << k << RESET << std::endl;
+				this->body_state = HEADERS2;
+				break;	
+			case HEADERS2:
+				if ( tmp.empty()) {
+					this->body_state = BODY2;
+					break;
+				}
+				std::cout << "HEADER " << k << ": " << tmp.substr( 0, 70 ) << std::endl; // FABIO structbody->header->setHeader( tmp )
+				newBody.bodyHeader.setHeader(tmp);
+				this->body_state = HEADERS2;
+				break;
+		}
 
+		found = this->fullRequest.find( CRLF );
+	}
+	
 	this->body = this->fullRequest;
 
-	// Handle final boundary
-	std::size_t f = this->body.find("\r\n--" + this->boundary + "--\r\n");
-	if (f != std::string::npos)
-	{
-		this->body			= this->body.erase(f, this->body.length());
+	std::size_t	f = this->body.find( "\r\n--" + this->boundary + "--\r\n" ); //ULTIMO BODY
+	if ( f != std::string::npos ) {
+		this->body = this->body.erase( f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
-		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
-		this->_bodies.push_back(newBody); // Add final body
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70) << std::endl;
 		this->state = DONE;
 	}
-
-	// Handle intermediate boundary
-	std::size_t f2 = this->body.find("\r\n--" + this->boundary + "\r\n");
-	if (f2 != std::string::npos)
-	{
-		this->body			= this->body.erase(f2, this->body.length());
+	std::size_t	f2 = this->body.find( "\r\n--" + this->boundary + "\r\n" ); //OTRO BODY
+	if ( f2 != std::string::npos ) {
+		this->body = this->body.erase( f2, this->body.length() ); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
-		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
-		this->_bodies.push_back(newBody); // Add current body
-		this->fullRequest = this->fullRequest.erase(0, f2 + 6);
-		this->body_state  = BOUNDARY;
+		std::cout << "BODY   " << k << ": " << this->body.substr( 0, 70 ) << std::endl;
+		this->fullRequest = this->fullRequest.erase( 0, f2 + 6 );
+		this->body_state = BOUNDARY;
 	}
+	this->_bodies.push_back(newBody);
+	makeNew = true;
 }
 
-void HttpRequest::setStatusCode(std::string error)
-{
-	char code_str[4];
+void	HttpRequest::setStatusCode( std::string error ) {
+	char	code_str[4];
 
-	std::strncpy(code_str, error.c_str(), 3);
+	std::strncpy( code_str, error.c_str(), 3 );
 
 	code_str[3] = '\0';
 
 	this->state = ERR;
 
-	this->code = std::atoi(code_str);
+	this->code = std::atoi( code_str );
 	std::cout << "ERROR CODE: " << code << std::endl;
 	std::cout << error << std::endl;
 }
 
-void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std::string const &path)
-{
-	std::size_t found = path.rfind("/");
+void HttpRequest::setLocation( std::map<std::string, LocationConf> & location, std::string const & path ) {
+	std::size_t found = path.rfind( "/" );
 
-	//	if ( found == std::string::npos ) //BADREQUEST
+//	if ( found == std::string::npos ) //BADREQUEST
+		
+	this->location = path.substr( 0, found + 1 );
+//	std::cout << "LOCATION REQ: " << this->location << std::endl;
 
-	this->location = path.substr(0, found + 1);
-	//	std::cout << "LOCATION REQ: " << this->location << std::endl;
+	std::map<std::string, LocationConf>::iterator	it = location.find( this->location );
 
-	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
+//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 
-	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+	if ( it == location.end() ) throw std::invalid_argument( E_404 ); 
 
-	if (it == location.end())
-		throw std::invalid_argument(E_404);
-
-	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
+//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
-void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)
-{
-	if (it == this->headers->getHeaderEnd())
-		throw std::invalid_argument(E_400);
+void	HttpRequest::checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it ) {
+	if ( it == this->headers->getHeaderEnd()) throw std::invalid_argument( E_400 ); 
 
-	if (this->headers->getHeaderOnlyOneValue("host", 0).empty())
-		throw std::invalid_argument(E_400);
-
-	this->host = HttpParser::parseHost(this->headers->getHeaderOnlyOneValue("host", 0));
+	if ( this->headers->getHeaderOnlyOneValue( "host", 0 ).empty()) throw std::invalid_argument( E_400 ); 
+	
+	this->host = HttpParser::parseHost( this->headers->getHeaderOnlyOneValue( "host", 0 )); 
 }
 
-std::string HttpRequest::getHttpMethod() const
-{
-	return this->req_line->getMethod();
-}
 
-std::string HttpRequest::getRequestUri() const
-{
-	return this->uri->getUri();
-}
+std::string	HttpRequest::getHttpMethod() const { return this->req_line->getMethod(); }
 
-std::string HttpRequest::getPath() const
-{
-	return this->uri->getPath();
-}
+std::string	HttpRequest::getRequestUri() const { return this->uri->getUri(); }
+
+std::string	HttpRequest::getPath() const { return this->uri->getPath(); }
 
 /* TODO we need to check also for the case when we get an absolute path i think
  getFullPath() just adds the root to the path in the Uri from the request */
 
-void HttpRequest::setFullPath(ServerData const &serv)
-{
+void HttpRequest::setFullPath(ServerData const &serv) {
 	_fullPath = std::make_pair<std::string, std::string>(serv.getRoot(), uri->getPath());
 }
 
-std::pair<std::string, std::string> HttpRequest::getFullPath() const
-{
-	return _fullPath;
-}
+std::pair<std::string, std::string> HttpRequest::getFullPath() const { return _fullPath; }
 
-std::string HttpRequest::getQuery() const
-{
-	return this->uri->getQuery();
-}
+std::string	HttpRequest::getQuery() const { return this->uri->getQuery(); }
 
-std::string HttpRequest::getHttpVersion() const
-{
-	return this->req_line->getVersion();
-}
+std::string	HttpRequest::getHttpVersion() const { return this->req_line->getVersion(); }
 
-int HttpRequest::getStatusCode() const
-{
-	return this->code;
-}
+int	HttpRequest::getStatusCode() const { return this->code; }
 
-int HttpRequest::getParsingState() const
-{
-	return this->state;
-}
+int	HttpRequest::getParsingState() const { return this->state; }
 
 // MultiBody	HttpRequest::Headers const &header, std::string const &bodyContent)
 // {
 // 	/* TODO for testing right now:
 // 		create a random header
 // 		pass a body content
-// 		the function will work with a
+// 		the function will work with a 
 // 		push_back() to the vector of
 // 		bodies in the req class.
 // 		in the function also put dbg/print

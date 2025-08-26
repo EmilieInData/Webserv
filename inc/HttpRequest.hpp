@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 16:56:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 12:04:05 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ struct MultiBody // TODO delete unused constructor when we know which one we nee
 	std::string bodyContent;
 
 	MultiBody() {
-		std::cout << "[Body created]" << std::endl;
 	} // Constructs automatically and empty
 
 	MultiBody(const Headers &header, const std::string &content) // Constructs with passed parameters
