@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 15:48:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/27 15:52:45 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -372,15 +372,10 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 		{
 			std::cout << "IS FILE" << std::endl;
 			std::string locationUp = _fullPath.first + _fullPath.second;
-			std::cout << locationUp << std::endl;
-			it->bodyHeader.printHeader();
-			std::cout << "key: " << it->bodyHeader.getHeader("content-disposition")->first
-					  << std::endl;
 			std::string content	  = it->bodyHeader.getHeader("content-disposition")->second[0];
 			size_t		startName = content.find("filename=") + 10;
 			size_t		endName	  = content.find("\"", startName);
 			std::string fileName  = locationUp + content.substr(startName, endName - startName);
-			std::cout << "filename: " + fileName << std::endl;
 			std::ofstream fileUp(fileName.c_str());
 			if (fileUp.is_open())
 			{
