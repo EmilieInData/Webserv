@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/26 12:22:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/27 10:43:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,14 +297,20 @@ int	HttpRequest::getStatusCode() const { return this->code; }
 
 int	HttpRequest::getParsingState() const { return this->state; }
 
-// MultiBody	HttpRequest::Headers const &header, std::string const &bodyContent)
-// {
-// 	/* TODO for testing right now:
-// 		create a random header
-// 		pass a body content
-// 		the function will work with a 
-// 		push_back() to the vector of
-// 		bodies in the req class.
-// 		in the function also put dbg/print
-// 		messages to see if it works*/
-// }
+void	HttpRequest::fileUpload() // TODO check if maybe we should put it in response
+{
+	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	{
+		std::cout << it->bodyHeader.getHeaderValue("content-disposition") << std::endl;
+	}
+}
+
+/* TODO
+	fileUpload
+	{
+		for every body in request
+		get file name and extension
+		use getHeaderOnlyOneValue
+		try and access location (it should already be checked in request)
+		create file with name and copy bits
+	} */
