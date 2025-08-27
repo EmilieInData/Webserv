@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/23 09:55:56 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/27 16:10:42 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,6 +251,7 @@ std::string	HttpParser::parsePath( std::string const & uri ) {
 
 	if ( foundQ != std::string::npos ) return uri.substr( 0, foundQ );
 	if ( foundF != std::string::npos ) return uri.substr( 0, foundF );
+
 	return uri;
 }
 

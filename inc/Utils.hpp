@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/25 18:04:01 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/27 17:41:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 #include <vector>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 
 #include "PrintLog.hpp"

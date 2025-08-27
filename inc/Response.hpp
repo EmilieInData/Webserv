@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 18:23:31 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/27 18:42:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ public:
 	void		printRawResponse();
 	bool		getAutoindex() const;
 	std::string doAutoindex(std::string str, DIR *dir);
-
+	void		doHtmlAutoindex(std::string &uri, std::ostringstream &html);
 };
 
 #endif
