@@ -6,13 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 17:05:55 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/27 13:53:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
-#include <time.h>
 #include <fcntl.h>
+#include <time.h>
 
 ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
@@ -59,8 +59,8 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 		graError("Nonblocking setup error");
 
 	std::memset(&newaddr, 0, sizeof(newaddr));
-	newaddr.sin_family		= AF_INET;
-	newaddr.sin_port		= htons(_listens.first);
+	newaddr.sin_family = AF_INET;
+	newaddr.sin_port   = htons(_listens.first);
 	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str()); // TODO check if inet_addr can be used
 
 	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
@@ -120,7 +120,7 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 	return std::make_pair(portIn, ipStr);
 }
 
-bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req )
+bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 {
 	bool isComplete = false;
 
@@ -132,51 +132,60 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
-		time_t	start, check;
+		time_t start, check;
 		time(&start);
 
 		while (!isComplete && attempts < maxAttempts)
 		{
 			ssize_t bytes = recv(connection.clientFd, buffer, sizeof(buffer) - 1, 0);
-			
-			int flags = fcntl(connection.clientFd, F_GETFL, 0); 
+
+			int flags = fcntl(connection.clientFd, F_GETFL, 0);
 			fcntl(connection.clientFd, F_SETFL, flags | O_NONBLOCK);
 
 			if (bytes > 0)
 			{
 				connection.fullRequest.append(buffer, bytes); // DBG to remove
 				buffer[bytes] = '\0';
-			
+
 				connection.fullRequest = buffer;
-			//	printRaw( connection.fullRequest );
-			//	std::cout << std::endl;
+				//	printRaw( connection.fullRequest );
+				//	std::cout << std::endl;
 
-				req.sendBuffer( buffer, bytes ); //poner en param max_body_size del server
+				req.sendBuffer(buffer, bytes); // TODO poner en param max_body_size del server
 
-				if ( req.getParsingState() == DONE )
+				if (req.getParsingState() == DONE)
 					std::cout << "STATE: " << req.getParsingState() << std::endl;
-			
-			if ( req.getParsingState() <= 0 )
-				isComplete = true;
-			}
-			else if (bytes == 0) {
+
+				if (req.getParsingState() <= 0)
+				{
+					isComplete = true;
+					req.fileUpload(); // TODO i think this needs to go in the response
+				}
+				}
+			else if (bytes == 0)
+			{
 				std::cout << "BYTES = 0" << std::endl;
 				return false;
 			}
 			else if (bytes < 0)
 			{
-				time(&check);		
-				if ( req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE && difftime( check, start ) > 0.5 ) {
+				time(&check);
+				if (req.getParsingState() >= SKIP && req.getParsingState() <= REQ_LINE &&
+					difftime(check, start) > 0.5)
+				{
 					isComplete = true;
-					req.setStatusCode( E_400 ); 
+					req.setStatusCode(E_400);
 				}
-				else if ( req.getParsingState() == HEADERS && difftime( check, start ) > CLIENT_HEADER_TIMEOUT ) {
+				else if (req.getParsingState() == HEADERS &&
+						 difftime(check, start) > CLIENT_HEADER_TIMEOUT)
+				{
 					isComplete = true;
-					req.setStatusCode( E_408 );	
+					req.setStatusCode(E_408);
 				}
-				else if ( req.getParsingState() == BODY && difftime( check, start ) > CLIENT_BODY_TIMEOUT ) {
+				else if (req.getParsingState() == BODY && difftime(check, start) > CLIENT_BODY_TIMEOUT)
+				{
 					isComplete = true;
-					req.setStatusCode( E_408 );					
+					req.setStatusCode(E_408);
 				}
 			}
 		}
@@ -188,14 +197,16 @@ bool ServerManager::servReceive(ClientConnection &connection ,HttpRequest & req 
 	return isComplete;
 }
 
-void ServerManager::servRespond(ClientConnection &connection, HttpRequest & req, std::pair<int, std::string> incoming)
+void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
+								std::pair<int, std::string> incoming)
 {
 	try
 	{
-		Response					resp(req);
-		std::string					fullPath = req.getFullPath().first + req.getFullPath().second; // TODO make error management for bad request
-	//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
-	//				 req.getHttpMethod());
+		Response	resp(req);
+		std::string fullPath = req.getFullPath().first +
+							   req.getFullPath().second; // TODO make error management for bad request
+		//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
+		//				 req.getHttpMethod());
 		resp.setContent(req.getFullPath(), req.getHttpMethod());
 		resp.setClientFd(connection.clientFd);
 		resp.sendResponse();
@@ -228,14 +239,17 @@ void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)
 			connection.socketIndex = i;
 			connection.clientFd	   = accept(_socketFd[i], (struct sockaddr *)&connection.clientAddr,
 											&connection.clientLen);
-			
+
 			std::pair<int, std::string> incoming = getSocketData(_socketFd[connection.socketIndex]);
 
-			HttpRequest		req = HttpRequest( incoming, *this );
+			HttpRequest req = HttpRequest(incoming, *this);
 
-			if (servReceive(connection, req)) {
+			if (servReceive(connection, req))
+			{
 				servRespond(connection, req, incoming);
-			} else {
+			}
+			else
+			{
 				printBoxError("Incomplete or empty request received");
 				std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
 											"0\r\nConnection: close\r\n\r\n";
