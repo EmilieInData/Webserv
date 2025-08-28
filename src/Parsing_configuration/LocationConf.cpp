@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LocationConf.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/07/23 15:19:26 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:28:58 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ LocationConf::LocationConf(ServerData const& S)
 }
   
 LocationConf::~LocationConf() {} 
-//detruire des trucs ici?
 
 LocationConf::LocationConf(LocationConf const& other) : ABlockBase (other)
 {

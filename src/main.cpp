@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/16 16:23:17 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/27 19:11:52 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int main(int ac, char** av)
 	printServerManager(testserv);
 	testserv.servSetup();
 	testserv.servRun();
-
+	//throw exception for this part too because he will return 0 for error without
 
 	return 0;
 }

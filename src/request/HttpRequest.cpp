@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 17:14:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:44:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,11 +294,11 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 
 	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
 
-	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
-
-	if (it == location.end())
-		throw std::invalid_argument(E_404);
+//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
+	if ( it == location.end() )
+    throw std::invalid_argument( E_404 ); 
 
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
@@ -356,6 +356,8 @@ int HttpRequest::getStatusCode() const
 {
 	return this->code;
 }
+
+bool HttpRequest::getAutoindex() const { return this->_autoindex; }
 
 int HttpRequest::getParsingState() const
 {

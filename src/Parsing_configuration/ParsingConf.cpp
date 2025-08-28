@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParsingConf.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 19:10:20 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:27:04 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,12 @@ void	ParsingConf::checkSemicolon(std::string& line)
 	size_t j = line.find(';');
 	if(j == std::string::npos)
 		return;
-	for (size_t i = j + 1; i < line.length(); i++)  //si il y a autre chose derriere
+	for (size_t i = j + 1; i < line.length(); i++)
 	{
 		if (line[i] != 9 && line[i] != 32 && line[i] != '}')
 			throw std::invalid_argument("Parsing error, no argument accepted"
 				" after the semicolon\n");
-		if (line[i] == '}') //parenthese de fin de ligne acceptee uniquement 
+		if (line[i] == '}')
 		{
 			i++;
 			while (line[i])
@@ -100,9 +100,9 @@ void	ParsingConf::checkSemicolon(std::string& line)
 	size_t i = 0;
 	while (line[i] && line[i] < 33)
 		i++;
-	if (line[i] == ';') //pas de semicolon en premier token
+	if (line[i] == ';')
 		throw std::invalid_argument("Parsing error, need argument before the semicolon\n");
-	line.insert(j, " ");//mettre un espace avant le ";" pour le garder ds un autre token
+	line.insert(j, " ");
 	return;
 }
 
@@ -126,11 +126,11 @@ void	ParsingConf::doParsing(std::string line, std::vector<std::string>& buffer)
 {
 	for (size_t i = 0; i < line.length(); i++)
 	{
-		if ((line[i] < 32 && line[i] != 9 && line[i] != 10) || line[i] == 127) //je garde les espaces et tab pour couper les mots
+		if ((line[i] < 32 && line[i] != 9 && line[i] != 10) || line[i] == 127)
 			throw std::invalid_argument("Parsing error, invalid no printable character\n");
 		if (line[i] == '#')
 		{
-			line = line.substr(0, i); //enlever les commentaires
+			line = line.substr(0, i);
 			break;
 		}
 	}
@@ -139,12 +139,12 @@ void	ParsingConf::doParsing(std::string line, std::vector<std::string>& buffer)
 	checkSemicolon(line);
 	for (size_t i = 0; i < line.length(); i++)
 	{
-		if (line[i] != 9 && line[i] != 32) // enlever les espaces
+		if (line[i] != 9 && line[i] != 32)
 		{
 			size_t j = i;
 			while (i < line.length() && line[i] != 9 && line[i] != 32)
 				i++;
-			buffer.push_back (line.substr(j, i - j)); //transformer en token
+			buffer.push_back (line.substr(j, i - j));
 		}
 	}
 	for (size_t i = 0; i + 1 < buffer.size(); i++)
@@ -208,13 +208,12 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 {
 	int	num = i;
 
-	servers.push_back(ServerData());//creer les blocs server dans le contener
+	servers.push_back(ServerData());
 	itServer = servers.end() - 1;
 	blocks.push_back(&(*itServer));
 	i = i + 2;
 	while (i < buffer.size())
 	{
-		// std::cout << GREEN << " --> " << buffer[i] << RESET << std::endl; // to borrow
 		if (buffer[i] == "location")
 		{
 			if (!blocks.back()->checkFlag("location"))
@@ -230,19 +229,9 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 			}
 		}
 		else if (buffer[i] == "listen")
-		{
-			// if (!blocks.empty() && blocks.back() != &(*itServer))
-			// 	throw std::invalid_argument(" Parsing error, 'listen' directive"
-			// 		" allowed only in server block\n"); 
 			i = itServer->fillListens(buffer, i + 1);
-		}
 		else if (buffer[i] == "server_name")
-		{
-			// if (!blocks.empty() && blocks.back() != &(*itServer))
-			// 	throw std::invalid_argument(" Parsing error, 'server_name' directive"
-			// 		" allowed only in server block\n");	 
 			i = itServer->fillServerName(buffer, i + 1);
-		}	
 		else if (buffer[i] == "autoindex")
 			i = blocks.back()->fillAutoIndex(buffer, i + 1);
 		else if (buffer[i] == "root")
@@ -262,7 +251,7 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 		else if (buffer[i] == "}")
 			return num;
 		else
-			throw std::invalid_argument(" Parsing error, invalid directives\n");
+			throw std::invalid_argument(" Parsing error, invalid directives: " + buffer[i]);
 	}
 	return num;
 }
@@ -271,7 +260,6 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 	std::vector<ABlockBase*>& blocks, std::vector<ServerData>::iterator& itServer,
 	std::map<std::string, LocationConf>::iterator& itLocation)
 {
-	//std::cout << GREEN << " --> " << buffer[i] << " " << buffer[i + 1] << RESET << std::endl; // to borrow
 	if (itServer->getLocations().find(buffer[i + 1]) != itServer->getLocations().end())
 		throw std::invalid_argument(" Parsing error, this 'location'"
 			" directive already exist\n");
@@ -280,12 +268,8 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 	itLocation->second.setKey(buffer[i + 1]);
 	blocks.push_back(&itLocation->second);
 	i = i + 3;
-	// std::map<int, std::string>::const_iterator it;
-	// for (it = itLocation->second.getErrorPage().begin(); it != itLocation->second.getErrorPage().end(); it++)
-	// 	std::cout << PINK << it->first << std::endl;
 	while (i < buffer.size())
 	{
-		// std::cout << PURPLE << " --> " << buffer[i] << RESET << std::endl; // to borrow
 		if (buffer[i] == "listen" || buffer[i] == "server_name")
 			throw std::invalid_argument("Parsing error, '" + buffer[i] +
 			"' directive allowed only in server block\n");	
@@ -308,7 +292,7 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 		else if (buffer[i] == "}")
 			return i;
 		else
-		 	throw std::invalid_argument(" Parsing error, invalid directives\n");
+		 	throw std::invalid_argument(" Parsing error, invalid directives: " + buffer[i]);
 	}
 	return i;
 }
@@ -320,7 +304,7 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 	std::vector<ServerData>::iterator 				itServer;
 	std::map<std::string, LocationConf>::iterator	itLocation;
 	
-	checkStructure(buffer); //parenthesis well closed, blocks well positionned
+	checkStructure(buffer);
 	while(i < buffer.size())
 	{
 		if (buffer[i] == "server")
@@ -331,90 +315,87 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 			throw std::invalid_argument(" Parsing error, directives allowed only in a block\n");	
 		else if (buffer[i] == "}")
 		{
-			blocks.pop_back(); //supprimer le block ds le vector pour le 'fermer'
+			blocks.pop_back();
 			i++;
 		}
 		else
 			i++;
-		// else
-		// 	throw std::invalid_argument(" Parsing error, invalid directives\n");
 	}
-	// print_structure(); // TODO turned it off for now
 	return;
 }
 
-void	ParsingConf::print_structure()
-{
-	for (size_t i  = 0; i < servers.size(); i++)
-	{
-		std::cout << GREEN << "\n[SERVER #" << i << "]" << std::endl;
-		std::cout << PINK << "Listen:\n";
-		for (size_t j = 0; j < servers[i].getListens().size(); j++)
-			std::cout << "port: " << servers[i].getListens()[j].first
-					  << "ip: " << servers[i].getListens()[j].second << "\n";
+// void	ParsingConf::print_structure()
+// {
+// 	for (size_t i  = 0; i < servers.size(); i++)
+// 	{
+// 		std::cout << GREEN << "\n[SERVER #" << i << "]" << std::endl;
+// 		std::cout << PINK << "Listen:\n";
+// 		for (size_t j = 0; j < servers[i].getListens().size(); j++)
+// 			std::cout << "port: " << servers[i].getListens()[j].first
+// 					  << "ip: " << servers[i].getListens()[j].second << "\n";
 		 
-		std::cout << PURPLE << "ServerName:\n";
-		for (size_t j = 0; j < servers[i].getServerName().size(); j++)
-			std::cout << servers[i].getServerName()[j] << "\n";
+// 		std::cout << PURPLE << "ServerName:\n";
+// 		for (size_t j = 0; j < servers[i].getServerName().size(); j++)
+// 			std::cout << servers[i].getServerName()[j] << "\n";
 			 
-		std::cout << PURPLE << "Autoindex: " << servers[i].getAutoindex() << "\n"
+// 		std::cout << PURPLE << "Autoindex: " << servers[i].getAutoindex() << "\n"
 		
-		<< "Root: " << servers[i].getRoot() << "\n"
+// 		<< "Root: " << servers[i].getRoot() << "\n"
 		
-		<< "Bodysize: " << servers[i].getBodySize() << "\n"
+// 		<< "Bodysize: " << servers[i].getBodySize() << "\n"
 		
-		<< "Index:\n";
-		for (size_t j = 0; j < servers[i].getIndex().size(); j++)
-			std::cout << servers[i].getIndex()[j] << "\n";
+// 		<< "Index:\n";
+// 		for (size_t j = 0; j < servers[i].getIndex().size(); j++)
+// 			std::cout << servers[i].getIndex()[j] << "\n";
 		
-		std::cout << "AllowedMethods:\n";
-		for (size_t j = 0; j < servers[i].getAllowedMethods().size(); j++)
-			std::cout << servers[i].getAllowedMethods()[j] << "\n";
+// 		std::cout << "AllowedMethods:\n";
+// 		for (size_t j = 0; j < servers[i].getAllowedMethods().size(); j++)
+// 			std::cout << servers[i].getAllowedMethods()[j] << "\n";
 		
-		std::cout << "ReturnDirective:\n";
-		for (size_t j = 0; j < servers[i].getReturnDirective().size(); j++)
-			std::cout << servers[i].getReturnDirective()[j] << "\n";
+// 		std::cout << "ReturnDirective:\n";
+// 		for (size_t j = 0; j < servers[i].getReturnDirective().size(); j++)
+// 			std::cout << servers[i].getReturnDirective()[j] << "\n";
 		
-		std::cout << "ErrorPage:\n";
-		for (std::map<int, std::string>::const_iterator it = servers[i].getErrorPage().begin(); it != servers[i].getErrorPage().end(); it++)
-			std::cout << it->first << " " << it->second << "\n";
+// 		std::cout << "ErrorPage:\n";
+// 		for (std::map<int, std::string>::const_iterator it = servers[i].getErrorPage().begin(); it != servers[i].getErrorPage().end(); it++)
+// 			std::cout << it->first << " " << it->second << "\n";
 
-		std::cout << "CgiPass:\n";
-		for (std::map<std::string, std::string>::const_iterator it = servers[i].getCgiPass().begin(); it != servers[i].getCgiPass().end(); it++)
-			std::cout << it->first << " " << it->second << "\n";
+// 		std::cout << "CgiPass:\n";
+// 		for (std::map<std::string, std::string>::const_iterator it = servers[i].getCgiPass().begin(); it != servers[i].getCgiPass().end(); it++)
+// 			std::cout << it->first << " " << it->second << "\n";
 
-		std::cout << PINK "Locations: \n";
-		std::map<std::string, LocationConf> loc = servers[i].getLocations();
-		for (std::map<std::string, LocationConf>::iterator it = loc.begin(); it != loc.end(); it++)
-		{
-    		std::cout << PINK << it->first << "\n";
+// 		std::cout << PINK "Locations: \n";
+// 		std::map<std::string, LocationConf> loc = servers[i].getLocations();
+// 		for (std::map<std::string, LocationConf>::iterator it = loc.begin(); it != loc.end(); it++)
+// 		{
+//     		std::cout << PINK << it->first << "\n";
 
-			std::cout << PURPLE << "Autoindex: " << it->second.getAutoindex() << "\n"
+// 			std::cout << PURPLE << "Autoindex: " << it->second.getAutoindex() << "\n"
 		
-			<< "Root: " << it->second.getRoot() << "\n"
+// 			<< "Root: " << it->second.getRoot() << "\n"
 			
-			<< "Bodysize: " << it->second.getBodySize() << "\n"
+// 			<< "Bodysize: " << it->second.getBodySize() << "\n"
 			
-			<< "Index:\n";
-			for (size_t j = 0; j < it->second.getIndex().size(); j++)
-				std::cout << it->second.getIndex()[j] << "\n";
+// 			<< "Index:\n";
+// 			for (size_t j = 0; j < it->second.getIndex().size(); j++)
+// 				std::cout << it->second.getIndex()[j] << "\n";
 			
-			std::cout << "AllowedMethods:\n";
-			for (size_t j = 0; j < it->second.getAllowedMethods().size(); j++)
-				std::cout << it->second.getAllowedMethods()[j] << "\n";
+// 			std::cout << "AllowedMethods:\n";
+// 			for (size_t j = 0; j < it->second.getAllowedMethods().size(); j++)
+// 				std::cout << it->second.getAllowedMethods()[j] << "\n";
 			
-			std::cout << "ReturnDirective:\n";
-			for (size_t j = 0; j <it->second.getReturnDirective().size(); j++)
-				std::cout <<it->second.getReturnDirective()[j] << "\n";
+// 			std::cout << "ReturnDirective:\n";
+// 			for (size_t j = 0; j <it->second.getReturnDirective().size(); j++)
+// 				std::cout <<it->second.getReturnDirective()[j] << "\n";
 			
-			std::cout << "ErrorPage:\n";
-			for (std::map<int, std::string>::const_iterator it2 = it->second.getErrorPage().begin(); it2 != it->second.getErrorPage().end(); it2++)
-				std::cout << it2->first << " " << it2->second << "\n";
+// 			std::cout << "ErrorPage:\n";
+// 			for (std::map<int, std::string>::const_iterator it2 = it->second.getErrorPage().begin(); it2 != it->second.getErrorPage().end(); it2++)
+// 				std::cout << it2->first << " " << it2->second << "\n";
 
-			std::cout << "CgiPass:\n";
-			for (std::map<std::string, std::string>::const_iterator it3 = it->second.getCgiPass().begin(); it3 != it->second.getCgiPass().end(); it3++)
-				std::cout << it3->first << " " << it3->second << "\n";
-		}
-	}
-	std::cout << RESET;
-}
+// 			std::cout << "CgiPass:\n";
+// 			for (std::map<std::string, std::string>::const_iterator it3 = it->second.getCgiPass().begin(); it3 != it->second.getCgiPass().end(); it3++)
+// 				std::cout << it3->first << " " << it3->second << "\n";
+// 		}
+// 	}
+// 	std::cout << RESET;
+// }
