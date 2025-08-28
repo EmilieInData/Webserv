@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 16:56:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/27 10:16:48 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ struct MultiBody // TODO delete unused constructor when we know which one we nee
 	std::string bodyContent;
 
 	MultiBody() {
-		std::cout << "[Body created]" << std::endl;
 	} // Constructs automatically and empty
 
 	MultiBody(const Headers &header, const std::string &content) // Constructs with passed parameters
@@ -111,6 +110,7 @@ public:
 	int									getParsingState() const;
 	bool								getAutoindex() const;
 	MultiBody fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
+	void	fileUpload();
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
