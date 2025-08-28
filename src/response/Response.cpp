@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/28 13:48:47 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:13:38 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ std::string Response::prepFile()
 		}
 		if (this->getAutoindex() == false)
             return ""; //return error not allowed to read inside
-        return doAutoindex(_location, dir);
+        return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
@@ -104,12 +104,11 @@ std::string Response::prepFile()
 	}
 }
 
-std::string Response::doAutoindex(std::string location, DIR *dir)
+std::string Response::doAutoindex(std::string uri, DIR *dir)
 {
     std::ostringstream html;
     struct dirent *entry;
 
-    std::string uri = location.substr(5);
 	doHtmlAutoindex(uri, html);
 	
     while ((entry = readdir(dir)) != NULL)
