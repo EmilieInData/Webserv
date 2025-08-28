@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/25 17:44:50 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:00:10 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,10 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 
 		if (this->state == BODY)
 		{
-			if (!this->boundary.empty())
+			if (!this->boundary.empty()) // TODO create newBody here and pass it to routine?
+			{
 				manyBodiesRoutine(found);
+			}
 			else
 			{
 				this->body = this->fullRequest;
@@ -147,13 +149,13 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 void HttpRequest::printBodies()
 {
 	std::cout << "Bodies size: " << _bodies.size() << std::endl;
-	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
-	{
-		std::cout << GREEN << "Body content" << std::endl;
-		it->bodyHeader.printHeader();
-		std::cout << it->bodyContent << std::endl;
-		std::cout << RESET << std::endl;
-	}
+	// for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	// {
+	// 	std::cout << GREEN << "Body content" << std::endl;
+	// 	it->bodyHeader.printHeader();
+	// 	std::cout << it->bodyContent << std::endl;
+	// 	std::cout << RESET << std::endl;
+	// }
 }
 
 void HttpRequest::finalHeadersParsingRoutine()
@@ -200,30 +202,30 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	/* FABIO I changed to bool because it was creating bodies in a loop */
-	bool		 k = false;
+	static int k = -1; // TODO no needed
+	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
 	while (found != std::string::npos && this->body_state != BODY2)
 	{
 		std::string tmp = this->fullRequest.substr(0, found);
 		this->fullRequest.erase(0, found + 2);
-
+		if (makeNew)
+		{
+			newBody = MultiBody(); 
+			makeNew = false;
+		}
 		switch (this->body_state)
 		{
 		case BOUNDARY:
 			if (this->boundary_flag == true && tmp != "--" + this->boundary)
 			{
 				this->boundary_flag = false;
-				throw std::invalid_argument(E_400);
+				throw std::invalid_argument(E_400); //si el primer boundary no corresponde: error
 			}
-
-			if (k == false)
-			{
-				this->_bodies.push_back(newBody);
-				k = true;
-			}
+			//FABIO create new struct body
 			this->boundary_flag = false;
+			k++;
 			std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
 			this->body_state = HEADERS2;
 			break;
@@ -233,36 +235,36 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 				this->body_state = BODY2;
 				break;
 			}
-			std::cout << "HEADER " << k << ": " << tmp.substr(0, 70) << std::endl;
-			// Set header for current MultiBody
+			std::cout << "HEADER " << k << ": " << tmp.substr(0, 70)
+					  << std::endl; // FABIO structbody->header->setHeader( tmp )
 			newBody.bodyHeader.setHeader(tmp);
 			this->body_state = HEADERS2;
 			break;
 		}
+
 		found = this->fullRequest.find(CRLF);
 	}
 
 	this->body = this->fullRequest;
 
-	// Handle final boundary
-	std::size_t f = this->body.find("\r\n--" + this->boundary + "--\r\n");
+	std::size_t f = this->body.find("\r\n--" + this->boundary + "--\r\n"); //ULTIMO BODY
 	if (f != std::string::npos)
 	{
-		this->body			= this->body.erase(f, this->body.length());
+		this->body = this->body.erase(f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
-		this->_bodies.push_back(newBody); // Add final body
+		this->_bodies.push_back(newBody);
+		makeNew		= true;
 		this->state = DONE;
 	}
-
-	// Handle intermediate boundary
-	std::size_t f2 = this->body.find("\r\n--" + this->boundary + "\r\n");
+	std::size_t f2 = this->body.find("\r\n--" + this->boundary + "\r\n"); //OTRO BODY
 	if (f2 != std::string::npos)
 	{
-		this->body			= this->body.erase(f2, this->body.length());
+		this->body = this->body.erase(f2, this->body.length()); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
 		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
-		this->_bodies.push_back(newBody); // Add current body
+		this->_bodies.push_back(newBody);
+		makeNew			  = true;
 		this->fullRequest = this->fullRequest.erase(0, f2 + 6);
 		this->body_state  = BOUNDARY;
 	}
@@ -364,14 +366,38 @@ int HttpRequest::getParsingState() const
 	return this->state;
 }
 
-// MultiBody	HttpRequest::Headers const &header, std::string const &bodyContent)
-// {
-// 	/* TODO for testing right now:
-// 		create a random header
-// 		pass a body content
-// 		the function will work with a
-// 		push_back() to the vector of
-// 		bodies in the req class.
-// 		in the function also put dbg/print
-// 		messages to see if it works*/
-// }
+void HttpRequest::fileUpload() // TODO check if maybe we should put it in response
+{
+	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	{
+		if (it->bodyHeader.getHeaderSize() > 1)
+		{
+			std::cout << "IS FILE" << std::endl; // DBG
+			std::string locationUp = _fullPath.first + _fullPath.second;
+			std::string content	  = it->bodyHeader.getHeader("content-disposition")->second[0];
+			size_t		startName = content.find("filename=") + 10;
+			size_t		endName	  = content.find("\"", startName);
+			std::string fileName  = locationUp + content.substr(startName, endName - startName);
+			std::ofstream fileUp(fileName.c_str());
+			if (fileUp.is_open())
+			{
+				fileUp << it->bodyContent;
+				fileUp.close();
+			}
+		}
+		else
+			std::cout << "IS FORM" << std::endl; // DBG
+	}
+}
+
+/* TODO
+	fileUpload
+	{
+		for every body in request
+		get file name and extension
+		consider different cases for 
+		form and file
+		use getHeaderOnlyOneValue
+		try and access location (it should already be checked in request)
+		create file with name and copy bits
+	} */

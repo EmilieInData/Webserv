@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Headers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 11:55:53 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/27 15:07:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	Headers::printHeader() const {
 	std::vector<std::string>::const_iterator							it_v, ite_v;
 
 	for ( it = this->header.begin(); it != ite; ++it ) {
-		std::cout << "key: " << it->first << "	 values: ";
+		std::cout << "key: " << it->first << "\nvalues: ";
 		ite_v = it->second.end();
 		for ( it_v = it->second.begin(); it_v != ite_v; ++it_v )
 			std::cout << *it_v << " ";
@@ -95,4 +95,9 @@ void	Headers::setManyValuesHeader( std::string name ) {
 
 	cookie.insert( cookie.begin() , more_values.begin(), more_values.end());
 	cookie.pop_back();
+}
+
+size_t Headers::getHeaderSize() const
+{
+	return header.size();
 }
