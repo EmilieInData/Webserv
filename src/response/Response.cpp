@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
 /*   Updated: 2025/08/28 13:48:47 by esellier         ###   ########.fr       */
@@ -65,7 +65,7 @@ std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
-	
+
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
@@ -191,6 +191,9 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 
 std::string Response::runScript(std::string const &cgiPath)
 {
+	size_t		lastDot	   = cgiPath.find_last_of('.');
+	std::string scriptType = cgiPath.substr(lastDot);
+	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
 	std::string query = _request->getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 
@@ -226,6 +229,7 @@ std::string Response::runScript(std::string const &cgiPath)
 
 	else if (child == 0)
 	{
+		std::string runPath;
 		close(pipeIn[PIPE_WRITE]);
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
 		close(pipeIn[PIPE_READ]);
@@ -235,18 +239,29 @@ std::string Response::runScript(std::string const &cgiPath)
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
-		std::string envVar = "QUERY_STRING=" +
-							 query; // TODO should pass everything the script might need in form of variable
-		char *envChar = new char[envVar.length() + 1];
-		strcpy(envChar, envVar.c_str());
+		/* TODO wrap env creation
+		into its owh function*/
 
-		char *envServ[] = {envChar, NULL};
-		char *argv[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>(cgiPath.c_str()),
+		std::string varQuery  = "QUERY_STRING=" + query;
+		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
+		char	   *envQuery  = new char[varQuery.length() + 1];
+		strcpy(envQuery, varQuery.c_str());
+
+		char *envMethod = new char[varMethod.length() + 1];
+		strcpy(envMethod, varMethod.c_str());
+
+		char *envServ[] = {envQuery, envMethod, NULL};
+
+		if (scriptType == ".py")
+			runPath = "/usr/bin/python3";
+		else if (scriptType == ".php")
+			runPath = "/usr/bin/php";
+		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
 						NULL};
-		execve("/usr/bin/python3", argv, envServ);
+		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
-		delete[] envChar;
+		delete[] envQuery;
 		exit(1);
 	}
 	else
@@ -289,7 +304,7 @@ std::string Response::runScript(std::string const &cgiPath)
 		}
 		else
 		{
-			content = scriptOutput;
+			content		 = scriptOutput;
 			_contentType = "text/html";
 			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
@@ -318,20 +333,18 @@ std::string Response::checkType()
 		return "image/gif";
 	else if (extension == ".css")
 		return "text/css";
-	else if (extension == ".js")
-		return "text/javascript";
-	else if (extension == ".py")
-		return "text/x-python";
+	else if (extension == ".py" || extension == ".php") // TODO check if valid
+		return "cgi-script";
 	else
 		return "application/octet-stream";
 }
 
 void Response::prepResponse()
 {
-	std::string		   content;
-	_contentType   = checkType();
+	std::string content;
+	_contentType = checkType();
 
-	if (_contentType == "text/x-python")//do with PHP ?
+	if (_contentType == "cgi-script")
 		content = runScript(_location);
 	else
 		content = prepFile();
@@ -341,7 +354,7 @@ void Response::prepResponse()
 	_contentLength = output.str();
 
 	Header header(*this);
-		_response = header.getHeader() + content;
+	_response = header.getHeader() + content;
 }
 
 void Response::printRawResponse()
