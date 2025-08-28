@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/27 18:42:33 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/28 13:48:47 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,110 +103,6 @@ std::string Response::prepFile()
 		return pageContent.str();
 	}
 }
-
-// std::string Response::doAutoindex(std::string location, DIR *dir)
-// {
-// 	std::ostringstream html;
-// 	struct dirent *entry;
-
-// 	std::string uri =  location.substr(5);//	
-// 	html << "<html>\n<head><title>What's inside " << uri << " ?</title></head>\n<body>\n";
-// 	html << "<h1>What's inside " << uri << " ?</h1>\n<ul>\n";
-	
-// 	while ((entry = readdir(dir)) != NULL)
-// 	{
-// 		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
-// 			continue;
-// 		html << "  <li><a href=\"" << uri;
-//         if (uri[uri.size() - 1] != '/')
-//             html << "/";
-//         html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-// 		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET << std::endl; // TO BORROW
-// 	}
-// 	html << "</ul>\n</body>\n</html>\n";
-// 	closedir(dir);
-// 	return html.str();
-// }
-
-// std::string Response::doAutoindex(std::string location, DIR *dir)
-// {
-//     std::ostringstream html;
-//     struct dirent *entry;
-
-//     std::string uri = location.substr(5);
-
-//     html << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n";
-//     html << "    <meta charset=\"UTF-8\">\n";
-//     html << "    <title>Index of " << uri << "</title>\n";
-//     html << "    <style>\n";
-//     html << "        body {\n";
-//     html << "            background-color: white;\n";
-//     html << "            font-family: Arial, sans-serif;\n";
-//     html << "            display: flex;\n";
-//     html << "            flex-direction: column;\n";
-//     html << "            justify-content: center;\n";
-//     html << "            align-items: center;\n";
-//     html << "            min-height: 100vh;\n";
-//     html << "            margin: 0;\n";
-//     html << "            padding: 20px;\n";
-//     html << "            box-sizing: border-box;\n";
-//     html << "        }\n";
-//     html << "        .purple-text {\n";
-//     html << "            color: #b388eb;\n";
-//     html << "            font-size: 48px;\n";
-//     html << "            text-align: center;\n";
-//     html << "            margin-bottom: 20px;\n";
-//     html << "        }\n";
-//     html << "        .image-container {\n";
-//     html << "            text-align: center;\n";
-//     html << "            margin-bottom: 20px;\n";
-//     html << "        }\n";
-//     html << "        .image-container img {\n";
-//     html << "            max-width: 100%;\n";
-//     html << "            height: auto;\n";
-//     html << "            max-height: 300px;\n";
-//     html << "        }\n";
-//     html << "        .list-container {\n";
-//     html << "            text-align: center;\n";
-//     html << "        }\n";
-//     html << "        ul {\n";
-//     html << "            list-style: none;\n";
-//     html << "            padding: 0;\n";
-//     html << "        }\n";
-//     html << "        li {\n";
-//     html << "            margin: 8px 0;\n";
-//     html << "        }\n";
-//     html << "        a {\n";
-//     html << "            text-decoration: none;\n";
-//     html << "            color: #7b2cbf;\n";
-//     html << "            font-size: 20px;\n";
-//     html << "        }\n";
-//     html << "        a:hover {\n";
-//     html << "            text-decoration: underline;\n";
-//     html << "        }\n";
-//     html << "    </style>\n";
-//     html << "</head>\n<body>\n";
-//     html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
-//     html << "    <div class=\"image-container\">\n";
-//     html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
-//     html << "    </div>\n";
-//     html << "    <div class=\"list-container\">\n";
-//     html << "    <ul>\n";
-
-//     while ((entry = readdir(dir)) != NULL)
-//     {
-// 		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
-// 			continue;
-//         html << "      <li><a href=\"" << uri;
-//         if (uri[uri.size() - 1] != '/')
-//             html << "/";
-//         html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-// 		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET << std::endl; // TO BORROW
-//     }
-//     html << "    </ul>\n</div>\n</body>\n</html>\n";
-//     closedir(dir);
-//     return html.str();
-// }
 
 std::string Response::doAutoindex(std::string location, DIR *dir)
 {
