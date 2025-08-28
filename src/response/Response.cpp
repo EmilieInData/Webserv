@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 15:37:45 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:51:26 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ void Response::prepResponse()
 	std::string content;
 	
 	_contentType = _request->getRspType();
-	// _contentType = checkType();
 
 	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
 
