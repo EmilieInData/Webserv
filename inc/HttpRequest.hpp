@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 10:16:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/28 16:08:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ public:
 
 	void								sendBuffer( char *buffer, ssize_t bytes );
 	void								setStatusCode( std::string error );
-  void		printBodies(); // DBG this can be deleted, it's just for testing
+	void								printBodies(); // DBG this can be deleted, it's just for testing
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;
 	std::string							getPath() const;
@@ -109,8 +109,8 @@ public:
 	int									getStatusCode() const;
 	int									getParsingState() const;
 	bool								getAutoindex() const;
-	MultiBody fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
-	void	fileUpload();
+	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
+	void								fileUpload();
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

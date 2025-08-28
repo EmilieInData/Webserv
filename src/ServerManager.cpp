@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/27 13:53:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/28 16:28:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,7 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
 		_rspCount++;
 		printResponse(*this, incoming, resp.getResponse(), fullPath);
 	}
-	catch (const std::exception &e)
+	catch (const std::exception &e) // TODO check with errors because they happen in HttpRequest
 	{
 		std::cerr << "Error processing request: " << e.what() << std::endl;
 		std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
