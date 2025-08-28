@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 15:52:45 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:00:10 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,7 +202,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	static int k = -1;
+	static int k = -1; // TODO no needed
 	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
@@ -212,7 +212,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 		this->fullRequest.erase(0, found + 2);
 		if (makeNew)
 		{
-			newBody = MultiBody();
+			newBody = MultiBody(); 
 			makeNew = false;
 		}
 		switch (this->body_state)
@@ -370,7 +370,7 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 	{
 		if (it->bodyHeader.getHeaderSize() > 1)
 		{
-			std::cout << "IS FILE" << std::endl;
+			std::cout << "IS FILE" << std::endl; // DBG
 			std::string locationUp = _fullPath.first + _fullPath.second;
 			std::string content	  = it->bodyHeader.getHeader("content-disposition")->second[0];
 			size_t		startName = content.find("filename=") + 10;
@@ -384,7 +384,7 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 			}
 		}
 		else
-			std::cout << "IS FORM" << std::endl;
+			std::cout << "IS FORM" << std::endl; // DBG
 	}
 }
 
