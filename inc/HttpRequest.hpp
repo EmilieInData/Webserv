@@ -66,6 +66,7 @@ private:
 	std::pair<std::string, std::string> host;
 	std::pair<std::string, std::string> _fullPath;
 	std::string							location;
+	bool 								_autoindex; //ADD by Emilie
 	Headers							   *headers;
 	std::string							body;
 	std::size_t							body_len;
@@ -96,18 +97,18 @@ public:
 
 	HttpRequest &operator=(HttpRequest const &rhs);
 
-	void		sendBuffer(char *buffer, ssize_t bytes);
-	void		setStatusCode(std::string error);
-	void		printBodies(); // DBG this can be deleted, it's just for testing
-	std::string getHttpMethod() const;
-	std::string getRequestUri() const;
-	std::string getPath() const;
-	std::string getQuery() const;
-	std::string getHttpVersion() const;
-	std::pair<std::string, std::string>
-		getFullPath() const; // FABIO added this because I need full path for the response
-	int getStatusCode() const;
-	int getParsingState() const;
+	void								sendBuffer( char *buffer, ssize_t bytes );
+	void								setStatusCode( std::string error );
+  void		printBodies(); // DBG this can be deleted, it's just for testing
+	std::string							getHttpMethod() const;
+	std::string							getRequestUri() const;
+	std::string							getPath() const;
+	std::string							getQuery() const;
+	std::string							getHttpVersion() const;
+	std::pair<std::string, std::string> getFullPath() const;	// FABIO added this because I need full path for the response
+	int									getStatusCode() const;
+	int									getParsingState() const;
+	bool								getAutoindex() const;
 	MultiBody fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	void	fileUpload();
 	//PROVISOIR

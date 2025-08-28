@@ -6,12 +6,13 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 16:24:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/28 13:48:47 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
+#include "Utils.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -19,12 +20,13 @@
 Response::Response(HttpRequest const &request) : _request(&request)
 {
 
-	_clientFd	   = -1;
-	_response	   = "";
-	_location	   = "";
-	_method		   = "";
-	_contentType   = "";
-	_contentLength = "";
+	_clientFd	   	= -1;
+	_response	   	= "";
+	_location	   	= "";
+	_method			= "";
+	_contentType	= "";
+	_contentLength	= "";
+	_autoindex		= _request->getAutoindex();
 }
 
 Response::~Response() {}
@@ -43,12 +45,14 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
-	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/")
+	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n" << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
+	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
 		_location = fullPath.first + "/redirect/index.html";
 	else if (fullPath.second == "/" || fullPath.second.empty())
-		_location = fullPath.first + "/index.html"; // TODO check AutoIndex
+		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
+	std::cout << PINK << "_LOcation: " << _location << RESET << std::endl; // TO BORROW
 	_method = method;
 }
 
@@ -60,39 +64,129 @@ void Response::setClientFd(int clientFd)
 std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
-	/* 
-	if isFolder(location)
-	{
-		if (rights not ok)
-			error
-		if (autoindex off)
-			error
-		generate Auto Index page
-	}
-	*/
-	
+	//check if _location is empty first? TODO
+
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
 		if (!file.is_open())
-			return "";
-
+			return ""; // TODO ERROR MESSAGE?
 		std::ostringstream buffer;
 		buffer << file.rdbuf();
 		file.close();
 		return buffer.str();
 	}
+    else if (isFolder(_location))
+    {
+		// if (not exist) //find location bloc, done by cleo in http request
+		// 	//error
+		DIR *dir = opendir(_location.c_str());
+		if (!dir)
+			return "";//return error to open directory
+	    if (access(_location.c_str(), R_OK) != 0)
+		{
+			closedir(dir);
+    	    return "";//return error miss right to read what's inside
+		}
+		if (this->getAutoindex() == false)
+            return ""; //return error not allowed to read inside
+        return doAutoindex(_location, dir);
+	}
 	else
 	{
 		std::ifstream page(_location.c_str());
 		if (!page.is_open())
-			return "";
-
+			return ""; // TODO ERROR MESSAGE?
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
 		page.close();
 		return pageContent.str();
 	}
+}
+
+std::string Response::doAutoindex(std::string location, DIR *dir)
+{
+    std::ostringstream html;
+    struct dirent *entry;
+
+    std::string uri = location.substr(5);
+	doHtmlAutoindex(uri, html);
+	
+    while ((entry = readdir(dir)) != NULL)
+    {
+		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
+			continue;
+        html << "      <li><a href=\"" << uri;
+        if (uri[uri.size() - 1] != '/')
+            html << "/";
+        html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
+		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET << std::endl; // TO BORROW
+    }
+    html << "    </ul>\n</div>\n</body>\n</html>\n";
+    closedir(dir);
+    return html.str();
+}
+
+
+void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
+{
+	html << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n";
+    html << "    <meta charset=\"UTF-8\">\n";
+    html << "    <title>Index of " << uri << "</title>\n";
+    html << "    <style>\n";
+    html << "        body {\n";
+    html << "            background-color: white;\n";
+    html << "            font-family: Arial, sans-serif;\n";
+    html << "            display: flex;\n";
+    html << "            flex-direction: column;\n";
+    html << "            justify-content: center;\n";
+    html << "            align-items: center;\n";
+    html << "            min-height: 100vh;\n";
+    html << "            margin: 0;\n";
+    html << "            padding: 20px;\n";
+    html << "            box-sizing: border-box;\n";
+    html << "        }\n";
+    html << "        .purple-text {\n";
+    html << "            color: #b388eb;\n";
+    html << "            font-size: 48px;\n";
+    html << "            text-align: center;\n";
+    html << "            margin-bottom: 20px;\n";
+    html << "        }\n";
+    html << "        .image-container {\n";
+    html << "            text-align: center;\n";
+    html << "            margin-bottom: 20px;\n";
+    html << "        }\n";
+    html << "        .image-container img {\n";
+    html << "            max-width: 100%;\n";
+    html << "            height: auto;\n";
+    html << "            max-height: 300px;\n";
+    html << "        }\n";
+    html << "        .list-container {\n";
+    html << "            text-align: center;\n";
+    html << "        }\n";
+    html << "        ul {\n";
+    html << "            list-style: none;\n";
+    html << "            padding: 0;\n";
+    html << "        }\n";
+    html << "        li {\n";
+    html << "            margin: 8px 0;\n";
+    html << "        }\n";
+    html << "        a {\n";
+    html << "            text-decoration: none;\n";
+    html << "            color: #7b2cbf;\n";
+    html << "            font-size: 20px;\n";
+    html << "        }\n";
+    html << "        a:hover {\n";
+    html << "            text-decoration: underline;\n";
+    html << "        }\n";
+    html << "    </style>\n";
+    html << "</head>\n<body>\n";
+    html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
+    html << "    <div class=\"image-container\">\n";
+    html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
+    html << "    </div>\n";
+    html << "    <div class=\"list-container\">\n";
+    html << "    <ul>\n";
 }
 
 std::string Response::runScript(std::string const &cgiPath)
@@ -221,6 +315,9 @@ std::string Response::runScript(std::string const &cgiPath)
 
 std::string Response::checkType()
 {
+	if (isFolder(_location) && _autoindex)
+		return "text/html";
+		
 	std::string extension;
 	size_t		dotPos = _location.find_last_of('.');
 	if (dotPos != std::string::npos)
@@ -320,4 +417,9 @@ std::string Response::getLength()
 std::string Response::getResponse()
 {
 	return _response;
+}
+
+bool	Response::getAutoindex() const
+{
+	return _autoindex;
 }

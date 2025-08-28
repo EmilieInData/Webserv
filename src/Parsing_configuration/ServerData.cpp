@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerData.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/03 13:44:58 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:28:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,10 @@
 
 ServerData::ServerData()
 {
-	_listens.push_back(std::make_pair(8080, "127.0.0.1")); //accepter localhost
-	// _serverName.push_back("default");
+	_listens.push_back(std::make_pair(8080, "127.0.0.1"));
 }
   
 ServerData::~ServerData() {} 
-//detruire des trucs ici?
 
 ServerData::ServerData(ServerData const& other) : ABlockBase(other)
 {
@@ -73,17 +71,17 @@ size_t ServerData::fillListens(std::vector<std::string>& buffer, size_t i)
 		|| buffer[i + 1].empty() || buffer[i + 1] != ";")
 		throw std::invalid_argument(" Parsing error with 'listen' argument,"
 		" need one argument followed by a semicolon\n"); 
-	if (isInt(buffer[i])) //is an int
+	if (isInt(buffer[i]))
 	{
 		port = strToInt(buffer[i]);
 		ip = "127.0.0.1";
 	}
-	else if (isLocal(buffer[i])) //is an local address
+	else if (isLocal(buffer[i]))
 	{
 		port = strToInt(buffer[i].substr(10));;
 		ip = "127.0.0.1";
 	}
-	else if (isSocket(buffer[i])) // is a socket address
+	else if (isSocket(buffer[i]))
 	{
 		if (!checkSocketAddress(buffer[i]))
 			throw std::invalid_argument(" Parsing error, 'listen' socket address is not correct\n"); 
@@ -92,7 +90,6 @@ size_t ServerData::fillListens(std::vector<std::string>& buffer, size_t i)
 	}
 	else
 		throw std::invalid_argument(" Parsing error, 'listen' argument is not correct\n"); 
-	// std::cout << BLUE << "ip: " << ip << " port = " << port << std::endl;
 	if (checkFlag("listen"))
 	{
 		for (size_t i = 0; i < _listens.size(); i++)
