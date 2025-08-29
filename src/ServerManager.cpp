@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 10:57:55 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 11:23:37 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,6 +296,11 @@ void ServerManager::servRun()
 std::vector<ServerData> ServerManager::getServersList() const
 {
 	return _serverData;
+}
+
+Script	&ServerManager::getScript()
+{
+	return _script;
 }
 
 int ServerManager::getReqCount() const

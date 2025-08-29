@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 10:54:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 11:23:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 #include "ParsingConf.hpp"
 #include "PrintLog.hpp"
 #include "Response.hpp"
-#include "ServerData.hpp"
 #include "Script.hpp"
+#include "ServerData.hpp"
 #include "Utils.hpp"
 
 struct ClientConnection
@@ -71,6 +71,7 @@ public:
 	int									   getRspCount() const;
 	void								   servQuit();
 	void								   servInput();
+	Script								  &getScript();
 	void servRespond(ClientConnection &connection, HttpRequest &req,
 					 std::pair<int, std::string> incoming);
 	bool servReceive(ClientConnection &connection, HttpRequest &req);

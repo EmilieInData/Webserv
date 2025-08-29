@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 10:57:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 14:37:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,10 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->setStatusCode(e.what());
 	}
 
+
+
+	// FABIO end of request parsing here
+	
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
@@ -203,7 +207,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	static int k = -1; // TODO no needed
+	static int k = -1;			// TODO no needed
 	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
@@ -213,7 +217,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 		this->fullRequest.erase(0, found + 2);
 		if (makeNew)
 		{
-			newBody = MultiBody(); 
+			newBody = MultiBody();
 			makeNew = false;
 		}
 		switch (this->body_state)
@@ -297,12 +301,15 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 
 	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
 
-//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
-	setRspType(); // FABIO added here, seems the best place for now
-	if ( it == location.end() )
-    throw std::invalid_argument( E_404 ); 
+	setRspType();							// FABIO added here, seems the best place for now
+	if (_rspType == "cgi-script")
+		server.getScript().runScript(_fullPath.first + _fullPath.second);
+		// TODO if script fails throw error here
+	if (it == location.end())
+		throw std::invalid_argument(E_404);
 
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
@@ -312,7 +319,7 @@ void HttpRequest::setRspType()
 	std::string location = _fullPath.first + _fullPath.second;
 	if (isFolder(location) && _autoindex)
 		_rspType = "text/html";
-		
+
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
@@ -388,7 +395,10 @@ int HttpRequest::getStatusCode() const
 	return this->code;
 }
 
-bool HttpRequest::getAutoindex() const { return this->_autoindex; }
+bool HttpRequest::getAutoindex() const
+{
+	return this->_autoindex;
+}
 
 int HttpRequest::getParsingState() const
 {
@@ -407,11 +417,11 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 		if (it->bodyHeader.getHeaderSize() > 1)
 		{
 			std::cout << "IS FILE" << std::endl; // DBG
-			std::string locationUp = _fullPath.first + _fullPath.second;
-			std::string content	  = it->bodyHeader.getHeader("content-disposition")->second[0];
-			size_t		startName = content.find("filename=") + 10;
-			size_t		endName	  = content.find("\"", startName);
-			std::string fileName  = locationUp + content.substr(startName, endName - startName);
+			std::string	  locationUp = _fullPath.first + _fullPath.second;
+			std::string	  content	 = it->bodyHeader.getHeader("content-disposition")->second[0];
+			size_t		  startName	 = content.find("filename=") + 10;
+			size_t		  endName	 = content.find("\"", startName);
+			std::string	  fileName	 = locationUp + content.substr(startName, endName - startName);
 			std::ofstream fileUp(fileName.c_str());
 			if (fileUp.is_open())
 			{

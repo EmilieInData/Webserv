@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 10:40:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 11:44:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 
 #include "Utils.hpp"
 #include "HttpRequest.hpp"
+#include "PrintLog.hpp"
 
+#define PIPE_READ 0
+#define PIPE_WRITE 1
 class Script
 {
 private:
@@ -23,7 +26,7 @@ private:
 	std::string _message;
 	std::string _contentType;
 	std::string _scriptOutput;
-	
+	std::string _scriptType;
 
 	Script(Script const &src);
 	Script &operator=(Script const &rhs);
@@ -32,8 +35,9 @@ public:
 	Script();
 	~Script();
 
-	void		runScript();
+	void		runScript(std::string const &cgiPath);
 	void		setEnv(); // TODO set environment variables
+	void		setScriptType(std::string const &cgiPath);
 	int			getStatusCode() const;
 	std::string getMessage() const;
 	std::string getContentType() const;
