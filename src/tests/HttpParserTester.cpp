@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 10:28:35 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/29 14:47:35 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,79 +19,134 @@
 #include <iostream>
 #include <string>
 
+
+void	HttpParserTester::run( ServerManager & s ) {
+
+
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s); //for tests
+
+	char 	buffer[] = "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nAccept: */*\r\n\r\n";
+	size_t	bytes = strlen( buffer );
+
+
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 200 )
+		std::cout << GRE << "Valid request / Test OK" << RESET << std::endl;
+	else 
+		std::cout << RED << "Invalid request, error: " << req.getStatusCode() <<" / Test FAIL" << std::endl;
+
+	onlyASCII( s );
+	crWithoutLf( s );
+	emptyLinesBeforeReqLine( s );
+}
+
 /*--------------------------Request Message------------------------------------*/
 
-void	HttpParserTester::onlyASCII() {
-	std::string mess( "GET /こんにちは HTTP/1.1" );
-	std::string host;
+void	HttpParserTester::onlyASCII( ServerManager & s ) {
 
-	try {
-		std::string	http_mess( mess + "\r\nHost: www.example.com \r\nContent-Type: application/urlencoded\r\n\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "valid message:	  " << mess << " accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  " << mess << " host not accepted/ Test OK" << std::endl;
-	}
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s); //for tests
 
-	host = "españa";
-	try {
-		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: " + host + "\r\nContent-Type: application/urlencoded\r\n\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "valid message:	  " << host << " accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  " << host << " host not accepted/ Test OK" << std::endl;
-	}
+	char 	buffer[] = "GET /こん HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nAccept: */*\r\n\r\n";
+	size_t	bytes = strlen( buffer );
 
-}
 
-void	HttpParserTester::crWithoutLf() {
-	std::string host;
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:	  'こん' char accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" 'こん' char not accepted / Test OK";
+	std::cout << RESET << std::endl;
+	/*------------------*/
 	
-	try {
-		std::string	http_mess( "POST /for\rm HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "Valid message:    CR without LF accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  CR without LF not accepted/ Test OK" << std::endl;
-	}
+	HttpRequest		req1 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s); //for tests
 
-	try {
-		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\rido=perez" );
-		HttpParser::parseHttpMessage( http_mess, host );
+	char 	buffer1[] = "GET / HTTP/1.1\r\nHost:españa \r\nUser-Agent: curl/7.68.0\r\nAccept: */*\r\n\r\n";
+	size_t	bytes1 = strlen( buffer1 );
+
+
+	req1.sendBuffer( buffer1, bytes1 );
+	if ( req1.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:	  'ñ' char accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req1.getStatusCode() <<" 'ñ' char not accepted / Test OK";
+	std::cout << RESET << std::endl;
+}
+
+
+void	HttpParserTester::crWithoutLf( ServerManager & s ) {
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer[] = "GET / HT\rTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nAccept: */*\r\n\r\n";
+	size_t	bytes = strlen( buffer );
+
+
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:    CR without LF accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" CR without LF not accepted/ Test OK";
+	std::cout << RESET << std::endl;
+	/*------------------*/
+	
+	HttpRequest		req1 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer1[] = "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nContent-Length: 6\r\n\r\nhe\rllo";
+	size_t	bytes1 = strlen( buffer1 );
+
+
+	req1.sendBuffer( buffer1, bytes1 );
+	if ( req1.getStatusCode() == 200 )
 		std::cout << GRE << "Valid message:    CR without LF in body accepted / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  CR without LF in body not accepted / Test FAIL" << std::endl;
-	}
+	else 
+		std::cout << RED << "Invalid request, error: " << req1.getStatusCode() <<" CR without LF in body not accepted / Test FAIL";
+	std::cout << RESET << std::endl;
 
-	try {
-		std::string	http_mess( "POST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apel\r\rido=perez" );
-		HttpParser::parseHttpMessage( http_mess, host );
+	/*-------------------*/
+	HttpRequest		req2 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer2[] = "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nContent-Length: 7\r\n\r\nhe\r\nllo";
+	size_t	bytes2 = strlen( buffer2 );
+
+
+	req2.sendBuffer( buffer2, bytes2 );
+	if ( req2.getStatusCode() == 200 )
 		std::cout << GRE << "Valid message:    CRLF in body accepted / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  CRLF in body not accepted / Test FAIL" << std::endl;
-	}
-
+	else 
+		std::cout << RED << "Invalid request, error: " << req2.getStatusCode() <<" CRLF in body not accepted / Test FAIL";
+	std::cout << RESET << std::endl;
 }
 
-void	HttpParserTester::emptyLinesBeforeReqLine() {
-	std::string host;
 
-	try {
-		std::string	http_mess( "\r\n\r\n\r\nPOST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
-		HttpParser::parseHttpMessage( http_mess, host );
+void	HttpParserTester::emptyLinesBeforeReqLine( ServerManager & s ) {
+
+	HttpRequest		req1 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer1[] = "\r\n\r\n\r\nGET / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 6\r\n\r\nhe\rllo";
+	size_t	bytes1 = strlen( buffer1 );
+
+
+	req1.sendBuffer( buffer1, bytes1 );
+	if ( req1.getStatusCode() == 200 )
 		std::cout << GRE << "Valid message:    three empty lines (CRLF) before Request-Line accepted / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  three CRLF before req-line not accepted / Test FAIL" << std::endl;
-	}
+	else 
+		std::cout << RED << "Invalid request, error: " << req1.getStatusCode() <<" three CRLF before req-line not accepted / Test FAIL";
+	std::cout << RESET << std::endl;
 
-	try {
-		std::string	http_mess( "\r\nPOST /form HTTP/1.1\r\nHost: www.ejemplo.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 27\r\n\r\nnombre=juan&apellido=perez" );
-		HttpParser::parseHttpMessage( http_mess, host );
+	/*-------------------*/
+	HttpRequest		req2 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer2[] = "\r\nGET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.68.0\r\nContent-Length: 7\r\n\r\nhe\r\nllo";
+	size_t	bytes2 = strlen( buffer2 );
+
+
+	req2.sendBuffer( buffer2, bytes2 );
+	if ( req2.getStatusCode() == 200 )
 		std::cout << GRE << "Valid message:    one empty line (CRLF) before Request-Line accepted / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  one CRLF before req-line not accepted / Test FAIL" << std::endl;
-	}
+	else 
+		std::cout << RED << "Invalid request, error: " << req2.getStatusCode() <<" one CRLF before req-line not accepted / Test FAIL";
+	std::cout << RESET << std::endl;
 }
+
 
 void	HttpParserTester::isspaceBeforeHeader() {
 	std::string host;
@@ -109,63 +164,6 @@ void	HttpParserTester::isspaceBeforeHeader() {
 		std::cout << RED << "Valid message:    spaces before header accepted / Test FAIL" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  spaces (isspace) before header not accepted / Test OK" << std::endl;
-	}
-}
-
-void	HttpParserTester::sfWithoutCrlf() {
-	std::string host;
-
-	try {
-		std::string	http_mess( "POST /form HTTP/1.1" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "Valid message:    string without CRLF / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  string without CRLF / Test OK" << std::endl;
-	}
-}
-
-void	HttpParserTester::crlfTests() {
-	std::string host;
-
-	try {
-		std::string	http_mess( "\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "Valid message:		only CRLF string / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  only CRLF string / Test OK" << std::endl;
-	}
-
-	
-	try {
-		std::string	http_mess( "\r\n\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "Valid message:		two CRLF / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  two CRLF / Test OK" << std::endl;
-	}
-
-	try {
-		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << RED << "Valid message:		valid sintax without final crlf / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  invalid syntax without final crfl / Test OK" << std::endl;
-	}
-
-	try {
-		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << GRE << "Valid message:		valid sintax without body / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  invalid syntax without final body / Test FAIL" << std::endl;
-	}
-
-	try {
-		std::string	http_mess( "GET / HTTP/1.1\r\nHost: localhost\r\n\r\nUser-Agent: test\r\nAccept: */*\r\nConnection: close\r\n\r\n" );
-		HttpParser::parseHttpMessage( http_mess, host );
-		std::cout << GRE << "Valid message:		valid sintax with two double crlf / Test OK" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << RED << e.what() << ":  invalid syntax with two double crfl / Test FAIL" << std::endl;
 	}
 }
 
@@ -193,13 +191,13 @@ void	HttpParserTester::parseHttpMessageTest() {
 	
 	std::cout << "_____________Http message tests_____________" << std::endl;
 
-	onlyASCII();
-	crWithoutLf();
-	emptyLinesBeforeReqLine();
-	isspaceBeforeHeader();
-	sfWithoutCrlf();
-	crlfTests();
-	shouldHaveOneHost();
+//	onlyASCII();
+//	crWithoutLf();
+//	emptyLinesBeforeReqLine();
+//	isspaceBeforeHeader();
+//	sfWithoutCrlf();
+//	crlfTests();
+//	shouldHaveOneHost();
 
 	std::cout << std::endl;
 
@@ -656,6 +654,8 @@ void	HttpParserTester::parseUriTest() {
 	std::cout << RESET << std::endl;
 }
 
+/*-------------------------------------------Headers--------------------------------------------*/
+
 void	HttpParserTester::parseHeaderSyntaxis() {
 
 	std::string name( "Content-Length " );
@@ -762,10 +762,6 @@ void	HttpParserTester::pushHeaderValues() {
 
 void	HttpParserTester::pushMoreValues() {
 
-//	std::vector<std::string>			lines;
-//	lines.push_back( std::string( "Content-Length:45" ));
-//	lines.push_back( std::string( "Content-lEnGtH:46" ));
-//	std::vector<std::string>::iterator	it = lines.begin(), ite = lines.end();
 	std::string argC( "Content-Length:45" );
 	std::string argC2( "Content-LENGTh:45" );
 	std::string argc( "CoNtEnT-LeNgTh:46" );

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/28 14:00:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 12:49:04 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,26 @@
 #include <stdlib.h>
 
 HttpRequest::HttpRequest(ServerManager &server)
-	: req_line(NULL), uri(NULL), headers(NULL), server(server)
+	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
+	  boundary_flag(false), code(200), state(SKIP), incoming(std::make_pair(8080, "127.0.0.1")), server(server)
 {
+//	HttpParserTester::test(this);
+
 	HttpParserTester::parseHttpMessageTest();
 	HttpParserTester::parseRequestLineTest();
 	HttpParserTester::parseHostTest();
 	HttpParserTester::parseUriTest();
 	HttpParserTester::parseHeadersTest();
+//	simpleTest();
+
 }
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
 	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
 {
+	std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second << std::endl;
+
 	headers = new Headers();
 }
 
@@ -70,7 +77,13 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 	return *this;
 }
 
-void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
+//void	HttpRequest::runSimpleTest() {
+//	HttpParserTester::test( *this );
+//}
+
+
+
+void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 {
 
 	for (int i = 0; i < bytes; i++)

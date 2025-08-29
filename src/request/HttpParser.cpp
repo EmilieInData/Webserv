@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 16:10:42 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/28 17:06:03 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,8 +169,6 @@ std::string	HttpParser::trimSpaceAndTab( std::string & str ) {
 	while (!str.empty() && (str[0] == ' ' || str[0] == '\t'))
 		str.erase(0, 1);
 	
-//	std::cout << "\"" << str << "\"" << std::endl;
-
 	return str;
 }
 

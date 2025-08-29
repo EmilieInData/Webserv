@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/13 17:37:42 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/29 14:47:35 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 #define GRE		"\033[32m"
 #define RESET	"\033[0m"
 
+#include "HttpRequest.hpp"
+
+class	HttpRequest;
+
 class	HttpParserTester	{
 private:
 	HttpParserTester();
@@ -25,13 +29,11 @@ private:
 
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
-	/*---------------Http Message-----------------*/
-	static void	onlyASCII();
-	static void	crWithoutLf();
-	static void	emptyLinesBeforeReqLine();
-	static void	isspaceBeforeHeader();
-	static void sfWithoutCrlf();
-	static void	crlfTests();
+		/*---------------Http Message-----------------*/
+	static void	onlyASCII(ServerManager & s);
+	static void	crWithoutLf( ServerManager & s );
+	static void	emptyLinesBeforeReqLine( ServerManager & s );
+	static void	isspaceBeforeHeader(); // BORRAR , en todo caso hacer los tests en la parrte de headers
 	static void shouldHaveOneHost();
 
 	static void validHostSyntaxis();
@@ -57,6 +59,11 @@ private:
 
 	
 public:
+	
+	static void	run(ServerManager & s);
+//	static void	onlyASCII(ServerManager & s);
+
+
 	static void	parseHttpMessageTest();
 	static void	parseRequestLineTest();
 	static void parseUriTest();

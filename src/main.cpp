@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 19:11:52 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/29 14:03:49 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int main(int ac, char** av)
 
 	ServerManager	testserv(P);
 
-	HttpRequest		req(testserv); //run tests
+	HttpParserTester::run(testserv); //run tests
 
 	printServerManager(testserv);
 	testserv.servSetup();
