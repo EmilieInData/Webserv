@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 15:15:09 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:08:07 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,8 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex )
 {
 	std::string full( path.first + path.second );
-
+	(void) _autoindex;
+	
 	if (path.second == "/redirect/")
 		full = path.first + "/redirect/index.html";
 	else if (path.second == "/" || path.second.empty())
@@ -257,18 +258,18 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 			throw std::invalid_argument(E_403);
 		file.close();
 	}
-    else if (isFolder(full))
-    {
-		DIR *dir = opendir(full.c_str());
-		if (!dir)
-			throw std::invalid_argument(E_403);
-	    if (access(full.c_str(), R_OK) != 0 || _autoindex == false) //TODO check if there is an index
-		{
-			closedir(dir);
-			throw std::invalid_argument(E_403);
-		}
-		closedir(dir);
-	}
+    // else if (isFolder(full))
+    // {
+	// 	DIR *dir = opendir(full.c_str());
+	// 	if (!dir)
+	// 		throw std::invalid_argument(E_403);
+	//     if (access(full.c_str(), R_OK) != 0 || _autoindex == false) //TODO check if there is an index
+	// 	{
+	// 		closedir(dir);
+	// 		throw std::invalid_argument(E_403);
+	// 	}
+	// 	closedir(dir);
+	// }
 	else
 	{
 		std::ifstream page(full.c_str());

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 15:51:26 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:10:48 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,16 @@ std::string Response::prepFile()
 		file.close();
 		return buffer.str();
 	}
-	else if (isFolder(_location))
-	{
-		// if (not exist) //find location bloc, done by cleo in http request
-		// 	//error
+    else if (isFolder(_location))
+    {
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
- 			return ""; //return error to open directory
-// 		if (access(_location.c_str(), R_OK) != 0)
-// 		{
-// 			closedir(dir);
-// 			return ""; //return error miss right to read what's inside
-// 		}
-// 		if (this->getAutoindex() == false)
-// 			return ""; //return error not allowed to read inside
+			return "";//return error to open directory
+		// if (access(_location.c_str(), R_OK) != 0 || this->getAutoindex() == false)
+		// {
+		// 	closedir(dir);
+    	//     return "";//return error miss right to read what's inside
+		// }
         return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
@@ -106,6 +102,13 @@ std::string Response::prepFile()
 		return pageContent.str();
 	}
 }
+// 	    if (access(_location.c_str(), R_OK) != 0)
+// 		{
+// 			closedir(dir);
+//     	    return "";//return error miss right to read what's inside
+// 		}
+// 		if (this->getAutoindex() == false)
+//             return ""; //return error not allowed to read inside
 
 std::string Response::doAutoindex(std::string uri, DIR *dir)
 {
