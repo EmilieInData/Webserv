@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/28 14:00:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:34:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,6 +305,33 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
+void HttpRequest::setRspType()
+{
+	std::string location = _fullPath.first + _fullPath.second;
+	if (isFolder(location) && _autoindex)
+		_rspType = "text/html";
+		
+	std::string extension;
+	size_t		dotPos = location.find_last_of('.');
+	if (dotPos != std::string::npos)
+		extension = location.substr(dotPos);
+
+	if (extension == ".html" || extension == ".htm")
+		_rspType "text/html";
+	else if (extension == ".jpg" || extension == ".jpeg")
+		_rspType "image/jpeg";
+	else if (extension == ".png")
+		_rspType "image/png";
+	else if (extension == ".gif")
+		_rspType "image/gif";
+	else if (extension == ".css")
+		_rspType "text/css";
+	else if (extension == ".py" || extension == ".php") // TODO check if valid
+		_rspType "cgi-script";
+	else
+		_rspType "application/octet-stream";
+}
+
 void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)
 {
 	if (it == this->headers->getHeaderEnd())
@@ -364,6 +391,11 @@ bool HttpRequest::getAutoindex() const { return this->_autoindex; }
 int HttpRequest::getParsingState() const
 {
 	return this->state;
+}
+
+std::string HttpRequest::getRspType() const
+{
+	return _rspType;
 }
 
 void HttpRequest::fileUpload() // TODO check if maybe we should put it in response

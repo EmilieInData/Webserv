@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/28 14:13:38 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:35:49 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,36 +312,37 @@ std::string Response::runScript(std::string const &cgiPath)
 	return content;
 }
 
-std::string Response::checkType()
-{
-	if (isFolder(_location) && _autoindex)
-		return "text/html";
+// TODO remove this, it's in request now
+// std::string Response::checkType()
+// {
+// 	if (isFolder(_location) && _autoindex)
+// 		return "text/html";
 		
-	std::string extension;
-	size_t		dotPos = _location.find_last_of('.');
-	if (dotPos != std::string::npos)
-		extension = _location.substr(dotPos);
+// 	std::string extension;
+// 	size_t		dotPos = _location.find_last_of('.');
+// 	if (dotPos != std::string::npos)
+// 		extension = _location.substr(dotPos);
 
-	if (extension == ".html" || extension == ".htm")
-		return "text/html";
-	else if (extension == ".jpg" || extension == ".jpeg")
-		return "image/jpeg";
-	else if (extension == ".png")
-		return "image/png";
-	else if (extension == ".gif")
-		return "image/gif";
-	else if (extension == ".css")
-		return "text/css";
-	else if (extension == ".py" || extension == ".php") // TODO check if valid
-		return "cgi-script";
-	else
-		return "application/octet-stream";
-}
+// 	if (extension == ".html" || extension == ".htm")
+// 		return "text/html";
+// 	else if (extension == ".jpg" || extension == ".jpeg")
+// 		return "image/jpeg";
+// 	else if (extension == ".png")
+// 		return "image/png";
+// 	else if (extension == ".gif")
+// 		return "image/gif";
+// 	else if (extension == ".css")
+// 		return "text/css";
+// 	else if (extension == ".py" || extension == ".php") // TODO check if valid
+// 		return "cgi-script";
+// 	else
+// 		return "application/octet-stream";
+// }
 
 void Response::prepResponse()
 {
 	std::string content;
-	_contentType = checkType();
+	_contentType = _request->getRspType();
 
 	if (_contentType == "cgi-script")
 		content = runScript(_location);
