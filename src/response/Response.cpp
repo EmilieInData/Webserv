@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 16:10:48 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:17:22 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 {
 	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
-	if (fullPath.second == "/redirect" ||
-		fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
+	if (fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
 		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
@@ -81,6 +80,8 @@ std::string Response::prepFile()
 	}
     else if (isFolder(_location))
     {
+		// if (not exist) //find location bloc, done by cleo in http request
+		// 	//error
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
 			return "";//return error to open directory
@@ -102,13 +103,6 @@ std::string Response::prepFile()
 		return pageContent.str();
 	}
 }
-// 	    if (access(_location.c_str(), R_OK) != 0)
-// 		{
-// 			closedir(dir);
-//     	    return "";//return error miss right to read what's inside
-// 		}
-// 		if (this->getAutoindex() == false)
-//             return ""; //return error not allowed to read inside
 
 std::string Response::doAutoindex(std::string uri, DIR *dir)
 {
@@ -214,7 +208,6 @@ void Response::prepResponse()
 	// 	content = prepFile();
 	// else
 	// 	//errorpages
-
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();

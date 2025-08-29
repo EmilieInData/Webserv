@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 16:07:15 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:13:35 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,18 @@ int main(int ac, char** av)
 		file.close();
 		return (1);
 	}
+	P.print_structure();
 	file.close();
 
-	setupSignal(); // TODO this needs to be completed
+	// setupSignal(); // TODO this needs to be completed
 
-	ServerManager	testserv(P);
+	// ServerManager	testserv(P);
 
 	HttpParserTester::run(testserv); //run tests
-
-	printServerManager(testserv);
-	testserv.servSetup();
-	testserv.servRun();
-	//throw exception for this part too because he will return 0 for error without
+	// printServerManager(testserv);
+	// testserv.servSetup();
+	// testserv.servRun();
+	// //throw exception for this part too because he will return 0 for error without
 
 	return 0;
 }
