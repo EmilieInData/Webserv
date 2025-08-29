@@ -6,132 +6,135 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 09:56:19 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 11:01:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Script.hpp"
 
-std::string Response::runScript(std::string const &cgiPath)
-{
-	size_t		lastDot	   = cgiPath.find_last_of('.');
-	std::string scriptType = cgiPath.substr(lastDot);
-	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
-	std::string query = _request->getQuery();
-	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
+Script::Script() {}
 
-	std::string content;
+Script::~Script() {}
+// std::string Response::runScript(std::string const &cgiPath)
+// {
+// 	size_t		lastDot	   = cgiPath.find_last_of('.');
+// 	std::string scriptType = cgiPath.substr(lastDot);
+// 	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
+// 	std::string query = _request->getQuery();
+// 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 
-	int pipeIn[2];
-	int pipeOut[2];
+// 	std::string content;
 
-	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
-	{
-		//TODO what error number here?
-		printBoxError("Pipe Error");
-		return "";
-	}
+// 	int pipeIn[2];
+// 	int pipeOut[2];
 
-	pid_t child = fork();
+// 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
+// 	{
+// 		//TODO what error number here?
+// 		printBoxError("Pipe Error");
+// 		return "";
+// 	}
 
-	if (child < 0)
-	{
-		//TODO also here, what error?
-		printBoxError("Fork error");
-		close(pipeOut[PIPE_WRITE]);
-		close(pipeOut[PIPE_READ]);
-		close(pipeIn[PIPE_WRITE]);
-		close(pipeIn[PIPE_READ]);
-		return "";
-	}
+// 	pid_t child = fork();
 
-	/* TODO to implement more types of script,
-	create option for selecting the kind of 
-	script detected (here for example it's
-	python)*/
+// 	if (child < 0)
+// 	{
+// 		//TODO also here, what error?
+// 		printBoxError("Fork error");
+// 		close(pipeOut[PIPE_WRITE]);
+// 		close(pipeOut[PIPE_READ]);
+// 		close(pipeIn[PIPE_WRITE]);
+// 		close(pipeIn[PIPE_READ]);
+// 		return "";
+// 	}
 
-	else if (child == 0)
-	{
-		std::string runPath;
-		close(pipeIn[PIPE_WRITE]);
-		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
-		close(pipeIn[PIPE_READ]);
+// 	/* TODO to implement more types of script,
+// 	create option for selecting the kind of 
+// 	script detected (here for example it's
+// 	python)*/
 
-		// Redirect script's stdout to write to pipeOut
-		close(pipeOut[PIPE_READ]);
-		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
-		close(pipeOut[PIPE_WRITE]);
+// 	else if (child == 0)
+// 	{
+// 		std::string runPath;
+// 		close(pipeIn[PIPE_WRITE]);
+// 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
+// 		close(pipeIn[PIPE_READ]);
 
-		/* TODO wrap env creation
-		into its owh function*/
+// 		// Redirect script's stdout to write to pipeOut
+// 		close(pipeOut[PIPE_READ]);
+// 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
+// 		close(pipeOut[PIPE_WRITE]);
 
-		std::string varQuery  = "QUERY_STRING=" + query;
-		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
-		char	   *envQuery  = new char[varQuery.length() + 1];
-		strcpy(envQuery, varQuery.c_str());
+// 		/* TODO wrap env creation
+// 		into its owh function*/
 
-		char *envMethod = new char[varMethod.length() + 1];
-		strcpy(envMethod, varMethod.c_str());
+// 		std::string varQuery  = "QUERY_STRING=" + query;
+// 		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
+// 		char	   *envQuery  = new char[varQuery.length() + 1];
+// 		strcpy(envQuery, varQuery.c_str());
 
-		char *envServ[] = {envQuery, envMethod, NULL};
+// 		char *envMethod = new char[varMethod.length() + 1];
+// 		strcpy(envMethod, varMethod.c_str());
 
-		if (scriptType == ".py")
-			runPath = "/usr/bin/python3";
-		else if (scriptType == ".php")
-			runPath = "/usr/bin/php";
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
-						NULL};
-		execve(runPath.c_str(), argv, envServ);
+// 		char *envServ[] = {envQuery, envMethod, NULL};
 
-		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
-		delete[] envQuery;
-		exit(1);
-	}
-	else
-	{
-		close(pipeIn[PIPE_READ]);
-		close(pipeOut[PIPE_WRITE]);
+// 		if (scriptType == ".py")
+// 			runPath = "/usr/bin/python3";
+// 		else if (scriptType == ".php")
+// 			runPath = "/usr/bin/php";
+// 		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
+// 						NULL};
+// 		execve(runPath.c_str(), argv, envServ);
 
-		if (!query.empty())
-		{
-			if ((write(pipeIn[PIPE_WRITE], query.c_str(), query.length())) == -1)
-				printBoxError("Error parent writing");
-		}
-		close(pipeIn[PIPE_WRITE]);
+// 		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
+// 		delete[] envQuery;
+// 		exit(1);
+// 	}
+// 	else
+// 	{
+// 		close(pipeIn[PIPE_READ]);
+// 		close(pipeOut[PIPE_WRITE]);
 
-		// Read the script output from pipeOut
-		std::string scriptOutput;
-		char		buffer[4096];
-		ssize_t		bytesRead;
+// 		if (!query.empty())
+// 		{
+// 			if ((write(pipeIn[PIPE_WRITE], query.c_str(), query.length())) == -1)
+// 				printBoxError("Error parent writing");
+// 		}
+// 		close(pipeIn[PIPE_WRITE]);
 
-		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
-		{
-			buffer[bytesRead] = '\0';
-			scriptOutput += buffer;
-		}
-		close(pipeOut[PIPE_READ]);
+// 		// Read the script output from pipeOut
+// 		std::string scriptOutput;
+// 		char		buffer[4096];
+// 		ssize_t		bytesRead;
 
-		int status;
-		waitpid(child, &status, 0);
+// 		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
+// 		{
+// 			buffer[bytesRead] = '\0';
+// 			scriptOutput += buffer;
+// 		}
+// 		close(pipeOut[PIPE_READ]);
 
-		// Check if child process exited with error
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		{
-			std::cerr << "CGI script " << cgiPath << " exited with code " << WEXITSTATUS(status)
-					  << std::endl;
-		}
-		else if (WIFSIGNALED(status))
-		{
-			std::cerr << "CGI script " << cgiPath << " killed by signal " << WTERMSIG(status)
-					  << std::endl;
-		}
-		else
-		{
-			content		 = scriptOutput;
-			_contentType = "text/html";
-			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
-					  << " bytes" << RESET << std::endl;
-		}
-	}
-	return content;
-}
+// 		int status;
+// 		waitpid(child, &status, 0);
+
+// 		// Check if child process exited with error
+// 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+// 		{
+// 			std::cerr << "CGI script " << cgiPath << " exited with code " << WEXITSTATUS(status)
+// 					  << std::endl;
+// 		}
+// 		else if (WIFSIGNALED(status))
+// 		{
+// 			std::cerr << "CGI script " << cgiPath << " killed by signal " << WTERMSIG(status)
+// 					  << std::endl;
+// 		}
+// 		else
+// 		{
+// 			content		 = scriptOutput;
+// 			_contentType = "text/html";
+// 			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
+// 					  << " bytes" << RESET << std::endl;
+// 		}
+// 	}
+// 	return content;
+// }

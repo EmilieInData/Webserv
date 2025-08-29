@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 10:34:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:57:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "ServerManager.hpp"
 #include <stdlib.h>
 
 HttpRequest::HttpRequest(ServerManager &server)
@@ -299,6 +300,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 //	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 //		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
+	setRspType(); // FABIO added here, seems the best place for now
 	if ( it == location.end() )
     throw std::invalid_argument( E_404 ); 
 
@@ -317,19 +319,19 @@ void HttpRequest::setRspType()
 		extension = location.substr(dotPos);
 
 	if (extension == ".html" || extension == ".htm")
-		_rspType "text/html";
+		_rspType = "text/html";
 	else if (extension == ".jpg" || extension == ".jpeg")
-		_rspType "image/jpeg";
+		_rspType = "image/jpeg";
 	else if (extension == ".png")
-		_rspType "image/png";
+		_rspType = "image/png";
 	else if (extension == ".gif")
-		_rspType "image/gif";
+		_rspType = "image/gif";
 	else if (extension == ".css")
-		_rspType "text/css";
+		_rspType = "text/css";
 	else if (extension == ".py" || extension == ".php") // TODO check if valid
-		_rspType "cgi-script";
+		_rspType = "cgi-script";
 	else
-		_rspType "application/octet-stream";
+		_rspType = "application/octet-stream";
 }
 
 void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)

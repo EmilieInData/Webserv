@@ -6,19 +6,19 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 10:14:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:54:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVERMANAGER_HPP
 #define SERVERMANAGER_HPP
 
-#include "HttpRequest.hpp"
+// #include "HttpRequest.hpp"
 #include "ParsingConf.hpp"
 #include "PrintLog.hpp"
 #include "Response.hpp"
-#include "Script.hpp"
 #include "ServerData.hpp"
+#include "Script.hpp"
 #include "Utils.hpp"
 
 struct ClientConnection
@@ -36,6 +36,7 @@ struct ClientConnection
 };
 
 class Response;
+class HttpRequest;
 class ServerManager
 {
 private:

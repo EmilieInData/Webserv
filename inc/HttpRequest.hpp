@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 10:28:20 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:56:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 #include "HttpParserTester.hpp"
 #include "RequestLine.hpp"
 #include "ServerData.hpp"
-#include "ServerManager.hpp"
+// #include "ServerManager.hpp"
 #include "Uri.hpp"
 #include "Headers.hpp"
 #include "Utils.hpp"
@@ -40,7 +40,7 @@ class RequestLine;
 class Uri;
 class ServerManager;
 class Headers;
-
+class Script;
 struct MultiBody // TODO delete unused constructor when we know which one we need
 {
 	Headers		bodyHeader;
