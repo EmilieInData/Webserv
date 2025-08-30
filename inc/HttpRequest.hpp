@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/28 17:59:17 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 09:51:27 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ private:
 	void	runSimpleTest();
 
 public:
-	HttpRequest(ServerManager &server);
 	HttpRequest(std::pair<int, std::string> incoming,
 				ServerManager			   &server); // FABIO paired string with fd.
 	HttpRequest(HttpRequest const &src);

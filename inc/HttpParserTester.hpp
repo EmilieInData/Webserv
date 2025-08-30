@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 14:47:35 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 10:15:59 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,10 @@ private:
 	static void	onlyASCII(ServerManager & s);
 	static void	crWithoutLf( ServerManager & s );
 	static void	emptyLinesBeforeReqLine( ServerManager & s );
-	static void	isspaceBeforeHeader(); // BORRAR , en todo caso hacer los tests en la parrte de headers
-	static void shouldHaveOneHost();
+	static void	isspaceBeforeHeader( ServerManager & s );
+	static void shouldHaveOneHost( ServerManager & s );
 
 	static void validHostSyntaxis();
-	static void trimSpacesAndTab();
 
 	/*--------------Request Line------------------*/
 	static void	shouldHaveTwoSpaces();
@@ -61,10 +60,8 @@ private:
 public:
 	
 	static void	run(ServerManager & s);
-//	static void	onlyASCII(ServerManager & s);
 
-
-	static void	parseHttpMessageTest();
+	static void	parseHttpMessageTest( ServerManager & s);
 	static void	parseRequestLineTest();
 	static void parseUriTest();
 	static void	parseHostTest();

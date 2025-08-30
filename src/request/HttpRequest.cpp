@@ -6,27 +6,12 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 12:49:04 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 10:42:47 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include <stdlib.h>
-
-HttpRequest::HttpRequest(ServerManager &server)
-	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), incoming(std::make_pair(8080, "127.0.0.1")), server(server)
-{
-//	HttpParserTester::test(this);
-
-	HttpParserTester::parseHttpMessageTest();
-	HttpParserTester::parseRequestLineTest();
-	HttpParserTester::parseHostTest();
-	HttpParserTester::parseUriTest();
-	HttpParserTester::parseHeadersTest();
-//	simpleTest();
-
-}
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
@@ -73,15 +58,10 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 		this->fullRequest = rhs.fullRequest;
 		this->incoming	  = rhs.incoming;
 		this->location	  = rhs.location;
+		//check si falta algo
 	}
 	return *this;
 }
-
-//void	HttpRequest::runSimpleTest() {
-//	HttpParserTester::test( *this );
-//}
-
-
 
 void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 {
@@ -101,7 +81,6 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 			std::string tmp = this->fullRequest.substr(0, found);
 			this->fullRequest.erase(0, found + 2);
 
-			//	if ( i < 15)
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
 			//si no es body verifier que les char sont printable
 
@@ -175,20 +154,28 @@ void HttpRequest::finalHeadersParsingRoutine()
 {
 	if (this->headers->getHeader("cookie") != this->headers->getHeaderEnd())
 		this->headers->setManyValuesHeader("cookie");
+
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 		this->headers->setManyValuesHeader("content-type");
-	this->headers->printHeader();
+	//this->headers->printHeader();
+	
 	checkHost(this->headers->getHeader("host"));
+	
 	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
+	
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
+	
 	setFullPath(serv);
+	
 	this->max_body_size = serv.getBodySize();
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
+	
 	HttpParser::checkIfPathExist(this->_fullPath);
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
-								 this->req_line->getMethod());
+	
+	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
+	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(
@@ -202,8 +189,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	}
 	if (this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
 	{
-		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length",
-																								   0),
+		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length", 0),
 															  this->max_body_size);
 		this->state = BODY;
 	}
