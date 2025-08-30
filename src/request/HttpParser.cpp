@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/28 17:06:03 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:33:48 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -439,7 +439,7 @@ int	HttpParser::parseContentLengthHeader( std::string const & v, std::size_t bod
 std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const & v ) {
 	if ( v.at( 0 ) != "multipart/form-data" ) return "";
 		
-	if ( v.at( 1 ).empty()) throw std::invalid_argument( E_400 );
+	if ( v.size() < 2 ) throw std::invalid_argument( E_400 );
 
 	std::size_t	found = v.at( 1 ).find( "boundary=" );
 
@@ -448,6 +448,11 @@ std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const
 	std::string boundary = v[1].substr( 9, v[1].length());
 
 	//std::cout << "BOUNDARIE: " << boundary << std::endl;
+
+
+	//checkBoundarysintaxis prohibido espacios o char de control (DEL o ASCCII < 32 )
+	//max size boundary 70 char 
+
 
 	return boundary;
 }

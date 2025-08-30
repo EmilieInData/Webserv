@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 10:15:59 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:16:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,14 @@ private:
 
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
-		/*---------------Http Message-----------------*/
+	/*---------------Http Message-----------------*/
 	static void	onlyASCII(ServerManager & s);
 	static void	crWithoutLf( ServerManager & s );
 	static void	emptyLinesBeforeReqLine( ServerManager & s );
 	static void	isspaceBeforeHeader( ServerManager & s );
 	static void shouldHaveOneHost( ServerManager & s );
 
+	/*---------------Host Header-----------------*/
 	static void validHostSyntaxis();
 
 	/*--------------Request Line------------------*/
@@ -55,6 +56,13 @@ private:
 	static void	parseHeaderSyntaxis();
 	static void	pushHeaderValues();
 	static void	pushMoreValues();
+	
+	/*---------------Multipart Body-----------------*/
+	static void	boundaryExist(ServerManager & s);
+	static void	checkBoundary( ServerManager & s );
+//	static void	emptyLinesBeforeReqLine( ServerManager & s );
+//	static void	isspaceBeforeHeader( ServerManager & s );
+//	static void shouldHaveOneHost( ServerManager & s );
 
 	
 public:
@@ -66,6 +74,7 @@ public:
 	static void parseUriTest();
 	static void	parseHostTest();
 	static void	parseHeadersTest();
+	static void parseMultipartBodyTest( ServerManager & s );
 };
 
 #endif

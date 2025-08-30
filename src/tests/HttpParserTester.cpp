@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 10:23:32 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:28:45 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,82 @@ void	HttpParserTester::run( ServerManager & s ) {
 	parseUriTest();
 	parseHostTest();
 	parseHeadersTest();
+	parseMultipartBodyTest( s );
 }
+/*--------------------------Multipart Body------------------------------------*/
+
+void	HttpParserTester::boundaryExist( ServerManager & s ) {
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer[] = "POST /uploads/ HTTP/1.1\r\nHost: localhost\r\nContent-Type: multipart/form-data\r\nContent-Length: 62\r\n\r\n----1234\r\nContent-Disposition: form-data; name=description\r\n\r\nuna foto de mis mascotas sigo siendo el \r\n mismo body\r\n----1234\r\nContent-Disposition: form/data; name=description\r\nOther-Header:Random\r\n\r\nsgundo body souy el segundo\r\n----1234--\r\n";
+	size_t	bytes = strlen( buffer );
+
+
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:    Multipart Content-Type header without boundary accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" Multipart Content-Type header without boundary not accepted/ Test OK";
+	std::cout << RESET << std::endl;
+	/*------------------*/
+	
+	HttpRequest		req1 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer1[] = "POST /uploads/ HTTP/1.1\r\nHost: localhost\r\nContent-Type: multipart/form-data; bb=-1234\r\nContent-Length: 62\r\n\r\n----1234\r\nContent-Disposition: form-data; name=description\r\n\r\nuna foto de mis mascotas sigo siendo el \r\n mismo body\r\n----1234\r\nContent-Disposition: form/data; name=description\r\nOther-Header:Random\r\n\r\nsgundo body souy el segundo\r\n----1234--\r\n";
+	size_t	bytes1 = strlen( buffer1 );
+
+
+	req1.sendBuffer( buffer1, bytes1 );
+	if ( req1.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:    Multipart Content-Type header without boundary accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" Multipart Content-Type header without boundary not accepted/ Test OK";
+	std::cout << RESET << std::endl;
+
+	/*-------------------*/
+	HttpRequest		req2 = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer2[] = "POST /uploads/ HTTP/1.1\r\nHost: localhost\r\nContent-Type: multipart/form-data; boundary=--1 234\r\nContent-Length: 62\r\n\r\n----1 234\r\nContent-Disposition: form-data; name=description\r\n\r\nuna foto de mis mascotas sigo siendo el \r\n mismo body\r\n----1 234\r\nContent-Disposition: form/data; name=description\r\nOther-Header:Random\r\n\r\nsgundo body souy el segundo\r\n----1 234--\r\n";
+	size_t	bytes2 = strlen( buffer2 );
+
+
+	req2.sendBuffer( buffer2, bytes2 );
+	if ( req2.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:		boundary with spaces accepted / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" boundary with spaces not accepted/ Test OK";
+	std::cout << RESET << std::endl;
+}
+
+
+void	HttpParserTester::checkBoundary( ServerManager & s ) {
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s);
+
+	char 	buffer[] = "POST /uploads/ HTTP/1.1\r\nHost: localhost\r\nContent-Type: multipart/form-data; boundary=--1234\r\nContent-Length: 62\r\n\r\n----14\r\nContent-Disposition: form-data; name=description\r\n\r\nuna foto de mis mascotas sigo siendo el \r\n mismo body\r\n----1234\r\nContent-Disposition: form/data; name=description\r\nOther-Header:Random\r\n\r\nsgundo body souy el segundo\r\n----1234--\r\n";
+	size_t	bytes = strlen( buffer );
+
+
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 200 )
+		std::cout << RED << "Valid message:    good first boundary in body / Test FAIL";
+	else 
+		std::cout << GRE << "Invalid request, error: " << req.getStatusCode() <<" wrong first boundary in body / Test OK";
+	std::cout << RESET << std::endl;
+	/*------------------*/
+	
+}
+
+
+void	HttpParserTester::parseMultipartBodyTest( ServerManager & s ) {
+
+	std::cout << "_____________Multipart Body tests_____________" << std::endl;
+
+	boundaryExist( s );
+	checkBoundary( s );
+
+	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+}
+
 
 /*--------------------------Request Message------------------------------------*/
 
@@ -780,8 +855,8 @@ void	HttpParserTester::parseHeadersTest() {
 	parseHeaderSyntaxis();	
 	pushHeaderValues();
 	pushMoreValues();
+	
 
-
-	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+	std::cout << RESET << std::endl;// << "_____________End tests_____________" << std::endl << std::endl;
 }
 

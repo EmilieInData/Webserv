@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 10:42:47 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:33:48 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
 			//si no es body verifier que les char sont printable
+			if ( !HttpParser::isAsciiPrintable( tmp )) throw std::invalid_argument( E_400 ); 
+
 
 			switch (this->state)
 			{
@@ -178,8 +180,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
-		this->boundary = HttpParser::parseContentTypeBoundary(
-			this->headers->getHeaderValue("content-type"));
+		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));
 		if (!this->boundary.empty())
 		{
 			this->state			= BODY;
