@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:37:30 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:44:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 bool	HttpParser::isAsciiPrintable( std::string const & str ) {
 	std::string::const_iterator	it, ite = str.end();
 
-	for ( it = str.begin(); *it != *ite; ++it ) { 
+	for ( it = str.begin(); it != ite; ++it ) { 
 		if ( *it == '\t' ) continue;
 		if ( *it > 126 || *it < 32 )
 			return false;
@@ -380,10 +380,13 @@ std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const
 
 	//std::cout << "BOUNDARIE: " << boundary << std::endl;
 
+	if ( boundary.length() > 70 ) throw std::invalid_argument( E_400 );
 
-	//checkBoundarysintaxis prohibido espacios o char de control (DEL o ASCCII < 32 )
-	//max size boundary 70 char 
+	std::string::const_iterator	it, ite = boundary.end();
 
+	for ( it = boundary.begin(); it != ite; ++it )
+		if ( *it > 126 || *it < 33 ) 
+			throw std::invalid_argument( E_400 );
 
 	return boundary;
 }
