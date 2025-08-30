@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 16:14:58 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:21:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,12 +293,13 @@ void HttpRequest::setStatusCode(std::string error)
 void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std::string const &path)
 {
 	std::size_t found = path.rfind("/");
+	std::cout << PINK  << "request path: " << path << std::endl << RESET; //TO BORROW
 
 	//	if ( found == std::string::npos ) //BADREQUEST
 
 	this->location = path.substr(0, found + 1);
-	//	std::cout << "LOCATION REQ: " << this->location << std::endl;
-
+	std::cout << PINK << "LOCATION REQ: " << this->location << std::endl;
+// EMILIE this not ok because for ./error_pages/ esta buscando / solo
 	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
 
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
@@ -310,7 +311,6 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
-
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
