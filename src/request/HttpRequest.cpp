@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:33:48 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:36:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,7 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 			this->fullRequest.erase(0, found + 2);
 
 			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
-			//si no es body verifier que les char sont printable
 			if ( !HttpParser::isAsciiPrintable( tmp )) throw std::invalid_argument( E_400 ); 
-
 
 			switch (this->state)
 			{
@@ -113,9 +111,7 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		if (this->state == BODY)
 		{
 			if (!this->boundary.empty()) // TODO create newBody here and pass it to routine?
-			{
 				manyBodiesRoutine(found);
-			}
 			else
 			{
 				this->body = this->fullRequest;
