@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/13 17:37:42 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:16:26 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 #define GRE		"\033[32m"
 #define RESET	"\033[0m"
 
+#include "HttpRequest.hpp"
+
+class	HttpRequest;
+
 class	HttpParserTester	{
 private:
 	HttpParserTester();
@@ -26,16 +30,14 @@ private:
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
 	/*---------------Http Message-----------------*/
-	static void	onlyASCII();
-	static void	crWithoutLf();
-	static void	emptyLinesBeforeReqLine();
-	static void	isspaceBeforeHeader();
-	static void sfWithoutCrlf();
-	static void	crlfTests();
-	static void shouldHaveOneHost();
+	static void	onlyASCII(ServerManager & s);
+	static void	crWithoutLf( ServerManager & s );
+	static void	emptyLinesBeforeReqLine( ServerManager & s );
+	static void	isspaceBeforeHeader( ServerManager & s );
+	static void shouldHaveOneHost( ServerManager & s );
 
+	/*---------------Host Header-----------------*/
 	static void validHostSyntaxis();
-	static void trimSpacesAndTab();
 
 	/*--------------Request Line------------------*/
 	static void	shouldHaveTwoSpaces();
@@ -54,14 +56,25 @@ private:
 	static void	parseHeaderSyntaxis();
 	static void	pushHeaderValues();
 	static void	pushMoreValues();
+	
+	/*---------------Multipart Body-----------------*/
+	static void	boundaryExist(ServerManager & s);
+	static void	checkBoundary( ServerManager & s );
+//	static void	emptyLinesBeforeReqLine( ServerManager & s );
+//	static void	isspaceBeforeHeader( ServerManager & s );
+//	static void shouldHaveOneHost( ServerManager & s );
 
 	
 public:
-	static void	parseHttpMessageTest();
+	
+	static void	run(ServerManager & s);
+
+	static void	parseHttpMessageTest( ServerManager & s);
 	static void	parseRequestLineTest();
 	static void parseUriTest();
 	static void	parseHostTest();
 	static void	parseHeadersTest();
+	static void parseMultipartBodyTest( ServerManager & s );
 };
 
 #endif

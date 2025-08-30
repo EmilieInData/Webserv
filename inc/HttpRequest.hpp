@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 10:16:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/30 09:51:27 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,9 @@ private:
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 	void	manyBodiesRoutine( std::size_t found );
 
+	void	runSimpleTest();
+
 public:
-	HttpRequest(ServerManager &server);
 	HttpRequest(std::pair<int, std::string> incoming,
 				ServerManager			   &server); // FABIO paired string with fd.
 	HttpRequest(HttpRequest const &src);
@@ -99,7 +100,7 @@ public:
 
 	void								sendBuffer( char *buffer, ssize_t bytes );
 	void								setStatusCode( std::string error );
-  void		printBodies(); // DBG this can be deleted, it's just for testing
+	void								printBodies(); // DBG this can be deleted, it's just for testing
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;
 	std::string							getPath() const;
