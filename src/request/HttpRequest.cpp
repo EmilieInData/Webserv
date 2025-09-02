@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 12:01:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:08:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -407,7 +407,7 @@ std::string HttpRequest::getRspType() const
 }
 
 
-ServerManager &HttpRequest::getServ()
+ServerManager &HttpRequest::getServ() const
 {
 	return this->server;
 }

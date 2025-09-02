@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:05:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:16:52 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,4 +149,9 @@ void	Script::runScript(HttpRequest const &request)
 std::string Script::getScriptOutput() const
 {
 	return _scriptOutput;
+}
+
+std::string Script::getContentType() const
+{
+	return _contentType;
 }

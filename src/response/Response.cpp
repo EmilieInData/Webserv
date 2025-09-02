@@ -6,13 +6,14 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:03:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:14:05 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
 #include "Utils.hpp"
+#include "ServerManager.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -197,9 +198,11 @@ void Response::prepResponse()
 	_contentType = _request->getRspType();
 
 	if (_contentType == "cgi-script")
-		content = _request->getServ().getScript().
-	
-	content = prepFile()g;
+	{
+		content = _request->getServ().getScript().getScriptOutput();
+		_contentType = _request->getServ().getScript().getContentType();
+	}
+	content = prepFile();
 
 	std::ostringstream output;
 	output << content.length();

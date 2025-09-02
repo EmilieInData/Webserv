@@ -116,7 +116,7 @@ public:
 	std::string							getRspType() const;
 	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	void								fileUpload();
-	ServerManager						&getServ();
+	ServerManager						&getServ() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
