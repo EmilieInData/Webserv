@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 10:22:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:00:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ public:
 	std::string							getRspType() const;
 	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	void								fileUpload();
+	ServerManager						&getServ();
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

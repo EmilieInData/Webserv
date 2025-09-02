@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Header.hpp"
+#include "HeadRsp.hpp"
 #include "Response.hpp"
 
 HeadRsp::HeadRsp(Response &response) : _response(&response)

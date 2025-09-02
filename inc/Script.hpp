@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:10:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:04:19 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ public:
 	int			getStatusCode() const;
 	std::string getMessage() const;
 	std::string getContentType() const;
+	std::string getScriptOutput() const;
 };
 
 #endif

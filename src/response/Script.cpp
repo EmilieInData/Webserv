@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:32:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:05:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,14 +111,13 @@ void	Script::runScript(HttpRequest const &request)
 		close(pipeIn[PIPE_WRITE]);
 
 		// Read the script output from pipeOut
-		std::string scriptOutput;
 		char		buffer[4096];
 		ssize_t		bytesRead;
 
 		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
 		{
 			buffer[bytesRead] = '\0';
-			scriptOutput += buffer;
+			_scriptOutput += buffer;
 		}
 		close(pipeOut[PIPE_READ]);
 
@@ -140,9 +139,14 @@ void	Script::runScript(HttpRequest const &request)
 		{
 			content		 = _scriptOutput;
 			_contentType = "text/html"; // TODO check for other outputs?
-			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
+			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
 		}
 	}
 	_scriptOutput = content;
+}
+
+std::string Script::getScriptOutput() const
+{
+	return _scriptOutput;
 }

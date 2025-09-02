@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:36:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:03:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (fullPath.second == "/redirect" ||
 		fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
-		_location = fullPath.first + "/redirect/index.html";
+		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
 	else
@@ -193,9 +193,13 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 void Response::prepResponse()
 {
 	std::string content;
+	
 	_contentType = _request->getRspType();
 
-	content = prepFile();
+	if (_contentType == "cgi-script")
+		content = _request->getServ().getScript().
+	
+	content = prepFile()g;
 
 	std::ostringstream output;
 	output << content.length();

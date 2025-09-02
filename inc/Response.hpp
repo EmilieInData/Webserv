@@ -6,14 +6,14 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:06:00 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:39:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "Header.hpp"
+#include "HeadRsp.hpp"
 #include "Utils.hpp"
 
 /* TODO maybe this class can inherit

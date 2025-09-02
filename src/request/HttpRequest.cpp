@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 10:43:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:01:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -404,6 +404,12 @@ int HttpRequest::getParsingState() const
 std::string HttpRequest::getRspType() const
 {
 	return _rspType;
+}
+
+
+ServerManager &HttpRequest::getServ()
+{
+	return this->server;
 }
 
 void HttpRequest::fileUpload() // TODO check if maybe we should put it in response
