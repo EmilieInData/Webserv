@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/22 12:37:25 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:37:32 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ private:
 
 public:
 	static std::vector<std::string>	split( std::string const & str, char const delimiter );
-	static std::pair<std::vector<std::string>, std::string>	crlfSplit( std::string const & str ); //BORRAR
 	static std::vector<std::string>	isspaceSplit( std::string const & str );
 	static bool						isAsciiPrintable( std::string const & str );
 	static bool						isUnreservedForUri( char c );
@@ -69,8 +68,6 @@ public:
 	
 	static std::pair<std::string, std::string>				parseHost( std::string const & str );
 
-	static std::pair<std::vector<std::string>, std::string>	parseHttpMessage( std::string const & str, std::string & host );//delete
-	
 	static std::pair<std::string, std::string>	parseHeaderSyntaxis( std::string h );
 	static bool									recognizeHeaderName( std::string name );
 	static bool									oneValueHeader( std::string name );

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/29 10:56:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 10:22:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,9 @@ private:
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 	void	manyBodiesRoutine( std::size_t found );
 
+	void	runSimpleTest();
+
 public:
-	HttpRequest(ServerManager &server);
 	HttpRequest(std::pair<int, std::string> incoming,
 				ServerManager			   &server); // FABIO paired string with fd.
 	HttpRequest(HttpRequest const &src);

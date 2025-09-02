@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 16:10:42 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:44:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,41 +46,6 @@ std::vector<std::string>	HttpParser::split( std::string const & str, char const 
 	return tokens;
 }
 
-std::pair<std::vector<std::string>, std::string>	HttpParser::crlfSplit( std::string const & str ) { //ya no sirve ?? BORRAR ?
-	std::vector<std::string>	lines;
-	std::string					body;
-	size_t						start = 0, found_body, end, count = 0;
-
-	while ( ( found_body = str.find( "\r\n\r\n", start)) != std::string::npos ) {
-		std::string	tmp = str.substr( start, found_body - start );
-		if ( tmp != "" ) {
-			 body = str.substr( found_body + 4, str.length() );
-			 count++;
-			 break;
-		}
-        start = found_body + 4;
-    }
-	
-	if ( count == 0 ) throw std::invalid_argument( E_400 );
-
-	start = 0;
-	
-	while ( (end = str.find( "\r\n", start)) != std::string::npos  &&  end <= found_body ) {
-        lines.push_back( str.substr( start, end - start ));
-        start = end + 2;
-    }	
-
-	//PRINT LINES
-	std::vector<std::string>::iterator	it, ite = lines.end();
-
-	for ( it = lines.begin(); it != ite; ++it )
-		std::cout << "LINE: " << *it << std::endl;
-
-	std::cout << "BODY: " << body <<std::endl;
-
-    return std::make_pair( lines, body );
-}
-
 std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 
 	std::vector<std::string>	tokens;
@@ -110,7 +75,7 @@ std::vector<std::string>	HttpParser::isspaceSplit( std::string const & str ) {
 bool	HttpParser::isAsciiPrintable( std::string const & str ) {
 	std::string::const_iterator	it, ite = str.end();
 
-	for ( it = str.begin(); *it != *ite; ++it ) { 
+	for ( it = str.begin(); it != ite; ++it ) { 
 		if ( *it == '\t' ) continue;
 		if ( *it > 126 || *it < 32 )
 			return false;
@@ -169,43 +134,7 @@ std::string	HttpParser::trimSpaceAndTab( std::string & str ) {
 	while (!str.empty() && (str[0] == ' ' || str[0] == '\t'))
 		str.erase(0, 1);
 	
-//	std::cout << "\"" << str << "\"" << std::endl;
-
 	return str;
-}
-
-std::pair<std::vector<std::string>, std::string>	HttpParser::parseHttpMessage( //ya no sirve borrar
-std::string const & message, std::string & host_str ) {
-
-	std::pair<std::vector<std::string>, std::string> lines = crlfSplit( message );
-
-	if ( lines.first.empty()) throw std::invalid_argument( E_400 );
-
-	std::vector<std::string>::iterator	it;
-	std::vector<std::string>::iterator	ite = lines.first.end();
-	std::string::const_iterator			s_it, s_ite;
-
-	int header = 0, host = 0;
-
-	for ( it = lines.first.begin(); it != ite; ++it ) {
-		if ( header == 0 && (*it).empty()) continue;
-		if ( header > 0 && !(*it).empty()) 
-			if ( std::isspace( (*it)[0] )) throw std::invalid_argument( E_400 );
-		s_ite = (*it).end();
-		for ( s_it = (*it).begin(); s_it != s_ite; ++s_it )
-			if ( *s_it == '\r' ) throw std::invalid_argument( E_400 );
-		if ( strncmp( toLower( *it ).c_str(), "host:", 5 ) == 0 ) {
-			host_str = (*it).substr( 5, (*it).length() - 5 );
-			if ( trimSpaceAndTab( host_str ) == "" ) throw std::invalid_argument( E_400 ); //ok
-			host++;
-		}
-		header++;
-		if ( !isAsciiPrintable( *it )) throw std::invalid_argument( E_400 ); 
-																			 
-	}
-	if ( host != 1 ) throw std::invalid_argument( E_400 ); //ok
-
-	return lines;
 }
 
 RequestLine	HttpParser::parseRequestLine( std::string const & line ) {
@@ -441,7 +370,7 @@ int	HttpParser::parseContentLengthHeader( std::string const & v, std::size_t bod
 std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const & v ) {
 	if ( v.at( 0 ) != "multipart/form-data" ) return "";
 		
-	if ( v.at( 1 ).empty()) throw std::invalid_argument( E_400 );
+	if ( v.size() < 2 ) throw std::invalid_argument( E_400 );
 
 	std::size_t	found = v.at( 1 ).find( "boundary=" );
 
@@ -450,6 +379,14 @@ std::string	HttpParser::parseContentTypeBoundary( std::vector<std::string> const
 	std::string boundary = v[1].substr( 9, v[1].length());
 
 	//std::cout << "BOUNDARIE: " << boundary << std::endl;
+
+	if ( boundary.length() > 70 ) throw std::invalid_argument( E_400 );
+
+	std::string::const_iterator	it, ite = boundary.end();
+
+	for ( it = boundary.begin(); it != ite; ++it )
+		if ( *it > 126 || *it < 33 ) 
+			throw std::invalid_argument( E_400 );
 
 	return boundary;
 }

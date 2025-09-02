@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 11:23:37 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 10:23:26 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 				//	printRaw( connection.fullRequest );
 				//	std::cout << std::endl;
 
-				req.sendBuffer(buffer, bytes); // TODO poner en param max_body_size del server
+				req.sendBuffer(buffer, bytes); //CLEO the max_body_size is checked in the request
 
 				if (req.getParsingState() == DONE)
 					std::cout << "STATE: " << req.getParsingState() << std::endl;
@@ -160,9 +160,10 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 				if (req.getParsingState() <= 0)
 				{
 					isComplete = true;
-					req.fileUpload(); // TODO this needs to happen in httprequest and get codes etc.
+					req.fileUpload(); // TODO i think this needs to go in the response
+					//CLEO I think is an error to upload file in case of req.ParsingState() == -1 because is an error of parsing
 				}
-				}
+			}
 			else if (bytes == 0)
 			{
 				std::cout << "BYTES = 0" << std::endl;
