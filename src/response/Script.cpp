@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:28:39 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:32:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	Script::runScript(HttpRequest const &request)
 		else
 		{
 			content		 = _scriptOutput;
-			_contentType = "text/html";
+			_contentType = "text/html"; // TODO check for other outputs?
 			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
 		}
