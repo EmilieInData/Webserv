@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:16:52 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:46:20 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ void	Script::setScriptType(std::string const &cgiPath)
 
 void	Script::runScript(HttpRequest const &request)
 {
+	_scriptOutput = "";
 	std::string query = request.getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DB
-	std::string content;
 	std::string cgiPath = request.getFullPath().first + request.getFullPath().second;
 	setScriptType(cgiPath);
 
@@ -137,13 +137,11 @@ void	Script::runScript(HttpRequest const &request)
 		}
 		else
 		{
-			content		 = _scriptOutput;
-			_contentType = "text/html"; // TODO check for other outputs?
+			_contentType = "text/html"; // TODO check for other outputs formats?
 			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
 		}
 	}
-	_scriptOutput = content;
 }
 
 std::string Script::getScriptOutput() const
