@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:14:05 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:40:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,7 +202,8 @@ void Response::prepResponse()
 		content = _request->getServ().getScript().getScriptOutput();
 		_contentType = _request->getServ().getScript().getContentType();
 	}
-	content = prepFile();
+	else
+		content = prepFile();
 
 	std::ostringstream output;
 	output << content.length();

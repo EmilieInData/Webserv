@@ -41,7 +41,7 @@ if error_message:
 	print(f"<p>{error_message}</p>")
 else:
 	# If successful, display the result with custom style.
-	print('<div style="font-size: 400px; font-weight: bold; color: red; text-align: center;">')
+	print('<div style="font-size: 40px; font-weight: bold; color: red; text-align: center;">')
 	print(result)
 	print('</div>')
 
