@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 11:35:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:06:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ public:
 	void		sendResponse();
 	std::string getType();
 	std::string getLength();
-	std::string	runScript(std::string const &cgiPath);
 	std::string getResponse();
 	void		printRawResponse();
 	bool		getAutoindex() const;

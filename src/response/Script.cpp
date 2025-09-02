@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 11:46:20 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:28:39 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,21 @@ void	Script::setScriptType(std::string const &cgiPath)
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
 	if (_scriptType != ".py" && _scriptType != ".php")
 		{
-			printBoxError("Invalid script type")
+			printBoxError("Invalid script type");
 			exit(1);
 			//TODO implement proper throw/error
 		}
 }
 
-void	Script::runScript(std::string const &cgiPath)
+void	Script::runScript(HttpRequest const &request)
 {
-	std::string query = _request->getQuery();
-	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
-
+	std::string query = request.getQuery();
+	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DB
 	std::string content;
+	std::string cgiPath = request.getFullPath().first + request.getFullPath().second;
+	setScriptType(cgiPath);
 
+	
 	int pipeIn[2];
 	int pipeOut[2];
 
@@ -43,7 +45,7 @@ void	Script::runScript(std::string const &cgiPath)
 	{
 		//TODO what error number here?
 		printBoxError("Pipe Error");
-		return "";
+		_scriptOutput = "";
 	}
 
 	pid_t child = fork();
@@ -56,7 +58,7 @@ void	Script::runScript(std::string const &cgiPath)
 		close(pipeOut[PIPE_READ]);
 		close(pipeIn[PIPE_WRITE]);
 		close(pipeIn[PIPE_READ]);
-		return "";
+		_scriptOutput = "";
 	}
 
 	else if (child == 0)
@@ -75,7 +77,7 @@ void	Script::runScript(std::string const &cgiPath)
 		into its owh function*/
 
 		std::string varQuery  = "QUERY_STRING=" + query;
-		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
+		std::string varMethod = "REQUEST_METHOD=" + request.getHttpMethod();
 		char	   *envQuery  = new char[varQuery.length() + 1];
 		strcpy(envQuery, varQuery.c_str());
 
@@ -92,7 +94,7 @@ void	Script::runScript(std::string const &cgiPath)
 						NULL};
 		execve(runPath.c_str(), argv, envServ);
 
-		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
+		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
 		delete[] envQuery;
 		exit(1);
 	}
@@ -142,5 +144,5 @@ void	Script::runScript(std::string const &cgiPath)
 					  << " bytes" << RESET << std::endl;
 		}
 	}
-	return content;
+	_scriptOutput = content;
 }

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 10:23:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 10:43:10 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,7 +302,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
 	setRspType();							// FABIO added here, seems the best place for now
 	if (_rspType == "cgi-script")
-		server.getScript().runScript(_fullPath.first + _fullPath.second);
+		server.getScript().runScript(*this);
 		// TODO if script fails throw error here
 	if (it == location.end())
 		throw std::invalid_argument(E_404);

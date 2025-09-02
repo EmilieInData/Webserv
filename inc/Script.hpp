@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/29 11:44:23 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:10:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 
 #define PIPE_READ 0
 #define PIPE_WRITE 1
+
+class HttpRequest;
+
 class Script
 {
 private:
@@ -35,7 +38,7 @@ public:
 	Script();
 	~Script();
 
-	void		runScript(std::string const &cgiPath);
+	void		runScript(HttpRequest const &request);
 	void		setEnv(); // TODO set environment variables
 	void		setScriptType(std::string const &cgiPath);
 	int			getStatusCode() const;
