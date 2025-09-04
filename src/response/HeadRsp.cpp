@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Header.cpp                                         :+:      :+:    :+:   */
+/*   HeadRsp.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Header.hpp"
+#include "HeadRsp.hpp"
 #include "Response.hpp"
 
-Header::Header(Response &response) : _response(&response)
+HeadRsp::HeadRsp(Response &response) : _response(&response)
 {
 	setContentType();
 	setProtocol();
@@ -24,14 +24,14 @@ Header::Header(Response &response) : _response(&response)
 	buildHeader();
 }
 
-Header::~Header() {};
+HeadRsp::~HeadRsp() {};
 
-void Header::setContentType()
+void HeadRsp::setContentType()
 {
 	_contentType = "Content-Type: " + _response->getType() + HEADNL;
 }
 
-void Header::setProtocol()
+void HeadRsp::setProtocol()
 {
 	/* TODO needed a way to extract
 	protocol from request
@@ -39,7 +39,7 @@ void Header::setProtocol()
 	_protocol = "HTTP/1.1";
 }
 
-void Header::setStatusCode()
+void HeadRsp::setStatusCode()
 {
 	/* TODO here we need to find
 	a way to get the appropriate
@@ -49,19 +49,19 @@ void Header::setStatusCode()
 	_statusCode = "200 OK";
 }
 
-void Header::setConnectionType()
+void HeadRsp::setConnectionType()
 {
 	/* TODO extract connection type from
 	request */
 	_connectionType = "Connection: close" + std::string(HEADNL);
 }
 
-void Header::setContentLength()
+void HeadRsp::setContentLength()
 {
-	_contentLength ="Content-Length: " + _response->getLength() + HEADNL;
+	_contentLength = "Content-Length: " + _response->getLength() + HEADNL;
 }
 
-void Header::setCacheControl()
+void HeadRsp::setCacheControl()
 {
 	std::string cache;
 
@@ -76,14 +76,14 @@ void Header::setCacheControl()
 	_cacheControl = "Cache-Control: " + cache + HEADNL;
 }
 
-void Header::buildHeader()
+void HeadRsp::buildHeader()
 {
 	_header = _protocol + " " + _statusCode + HEADNL + _contentType + _contentLength +
 			  _connectionType + _cacheControl + HEADNL;
 	// std::cout << GREEN << "[ HEADER ]\n\n" << _header << std::endl;
 }
 
-std::string Header::getHeader()
+std::string HeadRsp::getHeader()
 {
 	return _header;
 }

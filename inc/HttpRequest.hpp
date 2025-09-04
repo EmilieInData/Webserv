@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 09:51:27 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:00:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,17 @@
 #include "HttpParserTester.hpp"
 #include "RequestLine.hpp"
 #include "ServerData.hpp"
-#include "ServerManager.hpp"
+// #include "ServerManager.hpp"
 #include "Uri.hpp"
 #include "Headers.hpp"
 #include "Utils.hpp"
+#include "Script.hpp"
 
 class RequestLine;
 class Uri;
 class ServerManager;
 class Headers;
-
+class Script;
 struct MultiBody // TODO delete unused constructor when we know which one we need
 {
 	Headers		bodyHeader;
@@ -77,6 +78,7 @@ private:
 	int									state;
 	int									body_state;
 	std::string							fullRequest;
+	std::string							_rspType;
 	std::pair<int, std::string>			incoming;
 	ServerManager					   &server;
 
@@ -100,6 +102,7 @@ public:
 
 	void								sendBuffer( char *buffer, ssize_t bytes );
 	void								setStatusCode( std::string error );
+	void								setRspType();
 	void								printBodies(); // DBG this can be deleted, it's just for testing
 	std::string							getHttpMethod() const;
 	std::string							getRequestUri() const;
@@ -110,8 +113,10 @@ public:
 	int									getStatusCode() const;
 	int									getParsingState() const;
 	bool								getAutoindex() const;
-	MultiBody fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
-	void	fileUpload();
+	std::string							getRspType() const;
+	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
+	void								fileUpload();
+	ServerManager						&getServ() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

@@ -6,17 +6,18 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/25 16:23:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/08/29 11:23:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVERMANAGER_HPP
 #define SERVERMANAGER_HPP
 
-#include "HttpRequest.hpp"
+// #include "HttpRequest.hpp"
 #include "ParsingConf.hpp"
 #include "PrintLog.hpp"
 #include "Response.hpp"
+#include "Script.hpp"
 #include "ServerData.hpp"
 #include "Utils.hpp"
 
@@ -35,18 +36,20 @@ struct ClientConnection
 };
 
 class Response;
+class HttpRequest;
 class ServerManager
 {
 private:
-	bool								   _running;
-	int									   _inputFd;
-	std::string							   _input;
+	bool		_running;
+	int			_inputFd;
+	std::string _input;
 	// Response							   _response; // TODO remove this
 	std::vector<ServerData>				   _serverData;
 	std::vector<int>					   _socketFd;
 	std::vector<struct sockaddr_in>		   _servAddr;
 	int									   _reqCount;
 	int									   _rspCount;
+	Script								   _script;
 	std::set<std::pair<int, std::string> > _uniqueListens;
 	ServerManager();
 	ServerManager(ServerManager const &copy);
@@ -68,8 +71,10 @@ public:
 	int									   getRspCount() const;
 	void								   servQuit();
 	void								   servInput();
-	void								   servRespond(ClientConnection &connection, HttpRequest & req, std::pair<int, std::string> incoming);
-	bool								   servReceive(ClientConnection &connection, HttpRequest & req);
+	Script								  &getScript();
+	void servRespond(ClientConnection &connection, HttpRequest &req,
+					 std::pair<int, std::string> incoming);
+	bool servReceive(ClientConnection &connection, HttpRequest &req);
 	// TODO create servQuit() to stop all servers;
 };
 

@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Header.hpp                                         :+:      :+:    :+:   */
+/*   HeadRsp.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/06 11:35:50 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:36:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HEADER_HPP
-#define HEADER_HPP
+#ifndef HEADRSP_HPP
+#define HEADRSP_HPP
 
 #include "Utils.hpp"
 
@@ -23,10 +23,10 @@ the beginning of the response*/
 
 class Response;
 
-class Header
+class HeadRsp
 {
 private:
-	Response 	*_response;
+	Response   *_response;
 	std::string _header;
 	std::string _statusCode;
 	std::string _contentType;
@@ -35,15 +35,15 @@ private:
 	std::string _connectionType;
 	std::string _cacheControl;
 
-	Header &operator=(Header const &copy);
-	Header();
-	Header(Header const &copy);
+	HeadRsp &operator=(HeadRsp const &copy);
+	HeadRsp();
+	HeadRsp(HeadRsp const &copy);
 
 public:
-	Header(Response &response);
-	~Header();
+	HeadRsp(Response &response);
+	~HeadRsp();
 
-	void		setContentType();  //
+	void		setContentType(); // TODO check from script as well
 	void		setProtocol();
 	void		setStatusCode();
 	void		setContentLength();

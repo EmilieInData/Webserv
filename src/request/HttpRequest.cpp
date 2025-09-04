@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:36:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:08:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "ServerManager.hpp"
 #include <stdlib.h>
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
@@ -131,6 +132,10 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->setStatusCode(e.what());
 	}
 
+
+
+	// FABIO end of request parsing here
+	
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
@@ -198,7 +203,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	static int k = -1; // TODO no needed
+	static int k = -1;			// TODO no needed
 	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
@@ -208,7 +213,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 		this->fullRequest.erase(0, found + 2);
 		if (makeNew)
 		{
-			newBody = MultiBody(); 
+			newBody = MultiBody();
 			makeNew = false;
 		}
 		switch (this->body_state)
@@ -292,13 +297,44 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 
 	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
 
-//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
+	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
-	if ( it == location.end() )
-    throw std::invalid_argument( E_404 ); 
+	setRspType();							// FABIO added here, seems the best place for now
+	if (_rspType == "cgi-script")
+		server.getScript().runScript(*this);
+		// TODO if script fails throw error here
+	if (it == location.end())
+		throw std::invalid_argument(E_404);
 
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
+}
+
+void HttpRequest::setRspType()
+{
+	std::string location = _fullPath.first + _fullPath.second;
+	if (isFolder(location) && _autoindex)
+		_rspType = "text/html";
+
+	std::string extension;
+	size_t		dotPos = location.find_last_of('.');
+	if (dotPos != std::string::npos)
+		extension = location.substr(dotPos);
+
+	if (extension == ".html" || extension == ".htm")
+		_rspType = "text/html";
+	else if (extension == ".jpg" || extension == ".jpeg")
+		_rspType = "image/jpeg";
+	else if (extension == ".png")
+		_rspType = "image/png";
+	else if (extension == ".gif")
+		_rspType = "image/gif";
+	else if (extension == ".css")
+		_rspType = "text/css";
+	else if (extension == ".py" || extension == ".php") // TODO check if valid
+		_rspType = "cgi-script";
+	else
+		_rspType = "application/octet-stream";
 }
 
 void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)
@@ -355,11 +391,25 @@ int HttpRequest::getStatusCode() const
 	return this->code;
 }
 
-bool HttpRequest::getAutoindex() const { return this->_autoindex; }
+bool HttpRequest::getAutoindex() const
+{
+	return this->_autoindex;
+}
 
 int HttpRequest::getParsingState() const
 {
 	return this->state;
+}
+
+std::string HttpRequest::getRspType() const
+{
+	return _rspType;
+}
+
+
+ServerManager &HttpRequest::getServ() const
+{
+	return this->server;
 }
 
 void HttpRequest::fileUpload() // TODO check if maybe we should put it in response
@@ -369,11 +419,11 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 		if (it->bodyHeader.getHeaderSize() > 1)
 		{
 			std::cout << "IS FILE" << std::endl; // DBG
-			std::string locationUp = _fullPath.first + _fullPath.second;
-			std::string content	  = it->bodyHeader.getHeader("content-disposition")->second[0];
-			size_t		startName = content.find("filename=") + 10;
-			size_t		endName	  = content.find("\"", startName);
-			std::string fileName  = locationUp + content.substr(startName, endName - startName);
+			std::string	  locationUp = _fullPath.first + _fullPath.second;
+			std::string	  content	 = it->bodyHeader.getHeader("content-disposition")->second[0];
+			size_t		  startName	 = content.find("filename=") + 10;
+			size_t		  endName	 = content.find("\"", startName);
+			std::string	  fileName	 = locationUp + content.substr(startName, endName - startName);
 			std::ofstream fileUp(fileName.c_str());
 			if (fileUp.is_open())
 			{

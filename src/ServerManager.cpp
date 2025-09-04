@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/30 10:46:45 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/02 10:23:26 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
+#include "HttpRequest.hpp"
 #include <fcntl.h>
 #include <time.h>
 
@@ -194,7 +195,7 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	//printRaw(connection.fullRequest);
 	printRaw(connection.fullRequest); // DBG to remove
-	req.printBodies();
+	req.printBodies(); // DBG
 	return isComplete;
 }
 
@@ -214,7 +215,7 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
 		_rspCount++;
 		printResponse(*this, incoming, resp.getResponse(), fullPath);
 	}
-	catch (const std::exception &e)
+	catch (const std::exception &e) // TODO check with errors because they happen in HttpRequest
 	{
 		std::cerr << "Error processing request: " << e.what() << std::endl;
 		std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
@@ -296,6 +297,11 @@ void ServerManager::servRun()
 std::vector<ServerData> ServerManager::getServersList() const
 {
 	return _serverData;
+}
+
+Script	&ServerManager::getScript()
+{
+	return _script;
 }
 
 int ServerManager::getReqCount() const

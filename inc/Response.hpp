@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/27 18:42:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:39:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "Header.hpp"
+#include "HeadRsp.hpp"
 #include "Utils.hpp"
-
-#define PIPE_READ 0
-#define PIPE_WRITE 1
 
 /* TODO maybe this class can inherit
 from HttpRequest? */
@@ -54,7 +51,6 @@ public:
 	void		sendResponse();
 	std::string getType();
 	std::string getLength();
-	std::string	runScript(std::string const &cgiPath);
 	std::string getResponse();
 	void		printRawResponse();
 	bool		getAutoindex() const;

@@ -6,13 +6,14 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/28 14:13:38 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/02 12:40:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
 #include "Utils.hpp"
+#include "ServerManager.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -20,13 +21,13 @@
 Response::Response(HttpRequest const &request) : _request(&request)
 {
 
-	_clientFd	   	= -1;
-	_response	   	= "";
-	_location	   	= "";
-	_method			= "";
-	_contentType	= "";
-	_contentLength	= "";
-	_autoindex		= _request->getAutoindex();
+	_clientFd	   = -1;
+	_response	   = "";
+	_location	   = "";
+	_method		   = "";
+	_contentType   = "";
+	_contentLength = "";
+	_autoindex	   = _request->getAutoindex();
 }
 
 Response::~Response() {}
@@ -45,9 +46,11 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
-	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n" << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
-	if (fullPath.second == "/redirect" || fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
-		_location = fullPath.first + "/redirect/index.html";
+	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n"
+			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
+	if (fullPath.second == "/redirect" ||
+		fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
+		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
 	else
@@ -76,21 +79,21 @@ std::string Response::prepFile()
 		file.close();
 		return buffer.str();
 	}
-    else if (isFolder(_location))
-    {
+	else if (isFolder(_location))
+	{
 		// if (not exist) //find location bloc, done by cleo in http request
 		// 	//error
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return "";//return error to open directory
-	    if (access(_location.c_str(), R_OK) != 0)
+			return ""; //return error to open directory
+		if (access(_location.c_str(), R_OK) != 0)
 		{
 			closedir(dir);
-    	    return "";//return error miss right to read what's inside
+			return ""; //return error miss right to read what's inside
 		}
 		if (this->getAutoindex() == false)
-            return ""; //return error not allowed to read inside
-        return doAutoindex(_request->getFullPath().second, dir);
+			return ""; //return error not allowed to read inside
+		return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
@@ -106,245 +109,99 @@ std::string Response::prepFile()
 
 std::string Response::doAutoindex(std::string uri, DIR *dir)
 {
-    std::ostringstream html;
-    struct dirent *entry;
+	std::ostringstream html;
+	struct dirent	  *entry;
 
 	doHtmlAutoindex(uri, html);
-	
-    while ((entry = readdir(dir)) != NULL)
-    {
+
+	while ((entry = readdir(dir)) != NULL)
+	{
 		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
 			continue;
-        html << "      <li><a href=\"" << uri;
-        if (uri[uri.size() - 1] != '/')
-            html << "/";
-        html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET << std::endl; // TO BORROW
-    }
-    html << "    </ul>\n</div>\n</body>\n</html>\n";
-    closedir(dir);
-    return html.str();
+		html << "      <li><a href=\"" << uri;
+		if (uri[uri.size() - 1] != '/')
+			html << "/";
+		html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
+		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
+				  << std::endl; // TO BORROW
+	}
+	html << "    </ul>\n</div>\n</body>\n</html>\n";
+	closedir(dir);
+	return html.str();
 }
-
 
 void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 {
 	html << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n";
-    html << "    <meta charset=\"UTF-8\">\n";
-    html << "    <title>Index of " << uri << "</title>\n";
-    html << "    <style>\n";
-    html << "        body {\n";
-    html << "            background-color: white;\n";
-    html << "            font-family: Arial, sans-serif;\n";
-    html << "            display: flex;\n";
-    html << "            flex-direction: column;\n";
-    html << "            justify-content: center;\n";
-    html << "            align-items: center;\n";
-    html << "            min-height: 100vh;\n";
-    html << "            margin: 0;\n";
-    html << "            padding: 20px;\n";
-    html << "            box-sizing: border-box;\n";
-    html << "        }\n";
-    html << "        .purple-text {\n";
-    html << "            color: #b388eb;\n";
-    html << "            font-size: 48px;\n";
-    html << "            text-align: center;\n";
-    html << "            margin-bottom: 20px;\n";
-    html << "        }\n";
-    html << "        .image-container {\n";
-    html << "            text-align: center;\n";
-    html << "            margin-bottom: 20px;\n";
-    html << "        }\n";
-    html << "        .image-container img {\n";
-    html << "            max-width: 100%;\n";
-    html << "            height: auto;\n";
-    html << "            max-height: 300px;\n";
-    html << "        }\n";
-    html << "        .list-container {\n";
-    html << "            text-align: center;\n";
-    html << "        }\n";
-    html << "        ul {\n";
-    html << "            list-style: none;\n";
-    html << "            padding: 0;\n";
-    html << "        }\n";
-    html << "        li {\n";
-    html << "            margin: 8px 0;\n";
-    html << "        }\n";
-    html << "        a {\n";
-    html << "            text-decoration: none;\n";
-    html << "            color: #7b2cbf;\n";
-    html << "            font-size: 20px;\n";
-    html << "        }\n";
-    html << "        a:hover {\n";
-    html << "            text-decoration: underline;\n";
-    html << "        }\n";
-    html << "    </style>\n";
-    html << "</head>\n<body>\n";
-    html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
-    html << "    <div class=\"image-container\">\n";
-    html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
-    html << "    </div>\n";
-    html << "    <div class=\"list-container\">\n";
-    html << "    <ul>\n";
-}
-
-std::string Response::runScript(std::string const &cgiPath)
-{
-	size_t		lastDot	   = cgiPath.find_last_of('.');
-	std::string scriptType = cgiPath.substr(lastDot);
-	std::cout << RED << "script type = " + scriptType << RESET << std::endl; // DBG
-	std::string query = _request->getQuery();
-	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
-
-	std::string content;
-
-	int pipeIn[2];
-	int pipeOut[2];
-
-	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
-	{
-		//TODO what error number here?
-		printBoxError("Pipe Error");
-		return "";
-	}
-
-	pid_t child = fork();
-
-	if (child < 0)
-	{
-		//TODO also here, what error?
-		printBoxError("Fork error");
-		close(pipeOut[PIPE_WRITE]);
-		close(pipeOut[PIPE_READ]);
-		close(pipeIn[PIPE_WRITE]);
-		close(pipeIn[PIPE_READ]);
-		return "";
-	}
-
-	/* TODO to implement more types of script,
-	create option for selecting the kind of 
-	script detected (here for example it's
-	python)*/
-
-	else if (child == 0)
-	{
-		std::string runPath;
-		close(pipeIn[PIPE_WRITE]);
-		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
-		close(pipeIn[PIPE_READ]);
-
-		// Redirect script's stdout to write to pipeOut
-		close(pipeOut[PIPE_READ]);
-		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
-		close(pipeOut[PIPE_WRITE]);
-
-		/* TODO wrap env creation
-		into its owh function*/
-
-		std::string varQuery  = "QUERY_STRING=" + query;
-		std::string varMethod = "REQUEST_METHOD=" + _request->getHttpMethod();
-		char	   *envQuery  = new char[varQuery.length() + 1];
-		strcpy(envQuery, varQuery.c_str());
-
-		char *envMethod = new char[varMethod.length() + 1];
-		strcpy(envMethod, varMethod.c_str());
-
-		char *envServ[] = {envQuery, envMethod, NULL};
-
-		if (scriptType == ".py")
-			runPath = "/usr/bin/python3";
-		else if (scriptType == ".php")
-			runPath = "/usr/bin/php";
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
-						NULL};
-		execve(runPath.c_str(), argv, envServ);
-
-		std::cerr << "Execve failed for " << cgiPath << ": " << strerror(errno) << std::endl; // DBG
-		delete[] envQuery;
-		exit(1);
-	}
-	else
-	{
-		close(pipeIn[PIPE_READ]);
-		close(pipeOut[PIPE_WRITE]);
-
-		if (!query.empty())
-		{
-			if ((write(pipeIn[PIPE_WRITE], query.c_str(), query.length())) == -1)
-				printBoxError("Error parent writing");
-		}
-		close(pipeIn[PIPE_WRITE]);
-
-		// Read the script output from pipeOut
-		std::string scriptOutput;
-		char		buffer[4096];
-		ssize_t		bytesRead;
-
-		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
-		{
-			buffer[bytesRead] = '\0';
-			scriptOutput += buffer;
-		}
-		close(pipeOut[PIPE_READ]);
-
-		int status;
-		waitpid(child, &status, 0);
-
-		// Check if child process exited with error
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		{
-			std::cerr << "CGI script " << cgiPath << " exited with code " << WEXITSTATUS(status)
-					  << std::endl;
-		}
-		else if (WIFSIGNALED(status))
-		{
-			std::cerr << "CGI script " << cgiPath << " killed by signal " << WTERMSIG(status)
-					  << std::endl;
-		}
-		else
-		{
-			content		 = scriptOutput;
-			_contentType = "text/html";
-			std::cout << GREEN << "CGI script output captured: " << scriptOutput.length()
-					  << " bytes" << RESET << std::endl;
-		}
-	}
-	return content;
-}
-
-std::string Response::checkType()
-{
-	if (isFolder(_location) && _autoindex)
-		return "text/html";
-		
-	std::string extension;
-	size_t		dotPos = _location.find_last_of('.');
-	if (dotPos != std::string::npos)
-		extension = _location.substr(dotPos);
-
-	if (extension == ".html" || extension == ".htm")
-		return "text/html";
-	else if (extension == ".jpg" || extension == ".jpeg")
-		return "image/jpeg";
-	else if (extension == ".png")
-		return "image/png";
-	else if (extension == ".gif")
-		return "image/gif";
-	else if (extension == ".css")
-		return "text/css";
-	else if (extension == ".py" || extension == ".php") // TODO check if valid
-		return "cgi-script";
-	else
-		return "application/octet-stream";
+	html << "    <meta charset=\"UTF-8\">\n";
+	html << "    <title>Index of " << uri << "</title>\n";
+	html << "    <style>\n";
+	html << "        body {\n";
+	html << "            background-color: white;\n";
+	html << "            font-family: Arial, sans-serif;\n";
+	html << "            display: flex;\n";
+	html << "            flex-direction: column;\n";
+	html << "            justify-content: center;\n";
+	html << "            align-items: center;\n";
+	html << "            min-height: 100vh;\n";
+	html << "            margin: 0;\n";
+	html << "            padding: 20px;\n";
+	html << "            box-sizing: border-box;\n";
+	html << "        }\n";
+	html << "        .purple-text {\n";
+	html << "            color: #b388eb;\n";
+	html << "            font-size: 48px;\n";
+	html << "            text-align: center;\n";
+	html << "            margin-bottom: 20px;\n";
+	html << "        }\n";
+	html << "        .image-container {\n";
+	html << "            text-align: center;\n";
+	html << "            margin-bottom: 20px;\n";
+	html << "        }\n";
+	html << "        .image-container img {\n";
+	html << "            max-width: 100%;\n";
+	html << "            height: auto;\n";
+	html << "            max-height: 300px;\n";
+	html << "        }\n";
+	html << "        .list-container {\n";
+	html << "            text-align: center;\n";
+	html << "        }\n";
+	html << "        ul {\n";
+	html << "            list-style: none;\n";
+	html << "            padding: 0;\n";
+	html << "        }\n";
+	html << "        li {\n";
+	html << "            margin: 8px 0;\n";
+	html << "        }\n";
+	html << "        a {\n";
+	html << "            text-decoration: none;\n";
+	html << "            color: #7b2cbf;\n";
+	html << "            font-size: 20px;\n";
+	html << "        }\n";
+	html << "        a:hover {\n";
+	html << "            text-decoration: underline;\n";
+	html << "        }\n";
+	html << "    </style>\n";
+	html << "</head>\n<body>\n";
+	html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
+	html << "    <div class=\"image-container\">\n";
+	html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
+	html << "    </div>\n";
+	html << "    <div class=\"list-container\">\n";
+	html << "    <ul>\n";
 }
 
 void Response::prepResponse()
 {
 	std::string content;
-	_contentType = checkType();
+	
+	_contentType = _request->getRspType();
 
 	if (_contentType == "cgi-script")
-		content = runScript(_location);
+	{
+		content = _request->getServ().getScript().getScriptOutput();
+		_contentType = _request->getServ().getScript().getContentType();
+	}
 	else
 		content = prepFile();
 
@@ -352,7 +209,7 @@ void Response::prepResponse()
 	output << content.length();
 	_contentLength = output.str();
 
-	Header header(*this);
+	HeadRsp header(*this);
 	_response = header.getHeader() + content;
 }
 
@@ -418,7 +275,7 @@ std::string Response::getResponse()
 	return _response;
 }
 
-bool	Response::getAutoindex() const
+bool Response::getAutoindex() const
 {
 	return _autoindex;
 }
