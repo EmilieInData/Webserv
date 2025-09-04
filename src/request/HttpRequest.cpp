@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 12:50:26 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:09:59 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,6 +320,8 @@ void HttpRequest::setRspType()
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
 		extension = location.substr(dotPos);
+	
+	std::cout << PINK << std::string(__func__) + " extension = " + extension << RESET << std::endl; // DBG
 
 	if (extension == ".html" || extension == ".htm")
 		_rspType = "text/html";
@@ -335,6 +337,7 @@ void HttpRequest::setRspType()
 		_rspType = "cgi-script";
 	else
 		_rspType = "application/octet-stream";
+	std::cout << PINK << std::string(__func__) + " = " + _rspType << RESET << std::endl; // DBG
 }
 
 void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)

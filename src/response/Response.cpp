@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:40:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:10:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,7 @@ void Response::prepResponse()
 	_response = header.getHeader() + content;
 }
 
-void Response::printRawResponse()
+void Response::printRawResponse() // DBG
 {
 	std::cout << PINK << "[RAW RESPONSE]" << RESET << std::endl;
 	for (size_t i = 0; i < _response.size(); i++)
