@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:37:32 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:13:36 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ public:
 	static bool						isUnreservedForUri( char c );
 	static bool						isReservedForUri( char c );
 	static bool						isHexChar( char c );
+	static bool						isDNS( std::string s );
 	static std::string				toLower( std::string const & str );
 	static std::string				trimSpaceAndTab( std::string & str );
 	static bool						isTokenChar( char c );

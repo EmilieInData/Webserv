@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 12:08:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:26:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -346,6 +346,12 @@ void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::co
 		throw std::invalid_argument(E_400);
 
 	this->host = HttpParser::parseHost(this->headers->getHeaderOnlyOneValue("host", 0));
+
+	//if host.second (port) != incoming.first bad request??
+	//if host.first ( name) != incoming.second bad request??
+
+
+
 }
 
 std::string HttpRequest::getHttpMethod() const

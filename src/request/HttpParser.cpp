@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:44:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:19:58 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,17 @@ bool	HttpParser::isTokenChar( char c ) {
 
 bool HttpParser::isHexChar( char c ) {
 	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+}
+
+bool HttpParser::isDNS( std::string s ) {
+
+	std::string::const_iterator	it, ite = s.end();
+
+	for ( it = s.begin(); it != ite; ++it ) 
+		if ( !isalnum( *it ) && *it != '-' && *it != '.' ) return false;
+	
+	return true;
+
 }
 
 std::string	HttpParser::toLower( std::string const & str ) {
@@ -277,10 +288,20 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	if ( found != std::string::npos ) {
 		first = tmp.substr( 0, found ); //NAME
 		second = tmp.substr( found + 1, tmp.size() - found ); //PORT
-		if ( second.empty()) throw std::invalid_argument( E_400 );
+		if ( second.empty()) throw std::invalid_argument( E_400 ); // si hay localhost: dos puntos sin puerto
 		if ( !isInt( second )) throw std::invalid_argument( E_400 );
+		if ( second[0] == '0' ) throw std::invalid_argument( E_400 );
 	}
 	
+	if ( !isDNS( first )) throw std::invalid_argument( E_400 );
+	if ( !checkLabel( first )) throw std::invalid_argument( E_400 );
+
+
+	//Parse NAME
+	//if is an ip
+	//if is a domain
+	
+
 	return  std::make_pair( first, second );
 }
 
