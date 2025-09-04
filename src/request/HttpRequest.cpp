@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 15:39:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:05:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
+	  boundary_flag(false), code(200), state(SKIP), _incoming(incoming), server(server)
 {
 	std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second << std::endl;
 
@@ -57,7 +57,7 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 		this->code		  = rhs.code;
 		this->state		  = rhs.state;
 		this->fullRequest = rhs.fullRequest;
-		this->incoming	  = rhs.incoming;
+		this->_incoming	  = rhs._incoming;
 		this->location	  = rhs.location;
 		//check si falta algo
 	}
@@ -166,7 +166,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	
 	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
 	
-	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
+	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->_incoming);
 	
 	setFullPath(serv);
 	
@@ -319,6 +319,7 @@ void HttpRequest::setRspType()
 		_rspType = "text/html";
 		return ;
 	}
+
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
@@ -444,6 +445,17 @@ Headers	*HttpRequest::getReqHeaders() const
 {
 	return this->headers;
 }
+
+std::pair<int, std::string> HttpRequest::getAddrPort() const
+{
+	return _incoming;
+}
+
+std::pair<std::string, std::string>  HttpRequest::getHost() const
+{
+	return host;
+}
+
 /* TODO
 	fileUpload
 	{

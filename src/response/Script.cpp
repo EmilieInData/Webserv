@@ -165,9 +165,9 @@ void Script::setEnv(HttpRequest const &request) // TODO make it return a char**
 	envVars.push_back("PATH_INFO=" + _cgiPath); // TODO here and above not clear, check subject.
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
-	envVars.push_back("REMOTE_ADDR=" + request.getRequestUri()); // TODO get ip address
-	envVars.push_back("SERVER_NAME=" + request.getRequestUri()); // TODO get server name
-	envVars.push_back("SERVER_PORT=" + request.getRequestUri()); // TODO get port
+	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
+	envVars.push_back("SERVER_NAME=" + request.getHost().first); // TODO get server name
+	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
 	
 	// TODO get headers for HTTP_ variables
 	Headers *reqHeaders = request.getReqHeaders();
