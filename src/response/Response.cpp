@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:40:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:37:45 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
-
+	
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
@@ -85,15 +85,15 @@ std::string Response::prepFile()
 		// 	//error
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return ""; //return error to open directory
-		if (access(_location.c_str(), R_OK) != 0)
-		{
-			closedir(dir);
-			return ""; //return error miss right to read what's inside
-		}
-		if (this->getAutoindex() == false)
-			return ""; //return error not allowed to read inside
-		return doAutoindex(_request->getFullPath().second, dir);
+ 			return ""; //return error to open directory
+// 		if (access(_location.c_str(), R_OK) != 0)
+// 		{
+// 			closedir(dir);
+// 			return ""; //return error miss right to read what's inside
+// 		}
+// 		if (this->getAutoindex() == false)
+// 			return ""; //return error not allowed to read inside
+        return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
@@ -196,6 +196,9 @@ void Response::prepResponse()
 	std::string content;
 	
 	_contentType = _request->getRspType();
+	// _contentType = checkType();
+
+	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
 
 	if (_contentType == "cgi-script")
 	{
@@ -204,6 +207,11 @@ void Response::prepResponse()
 	}
 	else
 		content = prepFile();
+
+	// else if (_request->getStatusCode() == 200)
+	// 	content = prepFile();
+	// else
+	// 	//errorpages
 
 	std::ostringstream output;
 	output << content.length();

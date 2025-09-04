@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 12:08:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:41:45 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,11 +174,15 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
+// <<<<<<< HEAD
 	
-	HttpParser::checkIfPathExist(this->_fullPath);
+// 	HttpParser::checkIfPathExist(this->_fullPath);
 	
+// 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
+	
+// =======
+	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex());
 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
-	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));
@@ -299,13 +303,13 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
-	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
 	setRspType();							// FABIO added here, seems the best place for now
 	if (_rspType == "cgi-script")
 		server.getScript().runScript(*this);
 		// TODO if script fails throw error here
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
+	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
 
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
@@ -313,9 +317,11 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 void HttpRequest::setRspType()
 {
 	std::string location = _fullPath.first + _fullPath.second;
-	if (isFolder(location) && _autoindex)
+	if (isFolder(location))//check no index & _autoindex
+	{
 		_rspType = "text/html";
-
+		return;
+	}
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
