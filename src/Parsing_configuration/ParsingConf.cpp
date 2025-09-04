@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/26 18:27:04 by esellier         ###   ########.fr       */
+/*   Updated: 2025/08/30 16:27:45 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,8 +232,6 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 			i = itServer->fillListens(buffer, i + 1);
 		else if (buffer[i] == "server_name")
 			i = itServer->fillServerName(buffer, i + 1);
-		else if (buffer[i] == "autoindex")
-			i = blocks.back()->fillAutoIndex(buffer, i + 1);
 		else if (buffer[i] == "root")
 			i = blocks.back()->fillRoot(buffer, i + 1);
 		else if (buffer[i] == "index")
@@ -272,9 +270,9 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 	{
 		if (buffer[i] == "listen" || buffer[i] == "server_name")
 			throw std::invalid_argument("Parsing error, '" + buffer[i] +
-			"' directive allowed only in server block\n");	
+			"' directive allowed only in server block\n");
 		else if (buffer[i] == "autoindex")
-			i = blocks.back()->fillAutoIndex(buffer, i + 1);
+			i = itLocation->second.fillAutoIndex(buffer, i + 1);
 		else if (buffer[i] == "root")
 			i = blocks.back()->fillRoot(buffer, i + 1);
 		else if (buffer[i] == "index")
@@ -293,6 +291,8 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 			return i;
 		else
 		 	throw std::invalid_argument(" Parsing error, invalid directives: " + buffer[i]);
+		// std::cout << BLUE << itLocation->second.getAutoindex() << RESET << std::endl;
+
 	}
 	return i;
 }
@@ -338,13 +338,11 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 // 		for (size_t j = 0; j < servers[i].getServerName().size(); j++)
 // 			std::cout << servers[i].getServerName()[j] << "\n";
 			 
-// 		std::cout << PURPLE << "Autoindex: " << servers[i].getAutoindex() << "\n"
-		
-// 		<< "Root: " << servers[i].getRoot() << "\n"
+// 		std::cout << PURPLE << "Root: " << servers[i].getRoot() << "\n"
 		
 // 		<< "Bodysize: " << servers[i].getBodySize() << "\n"
 		
-// 		<< "Index:\n";
+// 		<< "Index: ";
 // 		for (size_t j = 0; j < servers[i].getIndex().size(); j++)
 // 			std::cout << servers[i].getIndex()[j] << "\n";
 		
@@ -368,30 +366,22 @@ void	ParsingConf::fillStructs(std::vector<std::string>& buffer)
 // 		std::map<std::string, LocationConf> loc = servers[i].getLocations();
 // 		for (std::map<std::string, LocationConf>::iterator it = loc.begin(); it != loc.end(); it++)
 // 		{
-//     		std::cout << PINK << it->first << "\n";
-
-// 			std::cout << PURPLE << "Autoindex: " << it->second.getAutoindex() << "\n"
-		
+//     		std::cout << PINK << it->first << "\n" << PURPLE
+// 			<< "Autoindex: " << it->second.getAutoindex() << "\n"
 // 			<< "Root: " << it->second.getRoot() << "\n"
-			
 // 			<< "Bodysize: " << it->second.getBodySize() << "\n"
-			
-// 			<< "Index:\n";
+// 			<< "Index: ";
 // 			for (size_t j = 0; j < it->second.getIndex().size(); j++)
 // 				std::cout << it->second.getIndex()[j] << "\n";
-			
 // 			std::cout << "AllowedMethods:\n";
 // 			for (size_t j = 0; j < it->second.getAllowedMethods().size(); j++)
 // 				std::cout << it->second.getAllowedMethods()[j] << "\n";
-			
 // 			std::cout << "ReturnDirective:\n";
 // 			for (size_t j = 0; j <it->second.getReturnDirective().size(); j++)
 // 				std::cout <<it->second.getReturnDirective()[j] << "\n";
-			
 // 			std::cout << "ErrorPage:\n";
 // 			for (std::map<int, std::string>::const_iterator it2 = it->second.getErrorPage().begin(); it2 != it->second.getErrorPage().end(); it2++)
 // 				std::cout << it2->first << " " << it2->second << "\n";
-
 // 			std::cout << "CgiPass:\n";
 // 			for (std::map<std::string, std::string>::const_iterator it3 = it->second.getCgiPass().begin(); it3 != it->second.getCgiPass().end(); it3++)
 // 				std::cout << it3->first << " " << it3->second << "\n";
