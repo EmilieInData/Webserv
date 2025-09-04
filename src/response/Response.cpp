@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 15:10:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:30:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ std::string Response::prepFile()
 	{
 		// if (not exist) //find location bloc, done by cleo in http request
 		// 	//error
+		_contentType = "text/html";
+		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
 			return ""; //return error to open directory
@@ -93,6 +95,7 @@ std::string Response::prepFile()
 		}
 		if (this->getAutoindex() == false)
 			return ""; //return error not allowed to read inside
+		
 		return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
@@ -113,7 +116,6 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 	struct dirent	  *entry;
 
 	doHtmlAutoindex(uri, html);
-
 	while ((entry = readdir(dir)) != NULL)
 	{
 		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
