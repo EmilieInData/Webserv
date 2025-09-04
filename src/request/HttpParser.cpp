@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:44:33 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:21:11 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,16 +238,65 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex )
+{
 	std::string full( path.first + path.second );
+	
+	if (path.second == "/redirect/")
+		full = path.first + "/redirect/index.html";
+	else if (path.second == "/" || path.second.empty())
+		full = path.first + "/index.html";
 
-//	std::cout << "FULL: " << full << std::endl;
-
-	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
-
-
-//	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
+	std:: cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
+	if ( access( full.c_str(), F_OK ) == -1 )
+	{// TO BORROW
+		std:: cout << PINK << "it's here 404\n" << RESET;// TO BORROW
+		throw std::invalid_argument( E_404 );
+	}// TO BORROW
+	
+	if (isBinary(full))
+	{
+		std::cout << PINK << "inside binary\n" << RESET;
+		std::ifstream file(full.c_str(), std::ios::binary);
+		if (!file.is_open())
+			throw std::invalid_argument(E_403);
+		file.close();
+	}
+    else if (isFolder(full))
+    {
+		std::cout << PINK << "inside folder\n" << RESET;
+		DIR *dir = opendir(full.c_str());
+		if (!dir)
+			throw std::invalid_argument(E_403);
+	    if (access(full.c_str(), R_OK) != 0) //TODO check if there is an index
+		{
+			closedir(dir);
+			throw std::invalid_argument(E_403);
+		}
+		(void) _autoindex;
+		// if ( pas d'index && _autoindex == false)
+		closedir(dir);
+	}
+	else
+	{
+		std::cout << PINK << "inside page\n" << RESET;
+		std::ifstream page(full.c_str());
+		if (!page.is_open())
+			throw std::invalid_argument(E_403);
+		page.close();
+	}
 }
+
+// void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
+// 	std::string full( path.first + path.second );
+
+// //	std::cout << "FULL: " << full << std::endl;
+
+// 	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
+
+
+// //	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
+// }
 
 
 void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator location, 

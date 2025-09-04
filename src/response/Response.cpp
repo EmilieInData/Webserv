@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 15:30:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:19:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 {
 	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
-	if (fullPath.second == "/redirect" ||
-		fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
+	if (fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
 		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
@@ -68,7 +67,7 @@ std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
-
+	
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
@@ -79,24 +78,21 @@ std::string Response::prepFile()
 		file.close();
 		return buffer.str();
 	}
-	else if (isFolder(_location))
-	{
+    else if (isFolder(_location))
+    {
 		// if (not exist) //find location bloc, done by cleo in http request
 		// 	//error
 		_contentType = "text/html";
 		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return ""; //return error to open directory
-		if (access(_location.c_str(), R_OK) != 0)
-		{
-			closedir(dir);
-			return ""; //return error miss right to read what's inside
-		}
-		if (this->getAutoindex() == false)
-			return ""; //return error not allowed to read inside
-		
-		return doAutoindex(_request->getFullPath().second, dir);
+			return "";//return error to open directory
+		// if (access(_location.c_str(), R_OK) != 0 || this->getAutoindex() == false)
+		// {
+		// 	closedir(dir);
+    	//     return "";//return error miss right to read what's inside
+		// }
+        return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
@@ -199,6 +195,8 @@ void Response::prepResponse()
 	
 	_contentType = _request->getRspType();
 
+	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
+
 	if (_contentType == "cgi-script")
 	{
 		content = _request->getServ().getScript().getScriptOutput();
@@ -207,6 +205,10 @@ void Response::prepResponse()
 	else
 		content = prepFile();
 
+	// else if (_request->getStatusCode() == 200)
+	// 	content = prepFile();
+	// else
+	// 	//errorpages
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
