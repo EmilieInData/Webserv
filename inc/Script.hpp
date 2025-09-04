@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 12:41:12 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:32:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ public:
 	~Script();
 
 	void		runScript(HttpRequest const &request);
-	void 		setEnv(HttpRequest const &request); // TODO put back to char** after testing
+	char 		**setEnv(HttpRequest const &request); // TODO put back to char** after testing
 	void		setScriptType(std::string const &cgiPath);
 	int			getStatusCode() const;
 	std::string getMessage() const;

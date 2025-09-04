@@ -36,16 +36,17 @@ void Script::runScript(HttpRequest const &request)
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DB
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
 	setScriptType(_cgiPath);
-	setEnv(request);
 	int pipeIn[2];
 	int pipeOut[2];
-
+	
 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
 	{
 		//TODO what error number here?
 		printBoxError("Pipe Error");
 		_scriptOutput = "";
 	}
+	
+	char **envServ = setEnv(request);
 
 	pid_t child = fork();
 
@@ -58,6 +59,7 @@ void Script::runScript(HttpRequest const &request)
 		close(pipeIn[PIPE_WRITE]);
 		close(pipeIn[PIPE_READ]);
 		_scriptOutput = "";
+		deleteArray(envServ);
 	}
 
 	else if (child == 0)
@@ -72,19 +74,6 @@ void Script::runScript(HttpRequest const &request)
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
-		/* TODO wrap env creation
-		into its owh function*/
-
-		std::string varQuery  = "QUERY_STRING=" + query;
-		std::string varMethod = "REQUEST_METHOD=" + request.getHttpMethod();
-		char	   *envQuery  = new char[varQuery.length() + 1];
-		strcpy(envQuery, varQuery.c_str());
-
-		char *envMethod = new char[varMethod.length() + 1];
-		strcpy(envMethod, varMethod.c_str());
-
-		char *envServ[] = {envQuery, envMethod, NULL};
-
 		if (_scriptType == ".py")
 			runPath = "/usr/bin/python3";
 		else if (_scriptType == ".php")
@@ -95,7 +84,6 @@ void Script::runScript(HttpRequest const &request)
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
 				  << std::endl; // DBG
-		delete[] envQuery;
 		exit(1);
 	}
 	else
@@ -123,7 +111,7 @@ void Script::runScript(HttpRequest const &request)
 
 		int status;
 		waitpid(child, &status, 0);
-
+		deleteArray(envServ);
 		// Check if child process exited with error
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
@@ -154,7 +142,7 @@ std::string Script::getContentType() const
 	return _contentType;
 }
 
-void Script::setEnv(HttpRequest const &request) // TODO make it return a char**
+char **Script::setEnv(HttpRequest const &request) // TODO make it return a char**
 {
 	std::vector<std::string> envVars;
 
@@ -180,8 +168,18 @@ void Script::setEnv(HttpRequest const &request) // TODO make it return a char**
 		if (!it->second.empty())
 			envVars.push_back(envEntry + "=" + it->second[0]);
 	}	
-	std::cout << RED << "[ENV variables]" << std::endl; // DBG to remove
-	for (size_t i = 0; i < envVars.size(); i++)
-		std::cout << envVars[i] << std::endl;
-	std::cout << RESET << std::endl;
+	// std::cout << RED << "[ENV variables]" << std::endl; // DBG to remove
+	// for (size_t i = 0; i < envVars.size(); i++)
+	// 	std::cout << envVars[i] << std::endl;
+	// std::cout << RESET << std::endl;
+
+	char **envp = new char*[envVars.size() + 1];
+	for	(size_t i = 0; i < envVars.size(); i++)
+	{
+		envp[i] = new char[envVars[i].length() + 1];
+		strcpy(envp[i], envVars[i].c_str());
+	}
+	envp[envVars.size()] = NULL;
+	
+	return envp;
 }

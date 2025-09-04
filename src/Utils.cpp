@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/27 17:45:03 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:33:39 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,3 +362,10 @@ bool isFolder(std::string location)
   return S_ISDIR(statbuf.st_mode);
 }
 // vector<std::string>	HttpParser::split( std::string & const str, std::string & const delimiter ) {}
+
+void deleteArray(char **array)
+{
+	for (size_t i = 0; array[i] != NULL; i++)
+		delete[] array[i];
+	delete []array;
+}
