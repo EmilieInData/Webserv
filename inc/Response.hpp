@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:39:59 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 15:49:03 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ public:
 	~Response();
 
 	std::string prepFile();
-	std::string checkType();
 	void		setClientFd(int _clientFd);
 	void		setResponse(std::string response);
 	void		setContent(std::pair<std::string, std::string> fullPath, std::string method);
