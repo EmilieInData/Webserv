@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:38:40 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 12:46:20 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 13:21:23by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,27 @@ Script::Script() {}
 
 Script::~Script() {}
 
-void	Script::setScriptType(std::string const &cgiPath)
+void Script::setScriptType(std::string const &cgiPath)
 {
-	size_t		lastDot	   = cgiPath.find_last_of('.');
-	_scriptType = cgiPath.substr(lastDot);
+	size_t lastDot = cgiPath.find_last_of('.');
+	_scriptType	   = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
 	if (_scriptType != ".py" && _scriptType != ".php")
-		{
-			printBoxError("Invalid script type");
-			exit(1);
-			//TODO implement proper throw/error
-		}
+	{
+		printBoxError("Invalid script type");
+		exit(1);
+		//TODO implement proper throw/error
+	}
 }
 
-void	Script::runScript(HttpRequest const &request)
+void Script::runScript(HttpRequest const &request)
 {
-	_scriptOutput = "";
+	_scriptOutput	  = "";
 	std::string query = request.getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DB
-	std::string cgiPath = request.getFullPath().first + request.getFullPath().second;
-	setScriptType(cgiPath);
-
-	
+	_cgiPath = request.getFullPath().first + request.getFullPath().second;
+	setScriptType(_cgiPath);
+	setEnv(request);
 	int pipeIn[2];
 	int pipeOut[2];
 
@@ -90,11 +89,12 @@ void	Script::runScript(HttpRequest const &request)
 			runPath = "/usr/bin/python3";
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php";
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(cgiPath.c_str()),
+		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(_cgiPath.c_str()),
 						NULL};
 		execve(runPath.c_str(), argv, envServ);
 
-		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
+		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
+				  << std::endl; // DBG
 		delete[] envQuery;
 		exit(1);
 	}
@@ -111,8 +111,8 @@ void	Script::runScript(HttpRequest const &request)
 		close(pipeIn[PIPE_WRITE]);
 
 		// Read the script output from pipeOut
-		char		buffer[4096];
-		ssize_t		bytesRead;
+		char	buffer[4096];
+		ssize_t bytesRead;
 
 		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
 		{
@@ -127,12 +127,12 @@ void	Script::runScript(HttpRequest const &request)
 		// Check if child process exited with error
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
-			std::cerr << "CGI script " << cgiPath << " exited with code " << WEXITSTATUS(status)
+			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status)
 					  << std::endl;
 		}
 		else if (WIFSIGNALED(status))
 		{
-			std::cerr << "CGI script " << cgiPath << " killed by signal " << WTERMSIG(status)
+			std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status)
 					  << std::endl;
 		}
 		else
@@ -152,4 +152,36 @@ std::string Script::getScriptOutput() const
 std::string Script::getContentType() const
 {
 	return _contentType;
+}
+
+void Script::setEnv(HttpRequest const &request) // TODO make it return a char**
+{
+	std::vector<std::string> envVars;
+
+	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	envVars.push_back("SERVER_PROTOCOL=" + request.getHttpVersion());
+	envVars.push_back("REQUEST_METHOD=" + request.getHttpMethod());
+	envVars.push_back("SCRIPT_NAME=" + request.getFullPath().second);
+	envVars.push_back("PATH_INFO=" + _cgiPath); // TODO here and above not clear, check subject.
+	envVars.push_back("QUERY_STRING=" + request.getQuery());
+	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
+	envVars.push_back("REMOTE_ADDR=" + request.getRequestUri()); // TODO get ip address
+	envVars.push_back("SERVER_NAME=" + request.getRequestUri()); // TODO get server name
+	envVars.push_back("SERVER_PORT=" + request.getRequestUri()); // TODO get port
+	
+	// TODO get headers for HTTP_ variables
+	Headers *reqHeaders = request.getReqHeaders();
+	for (std::map<std::string, std::vector<std::string> >::const_iterator it = reqHeaders->getHeaderBegin(); it != reqHeaders->getHeaderEnd(); it++)
+	{
+		std::string envEntry = "HTTP_" + it->first;
+		std::transform(envEntry.begin(), envEntry.end(), envEntry.begin(), ::toupper);
+		std::replace(envEntry.begin(), envEntry.end(), '-', '_');
+		
+		if (!it->second.empty())
+			envVars.push_back(envEntry + "=" + it->second[0]);
+	}	
+	std::cout << RED << "[ENV variables]" << std::endl; // DBG to remove
+	for (size_t i = 0; i < envVars.size(); i++)
+		std::cout << envVars[i] << std::endl;
+	std::cout << RESET << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:49:25 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 14:31:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 13:06:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ public:
 
 	size_t																getHeaderSize() const;
 	std::map<std::string, std::vector<std::string> >::const_iterator	getHeader( std::string const & name ) const;
+	std::map<std::string, std::vector<std::string> >::const_iterator	getHeaderBegin() const;
 	std::map<std::string, std::vector<std::string> >::const_iterator	getHeaderEnd() const;
 	std::vector<std::string>											getHeaderValue( std::string const & name ) const; // FABIO why do we have 2?
 	std::vector<std::string> &											getHeaderValue( std::string const & name );

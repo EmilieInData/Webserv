@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/02 12:08:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 12:50:26 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -436,6 +436,10 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 	}
 }
 
+Headers	*HttpRequest::getReqHeaders() const
+{
+	return this->headers;
+}
 /* TODO
 	fileUpload
 	{

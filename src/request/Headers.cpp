@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 15:47:33 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/27 15:07:28 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/04 13:07:31 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHea
 	
 	return it;
 }
+
+std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHeaderBegin() const { return this->header.begin(); }
 
 std::map<std::string, std::vector<std::string> >::const_iterator	Headers::getHeaderEnd() const { return this->header.end(); }
 
