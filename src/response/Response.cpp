@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 12:56:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/05 15:53:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
-	std::cout << PINK << "_LOcation: " << _location << RESET << std::endl; // TO BORROW
+	std::cout << PINK << "_Location: " << _location << RESET << std::endl; // TO BORROW
 	_method = method;
 }
 
@@ -195,10 +195,20 @@ void Response::prepResponse()
 	
 	_contentType = _request->getRspType();
 
-	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
+	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl; // DBG
 
 	if (_contentType == "cgi-script")
+	{
 		content = _request->getServ().getScript().getOutputBody();
+		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
+		
+		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
+		if (it != _cgiHeaders.end())
+			_contentType = it->second;
+		else
+			_contentType = "text/plain";
+	}
+	
 	else
 		content = prepFile();
 
@@ -279,4 +289,9 @@ std::string Response::getResponse()
 bool Response::getAutoindex() const
 {
 	return _autoindex;
+}
+
+std::map<std::string, std::string> Response::getCgiHeaders() const
+{
+	return _cgiHeaders;
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import sys
 
 # --- Script Logic ---
 result = None
@@ -28,13 +29,13 @@ except (KeyError, ValueError):
 
 # --- HTTP Header & Output ---
 
-# 1. Print the Content-Type header. This is the required change.
-# print("Content-Type: text/html")
+# 1. Write the Content-Type header with the correct CRLF ending.
+sys.stdout.write("Content-Type: text/html\r\n")
 
-# 2. Print the mandatory blank line.
-print()
+# 2. Write the mandatory blank line (which is just a CRLF).
+sys.stdout.write("\r\n")
 
-# 3. Print the HTML content.
+# 3. Print the HTML content normally. The print() function will use standard newlines.
 print("<html>")
 print("<head><title>CGI Big Number Adder</title></head>")
 print('<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">')

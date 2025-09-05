@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 12:53:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/05 14:28:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ public:
 	std::string getScriptOutput() const;
 	void		parseOutput();
 	std::string getOutputBody() const;
+	std::map<std::string, std::string> getOutputHeaders() const;
 };
 
 #endif

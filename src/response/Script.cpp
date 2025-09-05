@@ -31,9 +31,15 @@ void Script::setScriptType(std::string const &cgiPath)
 
 void Script::runScript(HttpRequest const &request)
 {
+	_scriptOutput.clear();
+	_outputBody.clear();
+	_outputHeaders.clear();
+	_cgiPath.clear();
+	_scriptType.clear();
 	_scriptOutput	  = "";
+	
 	std::string query = request.getQuery();
-	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DB
+	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
 	setScriptType(_cgiPath);
 	int pipeIn[2];
@@ -91,7 +97,7 @@ void Script::runScript(HttpRequest const &request)
 		close(pipeIn[PIPE_READ]);
 		close(pipeOut[PIPE_WRITE]);
 
-		if (!query.empty())
+		if (!query.empty()) // TODO correct for POST
 		{
 			if ((write(pipeIn[PIPE_WRITE], query.c_str(), query.length())) == -1)
 				printBoxError("Error parent writing");
@@ -218,7 +224,7 @@ void Script::parseOutput()
 			if (first != std::string::npos)
 				value = value.substr(first);
 
-			_outputHeaders[key] = value;
+			_outputHeaders[upperKey(key)] = value;
 		}
 	}
 }
@@ -226,4 +232,9 @@ void Script::parseOutput()
 std::string Script::getOutputBody() const
 {
 	return _outputBody;
+}
+
+std::map < std::string, std::string > Script::getOutputHeaders() const
+{
+	return _outputHeaders;
 }

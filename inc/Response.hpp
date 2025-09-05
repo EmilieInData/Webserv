@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 15:49:03 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 15:20:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,16 @@ class HttpRequest;
 class Response
 {
 private:
-	const HttpRequest *	_request;
-	bool				_autoindex;
-	int				   	_clientFd;
-	std::string		   	_response;
-	std::string		   	_location;
-	std::string		   	_method;
-	std::ostringstream 	_output;
-	std::string		   	_contentType;
-	std::string		   	_contentLength;
+	const HttpRequest				  *_request;
+	bool							   _autoindex;
+	int								   _clientFd;
+	std::string						   _response;
+	std::string						   _location;
+	std::string						   _method;
+	std::ostringstream				   _output;
+	std::string						   _contentType;
+	std::string						   _contentLength;
+	std::map<std::string, std::string> _cgiHeaders;
 
 	Response &operator=(Response const &copy);
 	Response();
@@ -55,6 +56,7 @@ public:
 	bool		getAutoindex() const;
 	std::string doAutoindex(std::string str, DIR *dir);
 	void		doHtmlAutoindex(std::string &uri, std::ostringstream &html);
+	std::map<std::string, std::string> getCgiHeaders() const;
 };
 
 #endif

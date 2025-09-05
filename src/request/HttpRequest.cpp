@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 14:00:48 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/05 15:30:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	
 	//this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
 	
-	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
+	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->_incoming);
 	
 	checkHost(this->headers->getHeader("host"), serv);
 	
