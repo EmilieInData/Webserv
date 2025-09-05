@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 16:50:56 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:52:15 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
+	  boundary_flag(false), code(200), state(SKIP), _incoming(incoming), server(server)
 {
 	std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second << std::endl;
 
@@ -57,7 +57,7 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 		this->code		  = rhs.code;
 		this->state		  = rhs.state;
 		this->fullRequest = rhs.fullRequest;
-		this->incoming	  = rhs.incoming;
+		this->_incoming	  = rhs._incoming;
 		this->location	  = rhs.location;
 		//check si falta algo
 	}
@@ -313,15 +313,18 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 void HttpRequest::setRspType()
 {
 	std::string location = _fullPath.first + _fullPath.second;
-	if (isFolder(location))//check no index & _autoindex
+	
+	if (isFolder(location)) // && _autoindex)
 	{
 		_rspType = "text/html";
-		return;
+		return ;
 	}
+
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
 		extension = location.substr(dotPos);
+	
 
 	if (extension == ".html" || extension == ".htm")
 		_rspType = "text/html";
@@ -439,6 +442,21 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 		else
 			std::cout << "IS FORM" << std::endl; // DBG
 	}
+}
+
+Headers	*HttpRequest::getReqHeaders() const
+{
+	return this->headers;
+}
+
+std::pair<int, std::string> HttpRequest::getAddrPort() const
+{
+	return _incoming;
+}
+
+std::pair<std::string, std::string>  HttpRequest::getHost() const
+{
+	return host;
 }
 
 /* TODO

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 16:17:22 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 15:53:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
-	std::cout << PINK << "_LOcation: " << _location << RESET << std::endl; // TO BORROW
+	std::cout << PINK << "_Location: " << _location << RESET << std::endl; // TO BORROW
 	_method = method;
 }
 
@@ -82,6 +82,8 @@ std::string Response::prepFile()
     {
 		// if (not exist) //find location bloc, done by cleo in http request
 		// 	//error
+		_contentType = "text/html";
+		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
 			return "";//return error to open directory
@@ -110,7 +112,6 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 	struct dirent	  *entry;
 
 	doHtmlAutoindex(uri, html);
-
 	while ((entry = readdir(dir)) != NULL)
 	{
 		if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..") // Ignore "." & ".."
@@ -194,13 +195,20 @@ void Response::prepResponse()
 	
 	_contentType = _request->getRspType();
 
-	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
+	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl; // DBG
 
 	if (_contentType == "cgi-script")
 	{
-		content = _request->getServ().getScript().getScriptOutput();
-		_contentType = _request->getServ().getScript().getContentType();
+		content = _request->getServ().getScript().getOutputBody();
+		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
+		
+		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
+		if (it != _cgiHeaders.end())
+			_contentType = it->second;
+		else
+			_contentType = "text/plain";
 	}
+	
 	else
 		content = prepFile();
 
@@ -216,7 +224,7 @@ void Response::prepResponse()
 	_response = header.getHeader() + content;
 }
 
-void Response::printRawResponse()
+void Response::printRawResponse() // DBG
 {
 	std::cout << PINK << "[RAW RESPONSE]" << RESET << std::endl;
 	for (size_t i = 0; i < _response.size(); i++)
@@ -281,4 +289,9 @@ std::string Response::getResponse()
 bool Response::getAutoindex() const
 {
 	return _autoindex;
+}
+
+std::map<std::string, std::string> Response::getCgiHeaders() const
+{
+	return _cgiHeaders;
 }

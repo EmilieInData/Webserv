@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import sys
 
 # --- Script Logic ---
 result = None
@@ -26,12 +27,15 @@ except (KeyError, ValueError):
 	# This block runs if parameters were missing or not valid numbers.
 	error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=5&b=10</strong>"
 
-# --- HTML Output ---
+# --- HTTP Header & Output ---
 
-# 2. Print the mandatory blank line.
-print()
+# 1. Write the Content-Type header with the correct CRLF ending.
+sys.stdout.write("Content-Type: text/html\r\n")
 
-# 3. Print the HTML content.
+# 2. Write the mandatory blank line (which is just a CRLF).
+sys.stdout.write("\r\n")
+
+# 3. Print the HTML content normally. The print() function will use standard newlines.
 print("<html>")
 print("<head><title>CGI Big Number Adder</title></head>")
 print('<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">')
