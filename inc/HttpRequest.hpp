@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 14:00:00 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:53:47 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ private:
 	int									body_state;
 	std::string							fullRequest;
 	std::string							_rspType;
-	std::pair<int, std::string>			_incoming;
+	std::pair<int, std::string>			incoming;
 	ServerManager					   &server;
 
 	HttpRequest();

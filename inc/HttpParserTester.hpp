@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:22 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:16:26 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:49:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,42 +29,41 @@ private:
 
 	HttpParserTester &	operator=( HttpParserTester const & rhs );
 
-	/*---------------Http Message-----------------*/
+	/*----------Delete Methods------------*/
+	static void	deleteMethod( ServerManager & s );	
+
+	/*---------------Http Message------------------*/
 	static void	onlyASCII(ServerManager & s);
 	static void	crWithoutLf( ServerManager & s );
 	static void	emptyLinesBeforeReqLine( ServerManager & s );
 	static void	isspaceBeforeHeader( ServerManager & s );
 	static void shouldHaveOneHost( ServerManager & s );
 
-	/*---------------Host Header-----------------*/
+	/*---------------Host Header-------------------*/
 	static void validHostSyntaxis();
 
-	/*--------------Request Line------------------*/
+	/*--------------Request Line-------------------*/
 	static void	shouldHaveTwoSpaces();
 	static void shouldHaveThreeTokens();
 	static void	uriTooLong();
 	static void httpVersion();
 	static void	implementedMethod();
 
-	/*-------------------Uri----------------------*/
+	/*-------------------Uri-----------------------*/
 	static void	invalidCharUri();
 	static void	invalidForm();
 	static void	validPercentEncoded();
 	static void	uriReconstruction();
 
-	/*------------------Headers-------------------*/
+	/*------------------Headers--------------------*/
 	static void	parseHeaderSyntaxis();
 	static void	pushHeaderValues();
 	static void	pushMoreValues();
 	
-	/*---------------Multipart Body-----------------*/
+	/*---------------Multipart Body----------------*/
 	static void	boundaryExist(ServerManager & s);
 	static void	checkBoundary( ServerManager & s );
-//	static void	emptyLinesBeforeReqLine( ServerManager & s );
-//	static void	isspaceBeforeHeader( ServerManager & s );
-//	static void shouldHaveOneHost( ServerManager & s );
 
-	
 public:
 	
 	static void	run(ServerManager & s);
