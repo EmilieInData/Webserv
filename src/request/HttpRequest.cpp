@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 16:21:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:32:07 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,14 +174,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
-// <<<<<<< HEAD
-	
-// 	HttpParser::checkIfPathExist(this->_fullPath);
-	
-// 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
-	
-// =======
-	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex());
+	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex(), serv.getLocations());
 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
@@ -290,7 +283,7 @@ void HttpRequest::setStatusCode(std::string error)
 	std::cout << error << std::endl;
 }
 
-void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std::string const &path)
+void HttpRequest::setLocation(std::map<std::string, LocationConf> const& location, std::string const &path)
 {
 	std::size_t found = path.rfind("/");
 	std::cout << PINK  << "request path: " << path << std::endl << RESET; //TO BORROW
@@ -300,7 +293,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	this->location = path.substr(0, found + 1);
 	std::cout << PINK << "LOCATION REQ: " << this->location << std::endl;
 // EMILIE this not ok because for ./error_pages/ esta buscando / solo
-	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
+	std::map<std::string, LocationConf>::const_iterator it = location.find(this->location);
 
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;

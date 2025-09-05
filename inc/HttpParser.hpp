@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 14:29:23 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:36:54 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ public:
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
 	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming );
-	static void						checkIfPathExist( std::pair<std::string, std::string> const & path, bool _autoindex);
+	static void						checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc);
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
 	
@@ -77,5 +77,9 @@ public:
 	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
 	static int									parseContentLengthHeader( std::string const & v, std::size_t body_max );
 	static std::string							parseContentTypeBoundary( std::vector<std::string> const & v );
+	static LocationConf const*						findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
+	
+
+
 };
 #endif

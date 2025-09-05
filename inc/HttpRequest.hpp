@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 14:29:54 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:14:58 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ private:
 	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it );
 	void	finalHeadersParsingRoutine();
 	void	setFullPath(ServerData const &serv);
-	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
+	void	setLocation(std::map<std::string, LocationConf> const& location,std::string const &path );
 	void	manyBodiesRoutine( std::size_t found );
 
 	void	runSimpleTest();

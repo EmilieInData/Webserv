@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 16:21:11 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:43:35 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,25 +238,66 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex )
+LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+{
+	std::map<std::string, LocationConf>::const_iterator	it;
+	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
+	
+	for(it = loc.begin(); it != loc.end(); it++)
+	{
+		if (path.find(it->first) == 0)
+		{
+			if (tmp == loc.end() || tmp->first.length() < it->first.length())
+				tmp = it;
+		}
+	}
+    if (tmp == loc.end())
+        return NULL;
+    return &tmp->second;
+}
+
+// void	HttpParser::checkRedirection(std::string& path)
+// {
+	
+	
+// }
+
+//--> redirection <--
+//         int code = it->second.first;
+//         const std::string &redirect_to = it->second.second;
+
+//         std::cout << "Redirection détectée: " << path.second 
+//                   << " -> " << redirect_to << std::endl;
+
+//         // Ici au lieu de throw, tu pourrais générer la réponse HTTP directement
+//         throw std::invalid_argument("REDIRECT_" + std::to_string(code) + "_" + redirect_to);
+//     }
+// }
+
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc)
 {
 	std::string full( path.first + path.second );
 	
-	if (path.second == "/redirect/")
-		full = path.first + "/redirect/index.html";
-	else if (path.second == "/" || path.second.empty())
+	LocationConf const* block = findLocation(path.second, loc);
+	if (!block)
+		return; //TODO
+	std::cout << PINK << "KEY= " << block->getKey() << std::endl;
+	//check redirection
+	// if (path.second == "/redirect/") //et tout ce qui est ecrit apres
+	// //checker si il y a une redirection de garder dans le bloc location (car on ne connait pas le mon du dossier)
+	// 	//checker le code et l'adresse dans la variable
+	
+	
+	if (path.second == "/" || path.second.empty())
 		full = path.first + "/index.html";
 
 	std:: cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
 	if ( access( full.c_str(), F_OK ) == -1 )
-	{// TO BORROW
-		std:: cout << PINK << "it's here 404\n" << RESET;// TO BORROW
 		throw std::invalid_argument( E_404 );
-	}// TO BORROW
 	
 	if (isBinary(full))
 	{
-		std::cout << PINK << "inside binary\n" << RESET;
+		// std::cout << PINK << "inside binary\n" << RESET; // TO BORROW
 		std::ifstream file(full.c_str(), std::ios::binary);
 		if (!file.is_open())
 			throw std::invalid_argument(E_403);
@@ -264,7 +305,7 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 	}
     else if (isFolder(full))
     {
-		std::cout << PINK << "inside folder\n" << RESET;
+		// std::cout << PINK << "inside folder\n" << RESET; // TO BORROW
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
@@ -276,10 +317,13 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 		(void) _autoindex;
 		// if ( pas d'index && _autoindex == false)
 		closedir(dir);
+// 		Chercher index.html dans le dossier avec opendir + readdir.
+// 		Si pas trouvé et _autoindex == false → renvoyer 403.
+// 		Si _autoindex == true → générer un listing.
 	}
 	else
 	{
-		std::cout << PINK << "inside page\n" << RESET;
+		// std::cout << PINK << "inside page\n" << RESET; // TO BORROW
 		std::ifstream page(full.c_str());
 		if (!page.is_open())
 			throw std::invalid_argument(E_403);

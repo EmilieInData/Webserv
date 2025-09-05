@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:30:43 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/29 10:58:43 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:21:40 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ public:
 	ServerData& operator=(ServerData const& other);
 
 	virtual std::string const&						getRoot() const;
-	std::map<std::string, LocationConf>&			getLocations() const;
+	std::map<std::string, LocationConf>&			getLocations();
+	std::map<std::string, LocationConf> const&		getLocations() const;
 	std::map<std::string, LocationConf>::iterator	getItLocations(
 		std::string const& key);
 	std::vector<std::pair<int, std::string> >		getListens() const;
