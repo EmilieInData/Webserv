@@ -3,27 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 14:00:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPREQUEST_HPP
 #define HTTPREQUEST_HPP
 
-#define SKIP		1
-#define	REQ_LINE	2
-#define	HEADERS		3
-#define BODY		4
-#define BOUNDARY	5
-#define HEADERS2	6
-#define BODY2		7
-#define	DONE		0
-#define ERR			-1
-#define CRLF		"\r\n"
-#define TWO_CRLF	"\r\n\r\n"
+#define SKIP 1
+#define REQ_LINE 2
+#define HEADERS 3
+#define BODY 4
+#define BOUNDARY 5
+#define HEADERS2 6
+#define BODY2 7
+#define DONE 0
+#define ERR -1
+#define CRLF "\r\n"
+#define TWO_CRLF "\r\n\r\n"
 
 #include "Headers.hpp"
 #include "HttpParser.hpp"
@@ -31,10 +31,10 @@
 #include "RequestLine.hpp"
 #include "ServerData.hpp"
 // #include "ServerManager.hpp"
-#include "Uri.hpp"
 #include "Headers.hpp"
-#include "Utils.hpp"
 #include "Script.hpp"
+#include "Uri.hpp"
+#include "Utils.hpp"
 
 class RequestLine;
 class Uri;
@@ -46,8 +46,7 @@ struct MultiBody // TODO delete unused constructor when we know which one we nee
 	Headers		bodyHeader;
 	std::string bodyContent;
 
-	MultiBody() {
-	} // Constructs automatically and empty
+	MultiBody() {} // Constructs automatically and empty
 
 	MultiBody(const Headers &header, const std::string &content) // Constructs with passed parameters
 		: bodyHeader(header), bodyContent(content)
@@ -67,7 +66,7 @@ private:
 	std::pair<std::string, std::string> host;
 	std::pair<std::string, std::string> _fullPath;
 	std::string							location;
-	bool 								_autoindex; //ADD by Emilie
+	bool								_autoindex; //ADD by Emilie
 	Headers							   *headers;
 	std::string							body;
 	std::size_t							body_len;
@@ -79,7 +78,7 @@ private:
 	int									body_state;
 	std::string							fullRequest;
 	std::string							_rspType;
-	std::pair<int, std::string>			incoming;
+	std::pair<int, std::string>			_incoming;
 	ServerManager					   &server;
 
 	HttpRequest();
@@ -90,7 +89,7 @@ private:
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );
 	void	manyBodiesRoutine( std::size_t found );
 
-	void	runSimpleTest();
+	void runSimpleTest();
 
 public:
 	HttpRequest(std::pair<int, std::string> incoming,
@@ -100,23 +99,29 @@ public:
 
 	HttpRequest &operator=(HttpRequest const &rhs);
 
-	void								sendBuffer( char *buffer, ssize_t bytes );
-	void								setStatusCode( std::string error );
-	void								setRspType();
-	void								printBodies(); // DBG this can be deleted, it's just for testing
-	std::string							getHttpMethod() const;
-	std::string							getRequestUri() const;
-	std::string							getPath() const;
-	std::string							getQuery() const;
-	std::string							getHttpVersion() const;
-	std::pair<std::string, std::string> getFullPath() const;	// FABIO added this because I need full path for the response
-	int									getStatusCode() const;
-	int									getParsingState() const;
-	bool								getAutoindex() const;
-	std::string							getRspType() const;
-	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
-	void								fileUpload();
-	ServerManager						&getServ() const;
+	void		sendBuffer(char *buffer, ssize_t bytes);
+	void		setStatusCode(std::string error);
+	void		setRspType();
+	void		printBodies(); // DBG this can be deleted, it's just for testing
+	std::string getHttpMethod() const;
+	std::string getRequestUri() const;
+	std::string getPath() const;
+	std::string getQuery() const;
+	std::string getHttpVersion() const;
+	std::pair<std::string, std::string>
+				getFullPath() const; // FABIO added this because I need full path for the response
+	int			getStatusCode() const;
+	int			getParsingState() const;
+	bool		getAutoindex() const;
+	std::string getRspType() const;
+	MultiBody
+								fillBody(Headers const &header,
+										 std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
+	void						fileUpload();
+	Headers					   *getReqHeaders() const;
+	ServerManager			   &getServ() const;
+	std::pair<int, std::string> getAddrPort() const;
+	std::pair<std::string, std::string> getHost() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
