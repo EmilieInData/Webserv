@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 17:52:15 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:56:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), _incoming(incoming), server(server)
+	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
 {
 	std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second << std::endl;
 
@@ -57,7 +57,7 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 		this->code		  = rhs.code;
 		this->state		  = rhs.state;
 		this->fullRequest = rhs.fullRequest;
-		this->_incoming	  = rhs._incoming;
+		this->incoming	  = rhs.incoming;
 		this->location	  = rhs.location;
 		//check si falta algo
 	}
@@ -451,7 +451,7 @@ Headers	*HttpRequest::getReqHeaders() const
 
 std::pair<int, std::string> HttpRequest::getAddrPort() const
 {
-	return _incoming;
+	return incoming;
 }
 
 std::pair<std::string, std::string>  HttpRequest::getHost() const
