@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 13:00:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,8 +335,8 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	std::size_t	found = tmp.find( ':' );
 
 	if ( found != std::string::npos ) {
-		name = tmp.substr( 0, found ); //NAME
-		port = tmp.substr( found + 1, tmp.size() - found ); //PORT
+		name = tmp.substr( 0, found );
+		port = tmp.substr( found + 1, tmp.size() - found );
 		if ( port.empty()) throw std::invalid_argument( E_400 ); // si hay localhost: dos puntos sin puerto
 		if ( !isInt( port )) throw std::invalid_argument( E_400 );
 		if ( port[0] == '0' ) throw std::invalid_argument( E_400 );
@@ -344,11 +344,6 @@ std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & s
 	
 	if ( !isDNS( name )) throw std::invalid_argument( E_400 );
 	if ( !checkLabel( name )) throw std::invalid_argument( E_400 );
-
-
-	//Parse NAME
-	//if is an ip
-	
 
 	return  std::make_pair( name, port );
 }

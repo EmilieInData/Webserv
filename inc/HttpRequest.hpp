@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 12:58:14 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ private:
 
 	HttpRequest();
 
-	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv);
+	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv );
 	void	finalHeadersParsingRoutine();
 	void	setFullPath(ServerData const &serv);
 	void	setLocation( std::map<std::string, LocationConf> & location,std::string const &path );

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 12:58:14 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,13 +351,8 @@ void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::co
 
 	this->host = HttpParser::parseHost(this->headers->getHeaderOnlyOneValue("host", 0));
 
-	//if host.second (port) != incoming.first bad request??
-	//if host.first ( name) != incoming.second bad request??
-	
 	if ( !HttpParser::checkIfHostNameExistInServer( this->host.first, serv.getServerName()))
 		throw std::invalid_argument(E_400);
-
-
 }
 
 std::string HttpRequest::getHttpMethod() const
