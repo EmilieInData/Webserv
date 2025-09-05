@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 14:29:23 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 13:00:01 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ public:
 	static bool						isUnreservedForUri( char c );
 	static bool						isReservedForUri( char c );
 	static bool						isHexChar( char c );
+	static bool						isDNS( std::string s );
 	static std::string				toLower( std::string const & str );
 	static std::string				trimSpaceAndTab( std::string & str );
 	static bool						isTokenChar( char c );
@@ -67,8 +68,8 @@ public:
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
 	
-	static std::pair<std::string, std::string>				parseHost( std::string const & str );
-
+	static std::pair<std::string, std::string>	parseHost( std::string const & str );
+	static bool									checkIfHostNameExistInServer(std::string &host, std::vector<std::string> const & serv);
 	static std::pair<std::string, std::string>	parseHeaderSyntaxis( std::string h );
 	static bool									recognizeHeaderName( std::string name );
 	static bool									oneValueHeader( std::string name );
