@@ -48,4 +48,7 @@ printf "POST /uploads/ HTTP/1.1\r\nHost: localhost\r\nCookie: a; b;c\r\nContent-
 
 curl -X POST -F "description=una foto de mis mascotas" -F "description=file 1" -F "description=file 2" http://localhost:9090/uploads/
 
+printf "DELETE /uploads/text.txt HTTP/1.1\r\nHost: 127.0.0.1 \r\nUser-Agent: curl/7.68.0\r\n\r\n" | nc 127.0.0.1 8080
+
+
 
