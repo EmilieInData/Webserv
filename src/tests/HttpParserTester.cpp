@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 16:26:11 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:49:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,35 @@ void	HttpParserTester::run( ServerManager & s ) {
 	parseHostTest();
 	parseHeadersTest();
 	parseMultipartBodyTest( s );
+	deleteMethod( s );
+	
 }
+
+/*--------------------------Post And Delete------------------------------------*/
+
+void	HttpParserTester::deleteMethod( ServerManager & s ) {
+	std::cout << "_____________Delete tests_____________" << std::endl;
+
+	HttpRequest		req = HttpRequest( std::make_pair(8080, "127.0.0.1"), s); //for tests
+
+	char 	buffer[] = "DELETE /uploads/text.txt HTTP/1.1\r\nHost: 127.0.0.1 \r\nUser-Agent: curl/7.68.0\r\n\r\n";
+	size_t	bytes = strlen( buffer );
+
+
+	req.sendBuffer( buffer, bytes );
+	if ( req.getStatusCode() == 204 )
+		std::cout << GRE << "Valid request / Test OK" << RESET << std::endl;
+	else 
+		std::cout << RED << "Invalid request, error: " << req.getStatusCode() <<" / Test FAIL" << std::endl;
+
+
+
+
+
+	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+}
+
+
 /*--------------------------Multipart Body------------------------------------*/
 
 void	HttpParserTester::boundaryExist( ServerManager & s ) {
@@ -113,7 +141,7 @@ void	HttpParserTester::parseMultipartBodyTest( ServerManager & s ) {
 	boundaryExist( s );
 	checkBoundary( s );
 
-	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
+//	std::cout << RESET << std::endl << "_____________End tests_____________" << std::endl << std::endl;
 }
 
 
