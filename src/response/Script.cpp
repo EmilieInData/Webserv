@@ -38,14 +38,14 @@ void Script::runScript(HttpRequest const &request)
 	setScriptType(_cgiPath);
 	int pipeIn[2];
 	int pipeOut[2];
-	
+
 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
 	{
 		//TODO what error number here?
 		printBoxError("Pipe Error");
 		_scriptOutput = "";
 	}
-	
+
 	char **envServ = setEnv(request);
 
 	pid_t child = fork();
@@ -77,7 +77,7 @@ void Script::runScript(HttpRequest const &request)
 		if (_scriptType == ".py")
 			runPath = "/usr/bin/python3";
 		else if (_scriptType == ".php")
-			runPath = "/usr/bin/php";
+			runPath = "/usr/bin/php-cgi";
 		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(_cgiPath.c_str()),
 						NULL};
 		execve(runPath.c_str(), argv, envServ);
@@ -125,9 +125,10 @@ void Script::runScript(HttpRequest const &request)
 		}
 		else
 		{
-			_contentType = "text/html"; // TODO check for other outputs formats?
 			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
+			printRaw(_scriptOutput); // DBG
+			parseOutput();
 		}
 	}
 }
@@ -147,6 +148,7 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	std::vector<std::string> envVars;
 
 	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	envVars.push_back("REDIRECT_STATUS=200");
 	envVars.push_back("SERVER_PROTOCOL=" + request.getHttpVersion());
 	envVars.push_back("REQUEST_METHOD=" + request.getHttpMethod());
 	envVars.push_back("SCRIPT_NAME=" + request.getFullPath().second);
@@ -154,32 +156,74 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
 	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
-	envVars.push_back("SERVER_NAME=" + request.getHost().first); // TODO get server name
+	envVars.push_back("SERVER_NAME=" + request.getHost().first);	  // TODO get server name
 	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
-	
+
 	// TODO get headers for HTTP_ variables
 	Headers *reqHeaders = request.getReqHeaders();
-	for (std::map<std::string, std::vector<std::string> >::const_iterator it = reqHeaders->getHeaderBegin(); it != reqHeaders->getHeaderEnd(); it++)
+	for (std::map<std::string, std::vector<std::string> >::const_iterator it =
+			 reqHeaders->getHeaderBegin();
+		 it != reqHeaders->getHeaderEnd(); it++)
 	{
 		std::string envEntry = "HTTP_" + it->first;
 		std::transform(envEntry.begin(), envEntry.end(), envEntry.begin(), ::toupper);
 		std::replace(envEntry.begin(), envEntry.end(), '-', '_');
-		
+
 		if (!it->second.empty())
 			envVars.push_back(envEntry + "=" + it->second[0]);
-	}	
+	}
 	// std::cout << RED << "[ENV variables]" << std::endl; // DBG to remove
 	// for (size_t i = 0; i < envVars.size(); i++)
 	// 	std::cout << envVars[i] << std::endl;
 	// std::cout << RESET << std::endl;
 
-	char **envp = new char*[envVars.size() + 1];
-	for	(size_t i = 0; i < envVars.size(); i++)
+	char **envp = new char *[envVars.size() + 1];
+	for (size_t i = 0; i < envVars.size(); i++)
 	{
 		envp[i] = new char[envVars[i].length() + 1];
 		strcpy(envp[i], envVars[i].c_str());
 	}
 	envp[envVars.size()] = NULL;
-	
+
 	return envp;
+}
+
+void Script::parseOutput()
+{
+	size_t clrfPos = _scriptOutput.find("\r\n\r\n");
+
+	if (clrfPos == std::string::npos)
+	{
+		_outputBody = _scriptOutput;
+		return;
+	}
+
+	std::string headers = _scriptOutput.substr(0, clrfPos);
+	_outputBody			= _scriptOutput.substr(clrfPos + 4);
+
+	std::stringstream streamHeaders(headers);
+	std::string		  headerLine;
+	while (std::getline(streamHeaders, headerLine))
+	{
+		if (!headerLine.empty() && headerLine[headerLine.size() - 1] == '\r')
+			headerLine.erase(headerLine.size() - 1);
+
+		size_t colon = headerLine.find(':');
+		if (colon != std::string::npos)
+		{
+			std::string key	  = headerLine.substr(0, colon);
+			std::string value = headerLine.substr(colon + 1);
+
+			size_t first = value.find_first_not_of(" \t");
+			if (first != std::string::npos)
+				value = value.substr(first);
+
+			_outputHeaders[key] = value;
+		}
+	}
+}
+
+std::string Script::getOutputBody() const
+{
+	return _outputBody;
 }

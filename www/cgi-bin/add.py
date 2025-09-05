@@ -26,7 +26,10 @@ except (KeyError, ValueError):
 	# This block runs if parameters were missing or not valid numbers.
 	error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=5&b=10</strong>"
 
-# --- HTML Output ---
+# --- HTTP Header & Output ---
+
+# 1. Print the Content-Type header. This is the required change.
+# print("Content-Type: text/html")
 
 # 2. Print the mandatory blank line.
 print()

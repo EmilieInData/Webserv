@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
 // --- Script Logic ---
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 $result = null;
 $error_message = null;
 $params = [];

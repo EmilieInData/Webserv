@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/04 17:19:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/05 12:56:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,10 +198,7 @@ void Response::prepResponse()
 	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl;
 
 	if (_contentType == "cgi-script")
-	{
-		content = _request->getServ().getScript().getScriptOutput();
-		_contentType = _request->getServ().getScript().getContentType();
-	}
+		content = _request->getServ().getScript().getOutputBody();
 	else
 		content = prepFile();
 
