@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 17:48:32 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 12:58:14 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,12 +162,16 @@ void HttpRequest::finalHeadersParsingRoutine()
 		this->headers->setManyValuesHeader("content-type");
 	//this->headers->printHeader();
 	
-	checkHost(this->headers->getHeader("host"));
+	//checkHost(this->headers->getHeader("host"));
 	
-	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
+	//this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
 	
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
 	
+	checkHost(this->headers->getHeader("host"), serv);
+	
+	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
+
 	setFullPath(serv);
 	
 	this->max_body_size = serv.getBodySize();
@@ -337,7 +341,7 @@ void HttpRequest::setRspType()
 		_rspType = "application/octet-stream";
 }
 
-void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)
+void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv)
 {
 	if (it == this->headers->getHeaderEnd())
 		throw std::invalid_argument(E_400);
@@ -349,7 +353,9 @@ void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::co
 
 	//if host.second (port) != incoming.first bad request??
 	//if host.first ( name) != incoming.second bad request??
-
+	
+	if ( !HttpParser::checkIfHostNameExistInServer( this->host.first, serv.getServerName()))
+		throw std::invalid_argument(E_400);
 
 
 }

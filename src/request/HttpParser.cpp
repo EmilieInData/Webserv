@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 17:44:29 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 13:00:01 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,28 +330,38 @@ void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator
 
 std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & str ) {
 	std::string	tmp( str );
-	std::string	second = "";
-	std::string	first = trimSpaceAndTab( tmp );
+	std::string	port = "";
+	std::string	name = trimSpaceAndTab( tmp );
 	std::size_t	found = tmp.find( ':' );
 
 	if ( found != std::string::npos ) {
-		first = tmp.substr( 0, found ); //NAME
-		second = tmp.substr( found + 1, tmp.size() - found ); //PORT
-		if ( second.empty()) throw std::invalid_argument( E_400 ); // si hay localhost: dos puntos sin puerto
-		if ( !isInt( second )) throw std::invalid_argument( E_400 );
-		if ( second[0] == '0' ) throw std::invalid_argument( E_400 );
+		name = tmp.substr( 0, found ); //NAME
+		port = tmp.substr( found + 1, tmp.size() - found ); //PORT
+		if ( port.empty()) throw std::invalid_argument( E_400 ); // si hay localhost: dos puntos sin puerto
+		if ( !isInt( port )) throw std::invalid_argument( E_400 );
+		if ( port[0] == '0' ) throw std::invalid_argument( E_400 );
 	}
 	
-	if ( !isDNS( first )) throw std::invalid_argument( E_400 );
-	if ( !checkLabel( first )) throw std::invalid_argument( E_400 );
+	if ( !isDNS( name )) throw std::invalid_argument( E_400 );
+	if ( !checkLabel( name )) throw std::invalid_argument( E_400 );
 
 
 	//Parse NAME
 	//if is an ip
-	//if is a domain
 	
 
-	return  std::make_pair( first, second );
+	return  std::make_pair( name, port );
+}
+
+bool	HttpParser::checkIfHostNameExistInServer( std::string & host_name, std::vector<std::string> const & serv_name ) {
+
+	if ( host_name == "localhost" || host_name == "127.0.0.1" ) return true;
+
+	std::vector<std::string>::const_iterator it, ite = serv_name.end();
+
+	for ( it = serv_name.begin(); it != ite; ++it )
+		if ( host_name == *it ) return true;
+	return false;
 }
 
 const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "content-disposition", "cookie" };
