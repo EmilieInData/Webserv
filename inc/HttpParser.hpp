@@ -6,13 +6,14 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 18:36:54 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:18:12 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef	HTTPARSER_HPP
 #define	HTTPARSER_HPP
 
+#define E_204 "204 No Content"
 #define E_400 "400 Bad Request"
 #define E_403 "403 Forbidden"
 #define E_404 "404 Not Found"
@@ -52,6 +53,7 @@ public:
 	static bool						isUnreservedForUri( char c );
 	static bool						isReservedForUri( char c );
 	static bool						isHexChar( char c );
+	static bool						isDNS( std::string s );
 	static std::string				toLower( std::string const & str );
 	static std::string				trimSpaceAndTab( std::string & str );
 	static bool						isTokenChar( char c );
@@ -63,12 +65,13 @@ public:
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
 	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming );
-	static void						checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc);
+	static void						checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex,
+									std::map<std::string, LocationConf> const& loc, std::string const& method);
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
 	
-	static std::pair<std::string, std::string>				parseHost( std::string const & str );
-
+	static std::pair<std::string, std::string>	parseHost( std::string const & str );
+	static bool									checkIfHostNameExistInServer(std::string &host, std::vector<std::string> const & serv);
 	static std::pair<std::string, std::string>	parseHeaderSyntaxis( std::string h );
 	static bool									recognizeHeaderName( std::string name );
 	static bool									oneValueHeader( std::string name );
@@ -77,7 +80,7 @@ public:
 	static void									pushMoreValues( std::map<std::string, std::vector<std::string> >::iterator h, std::string v );
 	static int									parseContentLengthHeader( std::string const & v, std::size_t body_max );
 	static std::string							parseContentTypeBoundary( std::vector<std::string> const & v );
-	static LocationConf const*						findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
+	static LocationConf const*					findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
 	
 
 

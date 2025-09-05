@@ -41,10 +41,17 @@ void HeadRsp::setProtocol()
 
 void HeadRsp::setStatusCode()
 {
-	/* TODO here we need to find
-	a way to get the appropriate
-	status code. For now it's
-	always 200 */
+	const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
+
+	if (!cgiHeaders.empty())
+	{
+		std::map<std::string, std::string>::const_iterator it = cgiHeaders.find("Status");
+		if (it != cgiHeaders.end())
+		{
+			_statusCode = it->second;
+			return;
+		}
+	}
 
 	_statusCode = "200 OK";
 }
@@ -78,9 +85,38 @@ void HeadRsp::setCacheControl()
 
 void HeadRsp::buildHeader()
 {
-	_header = _protocol + " " + _statusCode + HEADNL + _contentType + _contentLength +
-			  _connectionType + _cacheControl + HEADNL;
-	// std::cout << GREEN << "[ HEADER ]\n\n" << _header << std::endl;
+	_header = _protocol + " " + _statusCode + HEADNL;
+
+	_header += "Server: webserv/1.0" + std::string(HEADNL);
+	_header += "Date: " + getHttpDate() + std::string(HEADNL);
+	_header += _connectionType;
+
+	const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
+
+	if (!cgiHeaders.empty())
+	{
+		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
+		{
+			if (it->first != "Status")
+			{
+				_header += it->first + ": " + it->second + HEADNL;
+			}
+		}
+
+		if (cgiHeaders.find("Content-Type") == cgiHeaders.end())
+		{
+			_header += "Content-Type: text/plain" + std::string(HEADNL);
+		}
+	}
+	else 
+	{
+		_header += _contentType;
+		_header += _cacheControl;
+	}
+
+	_header += _contentLength;
+
+	_header += HEADNL;
 }
 
 std::string HeadRsp::getHeader()

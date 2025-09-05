@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 18:43:35 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:36:25 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
+#include <cstdio>
 
 std::vector<std::string>	HttpParser::split( std::string const & str, char const delimiter ) {
 
@@ -108,6 +109,17 @@ bool	HttpParser::isTokenChar( char c ) {
 
 bool HttpParser::isHexChar( char c ) {
 	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+}
+
+bool HttpParser::isDNS( std::string s ) {
+
+	std::string::const_iterator	it, ite = s.end();
+
+	for ( it = s.begin(); it != ite; ++it ) 
+		if ( !isalnum( *it ) && *it != '-' && *it != '.' ) return false;
+	
+	return true;
+
 }
 
 std::string	HttpParser::toLower( std::string const & str ) {
@@ -274,8 +286,9 @@ LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::str
 //     }
 // }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc)
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc, std::string const& method)
 {
+		//virer autoindex en arg car block location && passer la classe request a la place de path && method
 	std::string full( path.first + path.second );
 	
 	LocationConf const* block = findLocation(path.second, loc);
@@ -287,6 +300,7 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
 	// //checker si il y a une redirection de garder dans le bloc location (car on ne connait pas le mon du dossier)
 	// 	//checker le code et l'adresse dans la variable
 	
+
 	
 	if (path.second == "/" || path.second.empty())
 		full = path.first + "/index.html";
@@ -295,7 +309,7 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
 	if ( access( full.c_str(), F_OK ) == -1 )
 		throw std::invalid_argument( E_404 );
 	
-	if (isBinary(full))
+	if (isBinary(full) && method != "DELETE") //CLEO
 	{
 		// std::cout << PINK << "inside binary\n" << RESET; // TO BORROW
 		std::ifstream file(full.c_str(), std::ios::binary);
@@ -305,7 +319,9 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
 	}
     else if (isFolder(full))
     {
-		// std::cout << PINK << "inside folder\n" << RESET; // TO BORROW
+		if ( method == "DELETE" ) throw std::invalid_argument(E_403); //CLEO
+
+		std::cout << PINK << "inside folder\n" << RESET;
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
@@ -325,10 +341,16 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
 	{
 		// std::cout << PINK << "inside page\n" << RESET; // TO BORROW
 		std::ifstream page(full.c_str());
-		if (!page.is_open())
+		if (!page.is_open() && method != "DELETE" ) 
 			throw std::invalid_argument(E_403);
 		page.close();
 	}
+
+	if ( method == "DELETE" ) { //FABIO delete aqui 
+		std::remove( full.c_str() );
+		throw std::invalid_argument(E_204);
+	}
+
 }
 
 // void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
@@ -363,18 +385,33 @@ void	HttpParser::notAllowedMethod( std::map<std::string, LocationConf>::iterator
 
 std::pair<std::string, std::string>	HttpParser::parseHost( std::string const & str ) {
 	std::string	tmp( str );
-	std::string	second = "";
-	std::string	first = trimSpaceAndTab( tmp );
+	std::string	port = "";
+	std::string	name = trimSpaceAndTab( tmp );
 	std::size_t	found = tmp.find( ':' );
 
 	if ( found != std::string::npos ) {
-		first = tmp.substr( 0, found ); //NAME
-		second = tmp.substr( found + 1, tmp.size() - found ); //PORT
-		if ( second.empty()) throw std::invalid_argument( E_400 );
-		if ( !isInt( second )) throw std::invalid_argument( E_400 );
+		name = tmp.substr( 0, found );
+		port = tmp.substr( found + 1, tmp.size() - found );
+		if ( port.empty()) throw std::invalid_argument( E_400 ); // si hay localhost: dos puntos sin puerto
+		if ( !isInt( port )) throw std::invalid_argument( E_400 );
+		if ( port[0] == '0' ) throw std::invalid_argument( E_400 );
 	}
 	
-	return  std::make_pair( first, second );
+	if ( !isDNS( name )) throw std::invalid_argument( E_400 );
+	if ( !checkLabel( name )) throw std::invalid_argument( E_400 );
+
+	return  std::make_pair( name, port );
+}
+
+bool	HttpParser::checkIfHostNameExistInServer( std::string & host_name, std::vector<std::string> const & serv_name ) {
+
+	if ( host_name == "localhost" || host_name == "127.0.0.1" ) return true;
+
+	std::vector<std::string>::const_iterator it, ite = serv_name.end();
+
+	for ( it = serv_name.begin(); it != ite; ++it )
+		if ( host_name == *it ) return true;
+	return false;
 }
 
 const std::string	HttpParser::one_header[] = { "host", "content-type", "content-length", "content-disposition", "cookie" };

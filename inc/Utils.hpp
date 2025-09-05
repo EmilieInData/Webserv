@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/27 17:41:50 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:25:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,15 +86,20 @@ void handleSignal(int signum);
 
 // timestamp
 const std::string timeStamp();
+const std::string getHttpDate();
 
 // use colors without affecting linelength
 size_t visLen(const std::string &str);
 
 // others
 std::string intToString(const int &num);
+std::string upperKey(std::string const &key);
 
 // check file extension
 bool isBinary(std::string location);
 bool isFolder(std::string location);
+
+// cleanup
+void deleteArray(char **array);
 
 #endif

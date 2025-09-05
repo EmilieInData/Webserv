@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 18:32:07 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:21:55 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,20 +162,22 @@ void HttpRequest::finalHeadersParsingRoutine()
 		this->headers->setManyValuesHeader("content-type");
 	//this->headers->printHeader();
 	
-	checkHost(this->headers->getHeader("host"));
-	
-	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
-	
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
 	
+	checkHost(this->headers->getHeader("host"), serv);
+	
+	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
+
 	setFullPath(serv);
 	
 	this->max_body_size = serv.getBodySize();
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
-	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex(), serv.getLocations());
+
 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
+	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex(), serv.getLocations(), this->getHttpMethod() );
+	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));
@@ -310,15 +312,18 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locatio
 void HttpRequest::setRspType()
 {
 	std::string location = _fullPath.first + _fullPath.second;
-	if (isFolder(location))//check no index & _autoindex
+	
+	if (isFolder(location)) // && _autoindex)
 	{
 		_rspType = "text/html";
-		return;
+		return ;
 	}
+
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
 		extension = location.substr(dotPos);
+	
 
 	if (extension == ".html" || extension == ".htm")
 		_rspType = "text/html";
@@ -336,7 +341,7 @@ void HttpRequest::setRspType()
 		_rspType = "application/octet-stream";
 }
 
-void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it)
+void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv)
 {
 	if (it == this->headers->getHeaderEnd())
 		throw std::invalid_argument(E_400);
@@ -345,6 +350,9 @@ void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::co
 		throw std::invalid_argument(E_400);
 
 	this->host = HttpParser::parseHost(this->headers->getHeaderOnlyOneValue("host", 0));
+
+	if ( !HttpParser::checkIfHostNameExistInServer( this->host.first, serv.getServerName()))
+		throw std::invalid_argument(E_400);
 }
 
 std::string HttpRequest::getHttpMethod() const
@@ -433,6 +441,21 @@ void HttpRequest::fileUpload() // TODO check if maybe we should put it in respon
 		else
 			std::cout << "IS FORM" << std::endl; // DBG
 	}
+}
+
+Headers	*HttpRequest::getReqHeaders() const
+{
+	return this->headers;
+}
+
+std::pair<int, std::string> HttpRequest::getAddrPort() const
+{
+	return incoming;
+}
+
+std::pair<std::string, std::string>  HttpRequest::getHost() const
+{
+	return host;
 }
 
 /* TODO
