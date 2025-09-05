@@ -70,6 +70,26 @@ void Script::runScript(HttpRequest const &request)
 
 	else if (child == 0)
 	{
+		std::string scriptPath = _cgiPath;
+		std::string scriptDir;
+		std::string scriptFile; 
+
+		size_t lastSlash = scriptPath.find_last_of("/");
+		if (lastSlash != std::string::npos)
+		{
+			scriptDir = scriptPath.substr(0, lastSlash);
+			scriptFile = scriptPath.substr(lastSlash + 1); 
+			if (chdir(scriptDir.c_str()) != 0)
+			{
+				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno) << std::endl;
+				exit(1);
+			}
+		}
+		else
+		{
+			scriptFile = scriptPath; // Handle case where there is no slash
+		}
+
 		std::string runPath;
 		close(pipeIn[PIPE_WRITE]);
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
@@ -84,8 +104,9 @@ void Script::runScript(HttpRequest const &request)
 			runPath = "/usr/bin/python3";
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php-cgi";
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(_cgiPath.c_str()),
-						NULL};
+
+		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
+		
 		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
@@ -158,7 +179,8 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	envVars.push_back("SERVER_PROTOCOL=" + request.getHttpVersion());
 	envVars.push_back("REQUEST_METHOD=" + request.getHttpMethod());
 	envVars.push_back("SCRIPT_NAME=" + request.getFullPath().second);
-	envVars.push_back("PATH_INFO=" + _cgiPath); // TODO here and above not clear, check subject.
+	envVars.push_back("SCRIPT_FILENAME=" + _cgiPath);
+	envVars.push_back("PATH_INFO=" + request.getFullPath().second); // TODO here and above not clear, check subject.
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
 	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
