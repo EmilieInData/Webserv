@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/08/30 11:28:45 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:03:52 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -434,7 +434,7 @@ void	HttpParserTester::validHostSyntaxis() {
 		std::cout << GRE << e.what() << ":  " << host << " host not accepted/ Test OK" << RESET << std::endl;
 	}
 
-	host = "   ";
+	host = "#special%";
 	try {
 		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " empty spaces host accepted / Test FAIL" << RESET << std::endl;
@@ -442,13 +442,22 @@ void	HttpParserTester::validHostSyntaxis() {
 		std::cout << GRE << e.what() << ":  " << host << " empty spaces host not accepted/ Test OK" << RESET << std::endl;
 	}
 
-	host = "";
+	host = "-domain.com";
 	try {
 		HttpParser::parseHost( host );
 		std::cout << RED << "valid host:	  " << host << " empty host accepted / Test FAIL" << RESET << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << GRE << e.what() << ":  " << host << " empty host not accepted/ Test OK" << RESET << std::endl;
 	}
+
+	host = "domain-.com";
+	try {
+		HttpParser::parseHost( host );
+		std::cout << RED << "valid host:	  " << host << " empty host accepted / Test FAIL" << RESET << std::endl;
+	} catch( std::invalid_argument e ) {
+		std::cout << GRE << e.what() << ":  " << host << " empty host not accepted/ Test OK" << RESET << std::endl;
+	}
+
 }
 
 void	HttpParserTester::parseHostTest() {
