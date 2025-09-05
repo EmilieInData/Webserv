@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:50:56 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,10 +162,6 @@ void HttpRequest::finalHeadersParsingRoutine()
 		this->headers->setManyValuesHeader("content-type");
 	//this->headers->printHeader();
 	
-	//checkHost(this->headers->getHeader("host"));
-	
-	//this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
-	
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
 	
 	checkHost(this->headers->getHeader("host"), serv);
@@ -178,9 +174,11 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
-	
-	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex());
+
 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
+
+	HttpParser::checkIfPathExist( this->_fullPath, getAutoindex(), this->getHttpMethod() );
+	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));

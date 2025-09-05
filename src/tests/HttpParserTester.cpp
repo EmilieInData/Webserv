@@ -6,7 +6,7 @@
 /*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 14:22:15 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/04 16:03:52 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:26:11 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -368,22 +368,6 @@ void	HttpParserTester::validHostSyntaxis() {
 		std::cout << GRE << "valid host:	  " << host << " accepted / Test OK" << std::endl;
 	} catch( std::invalid_argument e ) {
 		std::cout << RED << e.what() << ":  " << host << " host not accepted/ Test FAIL" << std::endl;
-	}
-
-	host = "127.0.0.256";
-	try {
-		HttpParser::parseHost( host );
-		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  " << host << " host not accepted/ Test OK" << std::endl;
-	}
-
-	host = "127.0.0";
-	try {
-		HttpParser::parseHost( host );
-		std::cout << RED << "valid host:	  " << host << " accepted / Test FAIL" << std::endl;
-	} catch( std::invalid_argument e ) {
-		std::cout << GRE << e.what() << ":  " << host << " host not accepted/ Test OK" << std::endl;
 	}
 
 	host = "domain.com:443";

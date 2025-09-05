@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 13:50:36 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:37:46 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
+#include <cstdio>
 
 std::vector<std::string>	HttpParser::split( std::string const & str, char const delimiter ) {
 
@@ -249,7 +250,7 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex )
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex, std::string const & method )
 {
 	std::string full( path.first + path.second );
 	
@@ -265,7 +266,7 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 		throw std::invalid_argument( E_404 );
 	}// TO BORROW
 	
-	if (isBinary(full))
+	if (isBinary(full) && method != "DELETE") //CLEO
 	{
 		std::cout << PINK << "inside binary\n" << RESET;
 		std::ifstream file(full.c_str(), std::ios::binary);
@@ -275,6 +276,8 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 	}
     else if (isFolder(full))
     {
+		if ( method == "DELETE" ) throw std::invalid_argument(E_403); //CLEO
+
 		std::cout << PINK << "inside folder\n" << RESET;
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
@@ -292,10 +295,16 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 	{
 		std::cout << PINK << "inside page\n" << RESET;
 		std::ifstream page(full.c_str());
-		if (!page.is_open())
+		if (!page.is_open() && method != "DELETE" ) 
 			throw std::invalid_argument(E_403);
 		page.close();
 	}
+
+	if ( method == "DELETE" ) {
+		std::remove( full.c_str() );
+		throw std::invalid_argument(E_204);
+	}
+
 }
 
 // void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
