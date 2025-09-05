@@ -6,13 +6,14 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 13:00:01 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:19:40 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef	HTTPARSER_HPP
 #define	HTTPARSER_HPP
 
+#define E_204 "204 No Content"
 #define E_400 "400 Bad Request"
 #define E_403 "403 Forbidden"
 #define E_404 "404 Not Found"
@@ -64,7 +65,7 @@ public:
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
 	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming );
-	static void						checkIfPathExist( std::pair<std::string, std::string> const & path, bool _autoindex);
+	static void						checkIfPathExist( std::pair<std::string, std::string> const & path, bool _autoindex, std::string const & method);
 	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
 									std::vector<std::string> const & serv_meth, std::string const & meth);
 	
