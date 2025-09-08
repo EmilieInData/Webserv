@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/22 14:50:47 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:57:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,16 @@ void printRequest(ServerManager &serv, int socketFd, std::string request, std::s
 
 void printRaw(std::string const &text)
 {
+	// Check if content appears to be an image (basic detection)
+	if (text.size() > 10 && ((text.substr(0, 4) == "\xFF\xD8\xFF") ||	   // JPEG
+							 (text.substr(0, 8) == "\x89PNG\r\n\x1A\n") || // PNG
+							 (text.substr(0, 6) == "GIF87a" || text.substr(0, 6) == "GIF89a"))) // GIF
+	{
+		std::cout << GREEN << "[Image content detected - " << text.size()
+				  << " bytes - content not displayed]" << RESET << std::endl;
+		return;
+	}
+
 	bool bits = false;
 	std::cout << GREEN;
 	for (size_t i = 0; i < text.size(); i++)

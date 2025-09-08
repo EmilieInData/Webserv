@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 10:23:26 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:53:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,8 +149,6 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 				buffer[bytes] = '\0';
 
 				connection.fullRequest = buffer;
-				//	printRaw( connection.fullRequest );
-				//	std::cout << std::endl;
 
 				req.sendBuffer(buffer, bytes); //CLEO the max_body_size is checked in the request
 
@@ -158,11 +156,7 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 					std::cout << "STATE: " << req.getParsingState() << std::endl;
 
 				if (req.getParsingState() <= 0)
-				{
 					isComplete = true;
-					req.fileUpload(); // TODO i think this needs to go in the response
-					//CLEO I think is an error to upload file in case of req.ParsingState() == -1 because is an error of parsing
-				}
 			}
 			else if (bytes == 0)
 			{
@@ -194,7 +188,6 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 	}
 	// std::cout << GREEN << connection.fullRequest << RESET << std::endl; // TODO delete when done
 	//printRaw(connection.fullRequest);
-	printRaw(connection.fullRequest); // DBG to remove
 	req.printBodies(); // DBG
 	return isComplete;
 }

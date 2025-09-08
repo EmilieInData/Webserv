@@ -36,8 +36,8 @@ void Script::runScript(HttpRequest const &request)
 	_outputHeaders.clear();
 	_cgiPath.clear();
 	_scriptType.clear();
-	_scriptOutput	  = "";
-	
+	_scriptOutput = "";
+
 	std::string query = request.getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
@@ -70,6 +70,27 @@ void Script::runScript(HttpRequest const &request)
 
 	else if (child == 0)
 	{
+		std::string scriptPath = _cgiPath;
+		std::string scriptDir;
+		std::string scriptFile;
+
+		size_t lastSlash = scriptPath.find_last_of("/");
+		if (lastSlash != std::string::npos)
+		{
+			scriptDir  = scriptPath.substr(0, lastSlash);
+			scriptFile = scriptPath.substr(lastSlash + 1);
+			if (chdir(scriptDir.c_str()) != 0)
+			{
+				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno)
+						  << std::endl;
+				exit(1);
+			}
+		}
+		else
+		{
+			scriptFile = scriptPath;
+		}
+
 		std::string runPath;
 		close(pipeIn[PIPE_WRITE]);
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
@@ -84,8 +105,10 @@ void Script::runScript(HttpRequest const &request)
 			runPath = "/usr/bin/python3";
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php-cgi";
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(_cgiPath.c_str()),
+
+		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(scriptFile.c_str()),
 						NULL};
+
 		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
@@ -97,14 +120,18 @@ void Script::runScript(HttpRequest const &request)
 		close(pipeIn[PIPE_READ]);
 		close(pipeOut[PIPE_WRITE]);
 
-		if (!query.empty()) // TODO correct for POST
+		if (request.getHttpMethod() == "POST")
 		{
-			if ((write(pipeIn[PIPE_WRITE], query.c_str(), query.length())) == -1)
-				printBoxError("Error parent writing");
+			const std::string &requestBody = request.getRawBody();
+			if (!requestBody.empty())
+			{
+				if (write(pipeIn[PIPE_WRITE], requestBody.c_str(), requestBody.length()) == -1)
+					printBoxError("Error parent writing POST body");
+			}
 		}
+
 		close(pipeIn[PIPE_WRITE]);
 
-		// Read the script output from pipeOut
 		char	buffer[4096];
 		ssize_t bytesRead;
 
@@ -118,7 +145,7 @@ void Script::runScript(HttpRequest const &request)
 		int status;
 		waitpid(child, &status, 0);
 		deleteArray(envServ);
-		// Check if child process exited with error
+
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
 			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status)
@@ -133,7 +160,7 @@ void Script::runScript(HttpRequest const &request)
 		{
 			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length()
 					  << " bytes" << RESET << std::endl;
-			printRaw(_scriptOutput); // DBG
+			printRaw(_scriptOutput);
 			parseOutput();
 		}
 	}
@@ -158,15 +185,32 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	envVars.push_back("SERVER_PROTOCOL=" + request.getHttpVersion());
 	envVars.push_back("REQUEST_METHOD=" + request.getHttpMethod());
 	envVars.push_back("SCRIPT_NAME=" + request.getFullPath().second);
-	envVars.push_back("PATH_INFO=" + _cgiPath); // TODO here and above not clear, check subject.
+	envVars.push_back("SCRIPT_FILENAME=" + _cgiPath);
+	envVars.push_back("PATH_INFO=" +
+					  request.getFullPath().second); // TODO here and above not clear, check subject.
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
 	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
 	envVars.push_back("SERVER_NAME=" + request.getHost().first);	  // TODO get server name
 	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
 
-	// TODO get headers for HTTP_ variables
 	Headers *reqHeaders = request.getReqHeaders();
+
+	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader("content-type");
+	if (it_ct != reqHeaders->getHeaderEnd())
+	{
+		const std::vector<std::string>& values = it_ct->second;
+		std::string contentTypeValue = values[0]; 
+		for (size_t i = 1; i < values.size(); ++i)
+		{
+			contentTypeValue += ";" + values[i]; 
+		}
+		envVars.push_back("CONTENT_TYPE=" + contentTypeValue);
+	}
+
+if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
+    envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
+
 	for (std::map<std::string, std::vector<std::string> >::const_iterator it =
 			 reqHeaders->getHeaderBegin();
 		 it != reqHeaders->getHeaderEnd(); it++)
@@ -234,7 +278,7 @@ std::string Script::getOutputBody() const
 	return _outputBody;
 }
 
-std::map < std::string, std::string > Script::getOutputHeaders() const
+std::map<std::string, std::string> Script::getOutputHeaders() const
 {
 	return _outputHeaders;
 }

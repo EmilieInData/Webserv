@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 17:56:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:00:16by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &rhs)
 	return *this;
 }
 
-void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
+void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 {
 
 	for (int i = 0; i < bytes; i++)
@@ -73,7 +73,7 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	std::size_t found = fullRequest.find(CRLF);
 	//	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
 
-	static int i = 0;
+	// static int i = 0;
 
 	try
 	{
@@ -82,8 +82,9 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 			std::string tmp = this->fullRequest.substr(0, found);
 			this->fullRequest.erase(0, found + 2);
 
-			std::cout << "TMP " << i++ << ": " << tmp << std::endl;
-			if ( !HttpParser::isAsciiPrintable( tmp )) throw std::invalid_argument( E_400 ); 
+			// std::cout << "TMP " << i++ << ": " << tmp << std::endl;
+			if (!HttpParser::isAsciiPrintable(tmp))
+				throw std::invalid_argument(E_400);
 
 			switch (this->state)
 			{
@@ -111,17 +112,25 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 
 		if (this->state == BODY)
 		{
-			if (!this->boundary.empty()) // TODO create newBody here and pass it to routine?
+			if (!this->boundary.empty() && this->getRspType() != "cgi-script")
+			{
 				manyBodiesRoutine(found);
+			}
+			// For simple bodies OR for ANY request going to a CGI script,
+			// treat the entire body as a single raw string.
 			else
 			{
-				this->body = this->fullRequest;
-				//	std::cout << "BODY: " << this->body << std::endl;
-				//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
+				// Append the received data to the body and clear the temporary buffer.
+				// This is safer than 'this->body = this->fullRequest' if data arrives in chunks.
+				this->body.append(this->fullRequest);
+				this->fullRequest.clear();
+
+				// Check if the full body has been received according to Content-Length.
 				if (this->body.length() >= this->body_len)
 				{
 					if (this->body.length() > this->body_len)
-						this->body.erase(this->body_len, this->body.length());
+						this->body.erase(this->body_len);
+
 					this->state = DONE;
 				}
 			}
@@ -131,26 +140,64 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	{
 		this->setStatusCode(e.what());
 	}
-
-
-
+	if (this->state == DONE)
+	{
+		if (getRspType() == "cgi-script")
+			server.getScript().runScript(*this);
+		else	
+			fileUpload();
+	}
 	// FABIO end of request parsing here
-	
+
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
 }
 
-void HttpRequest::printBodies()
+void HttpRequest::printBodies() // DBG
 {
 	std::cout << "Bodies size: " << _bodies.size() << std::endl;
-	// for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
-	// {
-	// 	std::cout << GREEN << "Body content" << std::endl;
-	// 	it->bodyHeader.printHeader();
-	// 	std::cout << it->bodyContent << std::endl;
-	// 	std::cout << RESET << std::endl;
-	// }
+
+	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); ++it)
+	{
+		std::cout << GREEN << "Body content" << std::endl;
+		it->bodyHeader.printHeader();
+
+		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader(
+			"content-disposition");
+
+		if (cd_it != it->bodyHeader.getHeaderEnd())
+		{
+			const std::string &contDisp		= cd_it->second[0];
+			size_t			   filename_pos = contDisp.find("filename=");
+
+			if (filename_pos != std::string::npos)
+			{
+				// Extract filename
+				size_t start_quote = contDisp.find("\"", filename_pos);
+				size_t end_quote   = contDisp.find("\"", start_quote + 1);
+
+				if (start_quote != std::string::npos && end_quote != std::string::npos)
+				{
+					std::string filename = contDisp.substr(start_quote + 1,
+														   end_quote - (start_quote + 1));
+					std::cout << "[FILE UPLOAD] Filename: " << filename
+							  << " (Size: " << it->bodyContent.size() << " bytes)" << std::endl;
+				}
+				else
+				{
+					std::cout << "[FILE UPLOAD] Binary content (Size: " << it->bodyContent.size()
+							  << " bytes)" << std::endl;
+				}
+			}
+			else
+				std::cout << it->bodyContent << std::endl;
+		}
+		else
+			std::cout << it->bodyContent << std::endl;
+
+		std::cout << RESET << std::endl;
+	}
 }
 
 void HttpRequest::finalHeadersParsingRoutine()
@@ -161,27 +208,29 @@ void HttpRequest::finalHeadersParsingRoutine()
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 		this->headers->setManyValuesHeader("content-type");
 	//this->headers->printHeader();
-	
+
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
-	
+
 	checkHost(this->headers->getHeader("host"), serv);
-	
-	this->uri		= new Uri(req_line->getReqTarget(), this->host.first);
+
+	this->uri = new Uri(req_line->getReqTarget(), this->host.first);
 
 	setFullPath(serv);
-	
+
 	this->max_body_size = serv.getBodySize();
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
 
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
+	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
+								 this->req_line->getMethod());
 
-	HttpParser::checkIfPathExist( this->_fullPath, getAutoindex(), this->getHttpMethod() );
-	
+	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex(), this->getHttpMethod());
+
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
-		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));
+		this->boundary = HttpParser::parseContentTypeBoundary(
+			this->headers->getHeaderValue("content-type"));
 		if (!this->boundary.empty())
 		{
 			this->state			= BODY;
@@ -191,7 +240,8 @@ void HttpRequest::finalHeadersParsingRoutine()
 	}
 	if (this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
 	{
-		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length", 0),
+		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length",
+																								   0),
 															  this->max_body_size);
 		this->state = BODY;
 	}
@@ -203,7 +253,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	static int k = -1;			// TODO no needed
+	// static int k = -1;			// TODO no needed
 	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
@@ -226,8 +276,8 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 			}
 			//FABIO create new struct body
 			this->boundary_flag = false;
-			k++;
-			std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
+			// k++;
+			// std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
 			this->body_state = HEADERS2;
 			break;
 		case HEADERS2:
@@ -236,8 +286,8 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 				this->body_state = BODY2;
 				break;
 			}
-			std::cout << "HEADER " << k << ": " << tmp.substr(0, 70)
-					  << std::endl; // FABIO structbody->header->setHeader( tmp )
+			// std::cout << "HEADER " << k << ": " << tmp.substr(0, 70)
+			// 		  << std::endl; // FABIO structbody->header->setHeader( tmp )
 			newBody.bodyHeader.setHeader(tmp);
 			this->body_state = HEADERS2;
 			break;
@@ -253,7 +303,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	{
 		this->body = this->body.erase(f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
-		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
+		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
 		makeNew		= true;
 		this->state = DONE;
@@ -263,7 +313,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	{
 		this->body = this->body.erase(f2, this->body.length()); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
-		std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
+		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
 		makeNew			  = true;
 		this->fullRequest = this->fullRequest.erase(0, f2 + 6);
@@ -289,21 +339,21 @@ void HttpRequest::setStatusCode(std::string error)
 void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std::string const &path)
 {
 	std::size_t found = path.rfind("/");
-	std::cout << PINK  << "request path: " << path << std::endl << RESET; //TO BORROW
+	std::cout << PINK << "request path: " << path << std::endl << RESET; //TO BORROW
 
 	//	if ( found == std::string::npos ) //BADREQUEST
 
 	this->location = path.substr(0, found + 1);
 	std::cout << PINK << "LOCATION REQ: " << this->location << std::endl;
-// EMILIE this not ok because for ./error_pages/ esta buscando / solo
+	// EMILIE this not ok because for ./error_pages/ esta buscando / solo
 	std::map<std::string, LocationConf>::iterator it = location.find(this->location);
 
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
-	setRspType();							// FABIO added here, seems the best place for now
-	if (_rspType == "cgi-script")
-		server.getScript().runScript(*this);
-		// TODO if script fails throw error here
+	setRspType(); // FABIO added here, seems the best place for now
+	// if (_rspType == "cgi-script")
+	// 	server.getScript().runScript(*this);
+	// TODO if script fails throw error here
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
@@ -313,18 +363,17 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 void HttpRequest::setRspType()
 {
 	std::string location = _fullPath.first + _fullPath.second;
-	
+
 	if (isFolder(location)) // && _autoindex)
 	{
 		_rspType = "text/html";
-		return ;
+		return;
 	}
 
 	std::string extension;
 	size_t		dotPos = location.find_last_of('.');
 	if (dotPos != std::string::npos)
 		extension = location.substr(dotPos);
-	
 
 	if (extension == ".html" || extension == ".htm")
 		_rspType = "text/html";
@@ -342,7 +391,8 @@ void HttpRequest::setRspType()
 		_rspType = "application/octet-stream";
 }
 
-void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv)
+void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it,
+							ServerData														&serv)
 {
 	if (it == this->headers->getHeaderEnd())
 		throw std::invalid_argument(E_400);
@@ -352,7 +402,7 @@ void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::co
 
 	this->host = HttpParser::parseHost(this->headers->getHeaderOnlyOneValue("host", 0));
 
-	if ( !HttpParser::checkIfHostNameExistInServer( this->host.first, serv.getServerName()))
+	if (!HttpParser::checkIfHostNameExistInServer(this->host.first, serv.getServerName()))
 		throw std::invalid_argument(E_400);
 }
 
@@ -414,37 +464,94 @@ std::string HttpRequest::getRspType() const
 	return _rspType;
 }
 
-
 ServerManager &HttpRequest::getServ() const
 {
 	return this->server;
 }
 
-void HttpRequest::fileUpload() // TODO check if maybe we should put it in response
+void HttpRequest::fileUpload()
 {
-	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); it++)
+	std::map<std::string, std::string> formData;
+
+	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); ++it)
 	{
-		if (it->bodyHeader.getHeaderSize() > 1)
+		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader(
+			"content-disposition"); // checks if file
+		if (cd_it == it->bodyHeader.getHeaderEnd())
 		{
-			std::cout << "IS FILE" << std::endl; // DBG
-			std::string	  locationUp = _fullPath.first + _fullPath.second;
-			std::string	  content	 = it->bodyHeader.getHeader("content-disposition")->second[0];
-			size_t		  startName	 = content.find("filename=") + 10;
-			size_t		  endName	 = content.find("\"", startName);
-			std::string	  fileName	 = locationUp + content.substr(startName, endName - startName);
-			std::ofstream fileUp(fileName.c_str());
+			continue;
+		}
+
+		const std::string &contDisp = cd_it->second[0];
+
+		size_t filename_pos = contDisp.find("filename=");
+
+		if (filename_pos != std::string::npos)
+		{
+			// FABIO here if upload is file
+			size_t start_quote = contDisp.find("\"", filename_pos);
+			size_t end_quote   = contDisp.find("\"", start_quote + 1);
+			if (start_quote == std::string::npos || end_quote == std::string::npos)
+				continue;
+
+			std::string nameOriginal = contDisp.substr(start_quote + 1,
+													   end_quote - (start_quote + 1));
+			size_t		lastSlash	 = nameOriginal.find_last_of("/");
+			std::string nameClean	 = (lastSlash == std::string::npos)
+										   ? nameOriginal
+										   : nameOriginal.substr(lastSlash + 1);
+
+			if (nameClean.empty())
+				continue;
+
+			std::string uploadPath = _fullPath.first + _fullPath.second + nameClean;
+
+			// Save the file
+			std::ofstream fileUp(uploadPath.c_str(), std::ios::binary);
 			if (fileUp.is_open())
 			{
 				fileUp << it->bodyContent;
 				fileUp.close();
+				std::cout << GREEN << "SUCCESS: Saved file to " << uploadPath << RESET << std::endl;
+			}
+			else
+			{
+				std::cerr << "ERROR: Could not open file for writing: " << uploadPath << std::endl;
+				//	TODO send error status
 			}
 		}
 		else
-			std::cout << "IS FORM" << std::endl; // DBG
+		{
+			//FABIO here if it's form
+			size_t name_pos = contDisp.find("name=");
+			if (name_pos != std::string::npos)
+			{
+				size_t start_quote = contDisp.find("\"", name_pos);
+				size_t end_quote   = contDisp.find("\"", start_quote + 1);
+				if (start_quote != std::string::npos && end_quote != std::string::npos)
+				{
+					std::string field_name = contDisp.substr(start_quote + 1,
+															 end_quote - (start_quote + 1));
+					formData[field_name]   = it->bodyContent;
+				}
+			}
+		}
 	}
+
+	std::cout << RED << "[Form Data Received]" << RESET << std::endl;
+	for (std::map<std::string, std::string>::const_iterator map_it = formData.begin();
+		 map_it != formData.end(); ++map_it)
+	{
+		std::cout << map_it->first << ": " << map_it->second << std::endl;
+	}
+
+	/* 	TODO Generate a Response: After processing, set a success status code.
+	The Response class will then use this to build the final reply.
+	For a successful creation of a resource, 201 Created is appropriate. */
+	this->code = 201; // Or 200 OK
 }
 
-Headers	*HttpRequest::getReqHeaders() const
+Headers *HttpRequest::getReqHeaders() const
 {
 	return this->headers;
 }
@@ -454,9 +561,14 @@ std::pair<int, std::string> HttpRequest::getAddrPort() const
 	return incoming;
 }
 
-std::pair<std::string, std::string>  HttpRequest::getHost() const
+std::pair<std::string, std::string> HttpRequest::getHost() const
 {
 	return host;
+}
+
+std::string HttpRequest::getRawBody() const
+{
+	return this->body;
 }
 
 /* TODO
