@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 17:56:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/08 11:16:33 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,8 @@ void	HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->setStatusCode(e.what());
 	}
 
-
+	if (this->state == DONE)
+		fileUpload();
 
 	// FABIO end of request parsing here
 	

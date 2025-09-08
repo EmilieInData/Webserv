@@ -6,14 +6,14 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 15:53:15 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/08 11:26:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
-#include "Utils.hpp"
 #include "ServerManager.hpp"
+#include "Utils.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -49,7 +49,8 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
-		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
+		_location = fullPath.first +
+					"/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
 	else
@@ -67,7 +68,7 @@ std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
-	
+
 	if (isBinary(_location))
 	{
 		std::ifstream file(_location.c_str(), std::ios::binary);
@@ -78,21 +79,22 @@ std::string Response::prepFile()
 		file.close();
 		return buffer.str();
 	}
-    else if (isFolder(_location))
-    {
+	else if (isFolder(_location))
+	{
 		// if (not exist) //find location bloc, done by cleo in http request
 		// 	//error
 		_contentType = "text/html";
-		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
+		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET
+				  << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return "";//return error to open directory
-		// if (access(_location.c_str(), R_OK) != 0 || this->getAutoindex() == false)
-		// {
-		// 	closedir(dir);
-    	//     return "";//return error miss right to read what's inside
-		// }
-        return doAutoindex(_request->getFullPath().second, dir);
+			return ""; //return error to open directory
+					   // if (access(_location.c_str(), R_OK) != 0 || this->getAutoindex() == false)
+					   // {
+					   // 	closedir(dir);
+					   //     return "";//return error miss right to read what's inside
+					   // }
+		return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
@@ -192,23 +194,23 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 void Response::prepResponse()
 {
 	std::string content;
-	
+
 	_contentType = _request->getRspType();
 
-	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl; // DBG
+	std::cout << PINK << "Content type(prepResponse) : " << _contentType << std::endl; // DBG
 
 	if (_contentType == "cgi-script")
 	{
-		content = _request->getServ().getScript().getOutputBody();
+		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
-		
+
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
 		else
 			_contentType = "text/plain";
 	}
-	
+
 	else
 		content = prepFile();
 
