@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/08 15:00:16 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:20:24 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,9 @@ public:
 	int			getParsingState() const;
 	bool		getAutoindex() const;
 	std::string getRspType() const;
-	MultiBody							fillBody(Headers const &header, std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
+	MultiBody
+										fillBody(Headers const &header,
+												 std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	void								fileUpload();
 	Headers							   *getReqHeaders() const;
 	ServerManager						&getServ() const;
@@ -123,6 +125,7 @@ public:
 	std::pair<std::string, std::string> getHost() const;
 	LocationConf						findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
 	LocationConf						getBlockLoc()const;
+	std::string							getRawBody() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

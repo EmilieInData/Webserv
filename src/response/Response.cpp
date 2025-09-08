@@ -6,14 +6,14 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 17:06:18 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:21:27 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "HttpRequest.hpp"
-#include "Utils.hpp"
 #include "ServerManager.hpp"
+#include "Utils.hpp"
 
 #define PIPE_READ_END 0
 #define PIPE_WRITE_END 1
@@ -201,23 +201,23 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 void Response::prepResponse()
 {
 	std::string content;
-	
+
 	_contentType = _request->getRspType();
 
-	std::cout << PINK << "Content type(prepResponse) : " <<  _contentType << std::endl; // DBG
+	std::cout << PINK << "Content type(prepResponse) : " << _contentType << std::endl; // DBG
 
 	if (_contentType == "cgi-script")
 	{
-		content = _request->getServ().getScript().getOutputBody();
+		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
-		
+
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
 		else
 			_contentType = "text/plain";
 	}
-	
+
 	else
 		content = prepFile();
 
