@@ -42,32 +42,45 @@ except (FileNotFoundError, json.JSONDecodeError):
 
 # Process form data
 form = cgi.FieldStorage()
-first_name = form.getvalue('first_name')
-last_name = form.getvalue('last_name')
-dob_str = form.getvalue('dob')
 confirmation_message = ""
 
-if first_name and last_name and dob_str:
+# --- NEW: Handle DELETE action ---
+if form.getvalue('action') == 'delete':
     try:
-        # This line has been changed to parse the new format
-        dob_date = datetime.strptime(dob_str, '%d/%m/%Y')
-        day, month = dob_date.day, dob_date.month
-        sign = get_zodiac_sign(day, month)
-        
-        new_entry = {
-            'first_name': first_name,
-            'last_name': last_name,
-            'sign': sign
-        }
-        zodiac_list.append(new_entry)
-        
-        # Save the updated list back to the file
-        with open(JSON_FILE, 'w') as f:
-            json.dump(zodiac_list, f, indent=4)
+        index_to_delete = int(form.getvalue('index'))
+        if 0 <= index_to_delete < len(zodiac_list):
+            deleted_person = zodiac_list.pop(index_to_delete)
+            confirmation_message = f"<h2>Successfully deleted {deleted_person['first_name']} {deleted_person['last_name']}.</h2>"
+            # Save the updated list back to the file
+            with open(JSON_FILE, 'w') as f:
+                json.dump(zodiac_list, f, indent=4)
+    except (TypeError, ValueError):
+        confirmation_message = "<h2>Error: Invalid index for deletion.</h2>"
+
+# --- Handle ADD action ---
+elif form.getvalue('dob'):
+    first_name = form.getvalue('first_name')
+    last_name = form.getvalue('last_name')
+    dob_str = form.getvalue('dob')
+    if first_name and last_name and dob_str:
+        try:
+            dob_date = datetime.strptime(dob_str, '%d/%m/%Y')
+            day, month = dob_date.day, dob_date.month
+            sign = get_zodiac_sign(day, month)
             
-        confirmation_message = f"<h2>Successfully added {first_name} {last_name} ({sign})!</h2>"
-    except ValueError:
-        confirmation_message = "<h2>Error: Invalid date format. Please use DD/MM/YYYY.</h2>"
+            new_entry = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'sign': sign
+            }
+            zodiac_list.append(new_entry)
+            
+            with open(JSON_FILE, 'w') as f:
+                json.dump(zodiac_list, f, indent=4)
+                
+            confirmation_message = f"<h2>Successfully added {first_name} {last_name} ({sign})!</h2>"
+        except ValueError:
+            confirmation_message = "<h2>Error: Invalid date format. Please use DD/MM/YYYY.</h2>"
 
 # Print the HTTP headers and HTML response
 print("Content-Type: text/html\r\n\r\n")
@@ -84,7 +97,9 @@ print("""
         table { width: 100%; margin-top: 20px; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #007bff; color: white; }
-        a { display: block; text-align: center; margin-top: 20px; }
+        td a { color: #dc3545; text-decoration: none; }
+        td a:hover { text-decoration: underline; }
+        a.add-link { display: block; text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -96,15 +111,18 @@ print(confirmation_message)
 
 if zodiac_list:
     print("<table>")
-    print("<tr><th>First Name</th><th>Last Name</th><th>Zodiac Sign</th></tr>")
-    for person in zodiac_list:
-        print(f"<tr><td>{person['first_name']}</td><td>{person['last_name']}</td><td>{person['sign']}</td></tr>")
+    # --- NEW: Added "Action" column header ---
+    print("<tr><th>First Name</th><th>Last Name</th><th>Zodiac Sign</th><th>Action</th></tr>")
+    # --- UPDATED: Loop now includes an index and a delete link ---
+    for index, person in enumerate(zodiac_list):
+        delete_link = f'<a href="/cgi-bin/zodiac.py?action=delete&index={index}">Delete</a>'
+        print(f"<tr><td>{person['first_name']}</td><td>{person['last_name']}</td><td>{person['sign']}</td><td>{delete_link}</td></tr>")
     print("</table>")
 else:
     print("<p>The list is currently empty.</p>")
 
 print("""
-        <a href="/zodiac.html">Add Another Person</a>
+        <a class="add-link" href="/zodiac.html">Add Another Person</a>
     </div>
 </body>
 </html>
