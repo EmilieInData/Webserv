@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CGI File Upload</title>
+</head>
+<body>
+    <h1>Upload a File</h1>
+    <form action="/cgi-bin/upload.py" method="post" enctype="multipart/form-data">
+        <label for="file">Choose a file to upload:</label>
+        <input type="file" name="filename" id="file">
+        <br><br>
+        <input type="submit" value="Upload File">
+    </form>
+</body>
+</html>

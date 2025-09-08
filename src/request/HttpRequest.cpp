@@ -112,17 +112,25 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 
 		if (this->state == BODY)
 		{
-			if (!this->boundary.empty()) // TODO create newBody here and pass it to routine?
+			if (!this->boundary.empty() && this->getRspType() != "cgi-script")
+			{
 				manyBodiesRoutine(found);
+			}
+			// For simple bodies OR for ANY request going to a CGI script,
+			// treat the entire body as a single raw string.
 			else
 			{
-				this->body = this->fullRequest;
-				//	std::cout << "BODY: " << this->body << std::endl;
-				//	std::cout << "LEN: " << this->body.length() << " LEN IN STRUCT: " << this->body_len << std::endl;
+				// Append the received data to the body and clear the temporary buffer.
+				// This is safer than 'this->body = this->fullRequest' if data arrives in chunks.
+				this->body.append(this->fullRequest);
+				this->fullRequest.clear();
+
+				// Check if the full body has been received according to Content-Length.
 				if (this->body.length() >= this->body_len)
 				{
 					if (this->body.length() > this->body_len)
-						this->body.erase(this->body_len, this->body.length());
+						this->body.erase(this->body_len);
+
 					this->state = DONE;
 				}
 			}
@@ -134,9 +142,10 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	}
 	if (this->state == DONE)
 	{
-		std::cout << "Complete HTTP request:" << std::endl;
-		printRaw(this->fullRequest.c_str());
-		fileUpload();
+		if (getRspType() == "cgi-script")
+			server.getScript().runScript(*this);
+		else	
+			fileUpload();
 	}
 	// FABIO end of request parsing here
 
@@ -342,8 +351,8 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 	setRspType(); // FABIO added here, seems the best place for now
-	if (_rspType == "cgi-script")
-		server.getScript().runScript(*this);
+	// if (_rspType == "cgi-script")
+	// 	server.getScript().runScript(*this);
 	// TODO if script fails throw error here
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
@@ -555,6 +564,11 @@ std::pair<int, std::string> HttpRequest::getAddrPort() const
 std::pair<std::string, std::string> HttpRequest::getHost() const
 {
 	return host;
+}
+
+std::string HttpRequest::getRawBody() const
+{
+	return this->body;
 }
 
 /* TODO

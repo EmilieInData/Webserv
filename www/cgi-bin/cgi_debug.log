@@ -1,0 +1,28 @@
+--- CGI Debug Log ---
+
+## Environment Variables:
+GATEWAY_INTERFACE: CGI/1.1
+REDIRECT_STATUS: 200
+SERVER_PROTOCOL: HTTP/1.1
+REQUEST_METHOD: POST
+SCRIPT_NAME: /cgi-bin/upload.py
+SCRIPT_FILENAME: ./www/cgi-bin/upload.py
+PATH_INFO: /cgi-bin/upload.py
+QUERY_STRING: 
+PATH_TRANSLATED: ./www/cgi-bin/upload.py
+REMOTE_ADDR: 127.0.0.1
+SERVER_NAME: localhost
+SERVER_PORT: 8080
+CONTENT_TYPE: multipart/form-data;boundary=----geckoformboundary97b1fc80e8c65498adb906721d90bb79
+CONTENT_LENGTH: 404132
+HTTP_ACCEPT: text/html
+HTTP_ACCEPT_ENCODING: gzip
+HTTP_CONNECTION: keep-alive
+HTTP_CONTENT_LENGTH: 404132
+HTTP_CONTENT_TYPE: multipart/form-data
+HTTP_HOST: localhost:8080
+LC_CTYPE: C.UTF-8
+
+---
+
+## STDIN Content (based on CONTENT_LENGTH=404132):
