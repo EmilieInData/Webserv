@@ -19,13 +19,13 @@ Script::~Script() {}
 void Script::setScriptType(std::string const &cgiPath)
 {
 	size_t lastDot = cgiPath.find_last_of('.');
-	_scriptType	   = cgiPath.substr(lastDot);
+	_scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
 	if (_scriptType != ".py" && _scriptType != ".php")
 	{
 		printBoxError("Invalid script type");
 		exit(1);
-		//TODO implement proper throw/error
+		// TODO implement proper throw/error
 	}
 }
 
@@ -47,7 +47,7 @@ void Script::runScript(HttpRequest const &request)
 
 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
 	{
-		//TODO what error number here?
+		// TODO what error number here?
 		printBoxError("Pipe Error");
 		_scriptOutput = "";
 	}
@@ -58,7 +58,7 @@ void Script::runScript(HttpRequest const &request)
 
 	if (child < 0)
 	{
-		//TODO also here, what error?
+		// TODO also here, what error?
 		printBoxError("Fork error");
 		close(pipeOut[PIPE_WRITE]);
 		close(pipeOut[PIPE_READ]);
@@ -77,7 +77,7 @@ void Script::runScript(HttpRequest const &request)
 		size_t lastSlash = scriptPath.find_last_of("/");
 		if (lastSlash != std::string::npos)
 		{
-			scriptDir  = scriptPath.substr(0, lastSlash);
+			scriptDir = scriptPath.substr(0, lastSlash);
 			scriptFile = scriptPath.substr(lastSlash + 1);
 			if (chdir(scriptDir.c_str()) != 0)
 			{
@@ -132,7 +132,7 @@ void Script::runScript(HttpRequest const &request)
 
 		close(pipeIn[PIPE_WRITE]);
 
-		char	buffer[4096];
+		char buffer[4096];
 		ssize_t bytesRead;
 
 		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
@@ -190,8 +190,8 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 					  request.getFullPath().second); // TODO here and above not clear, check subject.
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
-	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
-	envVars.push_back("SERVER_NAME=" + request.getHost().first);	  // TODO get server name
+	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second);			  // TODO get ip address
+	envVars.push_back("SERVER_NAME=" + request.getHost().first);				  // TODO get server name
 	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
 
 	Headers *reqHeaders = request.getReqHeaders();
@@ -199,17 +199,17 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader("content-type");
 	if (it_ct != reqHeaders->getHeaderEnd())
 	{
-		const std::vector<std::string>& values = it_ct->second;
-		std::string contentTypeValue = values[0]; 
+		const std::vector<std::string> &values = it_ct->second;
+		std::string contentTypeValue = values[0];
 		for (size_t i = 1; i < values.size(); ++i)
 		{
-			contentTypeValue += ";" + values[i]; 
+			contentTypeValue += ";" + values[i];
 		}
 		envVars.push_back("CONTENT_TYPE=" + contentTypeValue);
 	}
 
-if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
-    envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
+	if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
+		envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
 
 	for (std::map<std::string, std::vector<std::string> >::const_iterator it =
 			 reqHeaders->getHeaderBegin();
@@ -240,35 +240,50 @@ if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
 
 void Script::parseOutput()
 {
-	size_t clrfPos = _scriptOutput.find("\r\n\r\n");
+	// Find the blank line that separates headers from the body.
+	// First, try the HTTP-standard CRLF separator.
+	size_t separatorPos = _scriptOutput.find("\r\n\r\n");
+	size_t separatorLen = 4; // The length of "\r\n\r\n"
 
-	if (clrfPos == std::string::npos)
+	// If CRLF is not found, fall back to the simpler LF separator.
+	if (separatorPos == std::string::npos)
 	{
+		separatorPos = _scriptOutput.find("\n\n");
+		separatorLen = 2; // The length of "\n\n"
+	}
+
+	std::string headersPart;
+	if (separatorPos != std::string::npos)
+	{
+		headersPart = _scriptOutput.substr(0, separatorPos);
+		_outputBody = _scriptOutput.substr(separatorPos + separatorLen); // Use the correct length
+	}
+	else
+	{
+		// If no separator is found, assume the entire output is the body.
 		_outputBody = _scriptOutput;
 		return;
 	}
 
-	std::string headers = _scriptOutput.substr(0, clrfPos);
-	_outputBody			= _scriptOutput.substr(clrfPos + 4);
-
-	std::stringstream streamHeaders(headers);
-	std::string		  headerLine;
-	while (std::getline(streamHeaders, headerLine))
+	// The rest of your parsing logic can remain the same.
+	std::stringstream ss(headersPart);
+	std::string line;
+	while (std::getline(ss, line))
 	{
-		if (!headerLine.empty() && headerLine[headerLine.size() - 1] == '\r')
-			headerLine.erase(headerLine.size() - 1);
+		if (!line.empty() && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1); // Trim trailing \r if it exists
 
-		size_t colon = headerLine.find(':');
-		if (colon != std::string::npos)
+		size_t colonPos = line.find(':');
+		if (colonPos != std::string::npos)
 		{
-			std::string key	  = headerLine.substr(0, colon);
-			std::string value = headerLine.substr(colon + 1);
+			std::string key = line.substr(0, colonPos);
+			std::string value = line.substr(colonPos + 1);
 
-			size_t first = value.find_first_not_of(" \t");
-			if (first != std::string::npos)
-				value = value.substr(first);
+			size_t firstChar = value.find_first_not_of(" \t");
+			if (firstChar != std::string::npos)
+				value = value.substr(firstChar);
 
-			_outputHeaders[upperKey(key)] = value;
+			_outputHeaders[key] = value;
 		}
 	}
 }
