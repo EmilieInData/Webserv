@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/29 10:53:09 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:39:00 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ ABlockBase::ABlockBase()
 	_root = "/www";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
-	_returnDirective.push_back("301");
-	_returnDirective.push_back("/redirect/index.html");
+	// _returnDirective.push_back("301");
+	// _returnDirective.push_back("/static/red.html");
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
 	_cgiPass[".py"] = "/usr/bin/python3";
@@ -187,7 +187,7 @@ size_t	ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t
 
 	if (checkFlag("return"))
 		throw std::invalid_argument(" Parsing error, only one 'return'"
-			" directive allowed by server blocks\n"); 
+			" directive allowed by blocks\n"); 
 	if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";"
 		|| buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty()
 		|| buffer[i + 1] == "{" || buffer[i + 1] == "}")
@@ -195,7 +195,7 @@ size_t	ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t
 	_returnDirective.clear();
 	if (isInt(buffer[i]))
 		num = strToInt(buffer[i]);
-	if (!isInt(buffer[i]) || num < 100 || num > 599)
+	if (!isInt(buffer[i]) || num < 100 || num > 599) // TO CHECK IF CORRECT
 			throw std::invalid_argument(" Parsing error, 'return' directive"
 				" argument is not correct\n");
 	_returnDirective.push_back(buffer[i]);

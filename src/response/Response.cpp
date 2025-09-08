@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 15:53:15 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:06:18 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,13 @@
 
 Response::Response(HttpRequest const &request) : _request(&request)
 {
-
 	_clientFd	   = -1;
 	_response	   = "";
 	_location	   = "";
 	_method		   = "";
 	_contentType   = "";
 	_contentLength = "";
-	_autoindex	   = _request->getAutoindex();
+	_blockLoc 	   = _request->getBlockLoc();
 }
 
 Response::~Response() {}
@@ -46,15 +45,15 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
-	std::cout << PINK << "FullPath.first: " << fullPath.first << "\n"
+	std::cout << PINK << "FullPath.first(set content): " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
-	if (fullPath.second == "/redirect/") //TODO check with another code (303) and send good errorpages
-		_location = fullPath.first + "/redirect/index.html"; // TODO redirect is hardcoded, it should work with every case I think
+	if (!_blockLoc.getReturnDirective().empty())
+		_location = fullPath.first + _blockLoc.getReturnDirective()[1];
 	else if (fullPath.second == "/" || fullPath.second.empty())
 		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
-	std::cout << PINK << "_Location: " << _location << RESET << std::endl; // TO BORROW
+	std::cout << PINK << "_Location (set content): " << _location << RESET << std::endl; // TO BORROW
 	_method = method;
 }
 
@@ -67,9 +66,12 @@ std::string Response::prepFile()
 {
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
+
+	// std::cout << PINK << "LOCATION (prepFile): " << _location << RESET << std::endl;
 	
 	if (isBinary(_location))
 	{
+		// std::cout << PINK << "inside BINARY (prepFile): " << RESET << std::endl;
 		std::ifstream file(_location.c_str(), std::ios::binary);
 		if (!file.is_open())
 			return ""; // TODO ERROR MESSAGE?
@@ -80,22 +82,29 @@ std::string Response::prepFile()
 	}
     else if (isFolder(_location))
     {
-		// if (not exist) //find location bloc, done by cleo in http request
-		// 	//error
 		_contentType = "text/html";
-		std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
+		// std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return "";//return error to open directory
-		// if (access(_location.c_str(), R_OK) != 0 || this->getAutoindex() == false)
-		// {
-		// 	closedir(dir);
-    	//     return "";//return error miss right to read what's inside
-		// }
-        return doAutoindex(_request->getFullPath().second, dir);
+			return "";//check if is enought
+		std::string index = _location + "/index.html";
+	 	if (access(index.c_str(), F_OK) == 0)
+		{
+			_location += "/index.html";
+			std::ifstream page(_location.c_str());
+			if (!page.is_open())
+				return ""; // TODO ERROR MESSAGE?
+			std::ostringstream pageContent;
+			pageContent << page.rdbuf();
+			page.close();
+			closedir(dir);
+			return pageContent.str();
+		}
+		return doAutoindex(_request->getFullPath().second, dir);
 	}
 	else
 	{
+		// std::cout << PINK << "inside ELSE (prepFile): " << RESET << std::endl; TO BORROW
 		std::ifstream page(_location.c_str());
 		if (!page.is_open())
 			return ""; // TODO ERROR MESSAGE?
@@ -120,8 +129,8 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 		if (uri[uri.size() - 1] != '/')
 			html << "/";
 		html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-		std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
-				  << std::endl; // TO BORROW
+		// std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
+		// 		  << std::endl; // TO BORROW
 	}
 	html << "    </ul>\n</div>\n</body>\n</html>\n";
 	closedir(dir);
@@ -216,6 +225,9 @@ void Response::prepResponse()
 	// 	content = prepFile();
 	// else
 	// 	//errorpages
+
+	//status 301/302 etc.. 
+	
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
@@ -284,11 +296,6 @@ std::string Response::getLength()
 std::string Response::getResponse()
 {
 	return _response;
-}
-
-bool Response::getAutoindex() const
-{
-	return _autoindex;
 }
 
 std::map<std::string, std::string> Response::getCgiHeaders() const

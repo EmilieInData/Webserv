@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 19:18:12 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 15:01:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,10 @@ public:
 	static std::string				parseFragment( std::string const & uri );
 	static bool						notImplementedMethod( std::string const & method );
 	static ServerData const &		checkIfServerExist( std::vector<ServerData> const & servers, std::pair<int, std::string> incoming );
-	static void						checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex,
-									std::map<std::string, LocationConf> const& loc, std::string const& method);
-	static void						notAllowedMethod( std::map<std::string, LocationConf>::iterator loc, 
-									std::vector<std::string> const & serv_meth, std::string const & meth);
+	static void						checkIfPathExist(std::pair<std::string, std::string> const& path, LocationConf& blockLoc,
+													std::string const& method);
+	static void						notAllowedMethod(std::map<std::string, LocationConf>::iterator loc, 
+													std::vector<std::string> const & serv_meth, std::string const & meth);
 	
 	static std::pair<std::string, std::string>	parseHost( std::string const & str );
 	static bool									checkIfHostNameExistInServer(std::string &host, std::vector<std::string> const & serv);

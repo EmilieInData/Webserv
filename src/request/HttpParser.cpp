@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 19:36:25 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:05:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,29 +250,24 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
-{
-	std::map<std::string, LocationConf>::const_iterator	it;
-	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-	
-	for(it = loc.begin(); it != loc.end(); it++)
-	{
-		if (path.find(it->first) == 0)
-		{
-			if (tmp == loc.end() || tmp->first.length() < it->first.length())
-				tmp = it;
-		}
-	}
-    if (tmp == loc.end())
-        return NULL;
-    return &tmp->second;
-}
-
-// void	HttpParser::checkRedirection(std::string& path)
+// LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
 // {
+// 	std::map<std::string, LocationConf>::const_iterator	it;
+// 	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
 	
-	
+// 	for(it = loc.begin(); it != loc.end(); it++)
+// 	{
+// 		if (path.find(it->first) == 0)
+// 		{
+// 			if (tmp == loc.end() || tmp->first.length() < it->first.length())
+// 				tmp = it;
+// 		}
+// 	}
+//     if (tmp == loc.end())
+//         return NULL;
+//     return &tmp->second;
 // }
+
 
 //--> redirection <--
 //         int code = it->second.first;
@@ -286,22 +281,24 @@ LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::str
 //     }
 // }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, bool _autoindex, std::map<std::string, LocationConf> const& loc, std::string const& method)
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, LocationConf& blockLoc, std::string const& method)
 {
 		//virer autoindex en arg car block location && passer la classe request a la place de path && method
 	std::string full( path.first + path.second );
 	
-	LocationConf const* block = findLocation(path.second, loc);
-	if (!block)
-		return; //TODO
-	std::cout << PINK << "KEY= " << block->getKey() << std::endl;
+	// LocationConf const* block = findLocation(path.second, loc);
+	// std::cout << PINK << "KEY= " << block->getKey() << std::endl;
+	
 	//check redirection
-	// if (path.second == "/redirect/") //et tout ce qui est ecrit apres
-	// //checker si il y a une redirection de garder dans le bloc location (car on ne connait pas le mon du dossier)
-	// 	//checker le code et l'adresse dans la variable
-	
-
-	
+	if (!blockLoc.getReturnDirective().empty())
+	{
+		full = path.first + blockLoc.getReturnDirective()[1];// TO CHANGE
+		// HTTP/1.1 302 Found
+		// Location: /newpage
+		// Content-Length: 0
+		//checker le code ??
+		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+	}	
 	if (path.second == "/" || path.second.empty())
 		full = path.first + "/index.html";
 
@@ -321,21 +318,29 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
     {
 		if ( method == "DELETE" ) throw std::invalid_argument(E_403); //CLEO
 
-		std::cout << PINK << "inside folder\n" << RESET;
+		// std::cout << PINK << "inside folder\n" << RESET; TO BORROW
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
-	    if (access(full.c_str(), R_OK) != 0) //TODO check if there is an index
+		
+		std::string index = full + "/index.html";
+		if (access(index.c_str(), F_OK) == 0)
 		{
-			closedir(dir);
-			throw std::invalid_argument(E_403);
+			if (access(index.c_str(), R_OK) != 0)
+			{
+				closedir(dir);
+				throw std::invalid_argument(E_403);
+			}
 		}
-		(void) _autoindex;
-		// if ( pas d'index && _autoindex == false)
+		else
+		{
+			if (access(full.c_str(), R_OK) != 0 || blockLoc.getAutoindex() == false)
+			{
+				closedir(dir);
+				throw std::invalid_argument(E_403);
+			}
+		}
 		closedir(dir);
-// 		Chercher index.html dans le dossier avec opendir + readdir.
-// 		Si pas trouvé et _autoindex == false → renvoyer 403.
-// 		Si _autoindex == true → générer un listing.
 	}
 	else
 	{
@@ -345,12 +350,10 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& pa
 			throw std::invalid_argument(E_403);
 		page.close();
 	}
-
 	if ( method == "DELETE" ) { //FABIO delete aqui 
 		std::remove( full.c_str() );
 		throw std::invalid_argument(E_204);
 	}
-
 }
 
 // void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {

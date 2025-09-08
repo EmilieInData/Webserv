@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/05 19:21:55 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/08 15:38:10 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,24 @@ void HttpRequest::printBodies()
 	// }
 }
 
+LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+{
+	std::map<std::string, LocationConf>::const_iterator	it;
+	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
+	
+	for(it = loc.begin(); it != loc.end(); it++)
+	{
+		if (path.find(it->first) == 0)
+		{
+			if (tmp == loc.end() || tmp->first.length() < it->first.length())
+				tmp = it;
+		}
+	}
+    if (tmp == loc.end())
+        return NULL;
+    return &tmp->second;
+}
+
 void HttpRequest::finalHeadersParsingRoutine()
 {
 	if (this->headers->getHeader("cookie") != this->headers->getHeaderEnd())
@@ -176,7 +194,9 @@ void HttpRequest::finalHeadersParsingRoutine()
 	setLocation(serv.getLocations(), this->_fullPath.second);
 
 	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
-	HttpParser::checkIfPathExist(this->_fullPath, getAutoindex(), serv.getLocations(), this->getHttpMethod() );
+	
+	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
+	HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
 	
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
@@ -305,7 +325,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locatio
 		// TODO if script fails throw error here
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
-	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
+	// _autoindex = it->second.getAutoindex(); //ADD by EMILIE
 	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
@@ -398,10 +418,10 @@ int HttpRequest::getStatusCode() const
 	return this->code;
 }
 
-bool HttpRequest::getAutoindex() const
-{
-	return this->_autoindex;
-}
+// bool HttpRequest::getAutoindex() const
+// {
+// 	return this->_autoindex;
+// }
 
 int HttpRequest::getParsingState() const
 {
@@ -469,3 +489,26 @@ std::pair<std::string, std::string>  HttpRequest::getHost() const
 		try and access location (it should already be checked in request)
 		create file with name and copy bits
 	} */
+
+LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+{
+	std::map<std::string, LocationConf>::const_iterator	it;
+	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
+	
+	for(it = loc.begin(); it != loc.end(); it++)
+	{
+		if (path.find(it->first) == 0)
+		{
+			if (tmp == loc.end() || tmp->first.length() < it->first.length())
+				tmp = it;
+		}
+	}
+    if (tmp == loc.end())
+        return LocationConf();
+    return tmp->second;
+}
+
+LocationConf	HttpRequest::getBlockLoc()const
+{
+	return blockLoc;
+}
