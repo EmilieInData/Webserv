@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-import cgi
 import json
 import os
 from datetime import datetime
+import sys
+from urllib.parse import parse_qs
 
 # The JSON file will be stored in the same directory as the script.
 JSON_FILE = './zodiac_list.json'
@@ -39,15 +40,17 @@ try:
         zodiac_list = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
     zodiac_list = []
-
 # Process form data
-form = cgi.FieldStorage()
-confirmation_message = ""
+if os.environ.get('REQUEST_METHOD', '') == 'POST':
+    input_data = sys.stdin.read(int(os.environ.get('CONTENT_LENGTH', 0)))
+else:
+    input_data = os.environ.get('QUERY_STRING', '')
 
-# --- NEW: Handle DELETE action ---
-if form.getvalue('action') == 'delete':
+form = parse_qs(input_data)
+
+if form.get('action', [''])[0] == 'delete':
     try:
-        index_to_delete = int(form.getvalue('index'))
+        index_to_delete = int(form.get('index', [''])[0])
         if 0 <= index_to_delete < len(zodiac_list):
             deleted_person = zodiac_list.pop(index_to_delete)
             confirmation_message = f"<h2>Successfully deleted {deleted_person['first_name']} {deleted_person['last_name']}.</h2>"
@@ -56,12 +59,10 @@ if form.getvalue('action') == 'delete':
                 json.dump(zodiac_list, f, indent=4)
     except (TypeError, ValueError):
         confirmation_message = "<h2>Error: Invalid index for deletion.</h2>"
-
-# --- Handle ADD action ---
-elif form.getvalue('dob'):
-    first_name = form.getvalue('first_name')
-    last_name = form.getvalue('last_name')
-    dob_str = form.getvalue('dob')
+elif form.get('dob', [''])[0]:
+    first_name = form.get('first_name', [''])[0]
+    last_name = form.get('last_name', [''])[0]
+    dob_str = form.get('dob', [''])[0]
     if first_name and last_name and dob_str:
         try:
             dob_date = datetime.strptime(dob_str, '%d/%m/%Y')
@@ -75,6 +76,12 @@ elif form.getvalue('dob'):
             }
             zodiac_list.append(new_entry)
             
+            with open(JSON_FILE, 'w') as f:
+                json.dump(zodiac_list, f, indent=4)
+                
+            confirmation_message = f"<h2>Successfully added {first_name} {last_name} ({sign})!</h2>"
+        except ValueError:
+            confirmation_message = "<h2>Error: Invalid date format. Please use DD/MM/YYYY.</h2>"
             with open(JSON_FILE, 'w') as f:
                 json.dump(zodiac_list, f, indent=4)
                 
