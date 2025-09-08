@@ -1,40 +1,41 @@
 #!/usr/bin/python3
-import sys
+import cgi
 import os
 
-# The location for our log file. Ensure this directory is writable by the server.
-LOG_FILE = './cgi_debug.log' 
+# The directory where files will be saved (make sure it exists and has write permissions)
+UPLOAD_DIR = '../uploads/'
 
-try:
-    # Open the log file for writing
-    with open(LOG_FILE, 'w') as f:
-        f.write("--- CGI Debug Log ---\n\n")
+form = cgi.FieldStorage()
+
+status_line = "Status: 200 OK"
+headers = ["Content-Type: text/html"]
+body = ""
+
+if 'filename' in form:
+    fileitem = form['filename']
+
+    if fileitem.filename:
+        fn = os.path.basename(fileitem.filename)
+        filepath = os.path.join(UPLOAD_DIR, fn)
         
-        # Log all environment variables given by the server
-        f.write("## Environment Variables:\n")
-        for key, value in os.environ.items():
-            f.write(f"{key}: {value}\n")
-        
-        f.write("\n---\n\n")
-        
-        # Check for CONTENT_LENGTH to know how much data to read
-        content_length_str = os.environ.get('CONTENT_LENGTH', '0')
-        f.write(f"## STDIN Content (based on CONTENT_LENGTH={content_length_str}):\n")
+        try:
+            with open(filepath, 'wb') as f:
+                f.write(fileitem.file.read())
+            message = f'The file "{fn}" was uploaded successfully to {filepath}'
+            body = f"<html><body><h1>Success!</h1><p>{message}</p></body></html>"
+        except IOError as e:
+            status_line = "Status: 500 Internal Server Error"
+            message = f'Could not save file. Error: {e}'
+            body = f"<html><body><h1>Error</h1><p>{message}</p></body></html>"
+    else:
+        message = 'No file was uploaded.'
+        body = f"<html><body><h1>Upload Status</h1><p>{message}</p></body></html>"
+else:
+    message = 'Form is missing the "filename" field.'
+    body = f"<html><body><h1>Error</h1><p>{message}</p></body></html>"
 
-        if content_length_str:
-            content_length = int(content_length_str)
-            # Read the exact number of bytes from standard input
-            stdin_body = sys.stdin.read(content_length)
-            f.write(stdin_body)
-        else:
-            f.write("No CONTENT_LENGTH, so stdin was not read.\n")
-
-    # Send a success message to the browser
-    print("Content-Type: text/html\r\n\r\n")
-    print("<html><body><h1>Debug log created</h1>")
-    print(f"<p>Check the server for the file: <b>{os.path.abspath(LOG_FILE)}</b></p></body></html>")
-
-except Exception as e:
-    # If an error happens, try to report it to the browser
-    print("Content-Type: text/html\r\n\r\n")
-    print(f"<html><body><h1>CGI Script Error</h1><p>{e}</p></body></html>")
+print(status_line)
+for header in headers:
+    print(header)
+print() 
+print(body)
