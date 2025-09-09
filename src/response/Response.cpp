@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 18:09:52 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:53:00 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,7 @@ void Response::prepResponse()
 		std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
 		if (errorPageIt != errorPages.end())
 		{
-			_location = _request->getFullPath().first + "/error_pages/" + errorPageIt->second; // TODO change error page locatio in parsing
+			_location = _request->getFullPath().first + errorPageIt->second; // TODO change error page locatio in parsing
 			std::cout << RED << "[errorpage found] " << _location << RESET << std::endl; // DBG
 		}
 		else
