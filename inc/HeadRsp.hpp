@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/02 11:36:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:31:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ public:
 
 	void		setContentType(); // TODO check from script as well
 	void		setProtocol();
-	void		setStatusCode();
+	void		setRspStatusCode();
 	void		setContentLength();
 	void		setConnectionType();
 	void		setCacheControl();

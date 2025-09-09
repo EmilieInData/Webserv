@@ -17,7 +17,7 @@ HeadRsp::HeadRsp(Response &response) : _response(&response)
 {
 	setContentType();
 	setProtocol();
-	setStatusCode();
+	setRspStatusCode();
 	setContentLength();
 	setConnectionType();
 	setCacheControl();
@@ -39,7 +39,7 @@ void HeadRsp::setProtocol()
 	_protocol = "HTTP/1.1";
 }
 
-void HeadRsp::setStatusCode()
+void HeadRsp::setRspStatusCode()
 {
 	const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
 
@@ -53,7 +53,22 @@ void HeadRsp::setStatusCode()
 		}
 	}
 
-	_statusCode = "200 OK";
+	int				  code = _response->getStatusCode();
+	std::stringstream ss;
+	ss << code;
+
+	const std::map<int, std::string>		  &statusCodeMap = getStatusCodeMap();
+	std::map<int, std::string>::const_iterator it			 = statusCodeMap.find(code);
+	if (it != statusCodeMap.end())
+	{
+		_statusCode = ss.str() + " " + it->second;
+	}
+	else
+	{
+		_statusCode = ss.str() + " Unknown Status";
+	}
+
+	std::cout << RED << __func__ << " > " << _statusCode << RESET << std::endl; // DBG
 }
 
 void HeadRsp::setConnectionType()
@@ -94,7 +109,8 @@ void HeadRsp::buildHeader()
 
 	if (!cgiHeaders.empty())
 	{
-		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
+		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin();
+			 it != cgiHeaders.end(); ++it)
 		{
 			if (it->first != "Status" && it->first != "Content-Type")
 			{
@@ -103,7 +119,7 @@ void HeadRsp::buildHeader()
 		}
 		_header += _contentType;
 	}
-	else 
+	else
 	{
 		_header += _contentType;
 		_header += _cacheControl;
@@ -111,6 +127,7 @@ void HeadRsp::buildHeader()
 
 	_header += _contentLength;
 	_header += HEADNL;
+	std::cout << RED << "[BUILT HEADER]\n" << _header << RESET << std::endl; // DBG
 }
 
 std::string HeadRsp::getHeader()
