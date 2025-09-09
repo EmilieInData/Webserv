@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/05 16:23:41 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:29:13 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,4 +402,40 @@ std::string upperKey(std::string const &key)
 		}
 	}
 	return normalized;
+}
+
+void replaceContent(std::string &htmlContent, const std::string &target, const std::string &newContent)
+{
+	if (target.empty())
+		return;
+	size_t startPos = 0;
+	while ((startPos = htmlContent.find(target, startPos)) != std::string::npos)
+	{
+		htmlContent.replace(startPos, target.length(), newContent);
+		startPos += newContent.length(); // Move past the replacement
+	}
+}
+
+std::map<int, std::string> getStatusCodeMap()
+{
+	std::map<int, std::string> m;
+	m[100] = "Continue";
+	m[101] = "Switching Protocols";
+	m[200] = "OK";
+	m[201] = "Created";
+	m[202] = "Accepted";
+	m[204] = "No Content";
+	m[301] = "Moved Permanently";
+	m[302] = "Found";
+	m[304] = "Not Modified";
+	m[400] = "Bad Request";
+	m[401] = "Unauthorized";
+	m[403] = "Forbidden";
+	m[404] = "Not Found";
+	m[405] = "Method Not Allowed";
+	m[500] = "Internal Server Error";
+	m[501] = "Not Implemented";
+	m[502] = "Bad Gateway";
+	m[503] = "Service Unavailable";
+	return m;
 }

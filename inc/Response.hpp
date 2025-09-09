@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 15:15:40 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:25:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Response
 private:
 	const HttpRequest*				  	_request;
 	int								   	_clientFd;
+	int									_statusCode;
 	std::string						   	_response;
 	std::string						   	_location;
 	std::string						   	_method;
@@ -59,6 +60,7 @@ public:
 	std::string doAutoindex(std::string str, DIR *dir);
 	void		doHtmlAutoindex(std::string &uri, std::ostringstream &html);
 	std::map<std::string, std::string> getCgiHeaders() const;
+	int			getStatusCode() const;
 };
 
 #endif

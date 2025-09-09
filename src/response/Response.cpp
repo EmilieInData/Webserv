@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 17:21:27 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:09:52 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ Response::Response(HttpRequest const &request) : _request(&request)
 	_clientFd	   = -1;
 	_response	   = "";
 	_location	   = "";
+	_statusCode	   = _request->getStatusCode();
 	_method		   = "";
 	_contentType   = "";
 	_contentLength = "";
-	_blockLoc 	   = _request->getBlockLoc();
+	_blockLoc	   = _request->getBlockLoc();
 }
 
 Response::~Response() {}
@@ -45,6 +46,15 @@ void Response::setResponse(std::string response)
 
 void Response::setContent(std::pair<std::string, std::string> fullPath, std::string method)
 {
+	_statusCode = _request->getStatusCode();
+	_method		= method;
+	if (_statusCode >= 400)
+	{
+		_location = "/home/fdi-cecc/webserv/www/error_pages/404.html";
+		std::cout << RED << "[STATCO]> " << _statusCode << " [LOC]> " << _location << RESET
+				  << std::endl; // DBG
+		return;
+	}
 	std::cout << PINK << "FullPath.first(set content): " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (!_blockLoc.getReturnDirective().empty())
@@ -53,8 +63,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 		_location = fullPath.first + "/index.html";
 	else
 		_location = fullPath.first + fullPath.second;
-	std::cout << PINK << "_Location (set content): " << _location << RESET << std::endl; // TO BORROW
-	_method = method;
+	std::cout << RED << "[STATCO]> " << _statusCode << " [LOC]> " << _location << RESET << std::endl;
 }
 
 void Response::setClientFd(int clientFd)
@@ -67,8 +76,8 @@ std::string Response::prepFile()
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
 
-	// std::cout << PINK << "LOCATION (prepFile): " << _location << RESET << std::endl;
-	
+	std::cout << RED << "LOCATION (prepFile): " << _location << RESET << std::endl;
+
 	if (isBinary(_location))
 	{
 		// std::cout << PINK << "inside BINARY (prepFile): " << RESET << std::endl;
@@ -80,15 +89,15 @@ std::string Response::prepFile()
 		file.close();
 		return buffer.str();
 	}
-    else if (isFolder(_location))
-    {
+	else if (isFolder(_location))
+	{
 		_contentType = "text/html";
 		// std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
 		if (!dir)
-			return "";//check if is enought
+			return ""; //check if is enought
 		std::string index = _location + "/index.html";
-	 	if (access(index.c_str(), F_OK) == 0)
+		if (access(index.c_str(), F_OK) == 0)
 		{
 			_location += "/index.html";
 			std::ifstream page(_location.c_str());
@@ -198,19 +207,20 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 	html << "    <ul>\n";
 }
 
+extern const std::map<int, std::string> statusCodeMap;
+
 void Response::prepResponse()
 {
 	std::string content;
+	bool		isErrorPage = (_statusCode >= 400);
 
 	_contentType = _request->getRspType();
-
 	std::cout << PINK << "Content type(prepResponse) : " << _contentType << std::endl; // DBG
 
 	if (_contentType == "cgi-script")
 	{
 		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
-
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
@@ -218,16 +228,39 @@ void Response::prepResponse()
 			_contentType = "text/plain";
 	}
 
+	if (isErrorPage && _contentType != "cgi-script")
+	{
+		const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
+
+		// Check if the status code exists in the errorPages map
+		std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
+		if (errorPageIt != errorPages.end())
+		{
+			_location = _request->getFullPath().first + "/error_pages/" + errorPageIt->second; // TODO change error page locatio in parsing
+			std::cout << RED << "[errorpage found] " << _location << RESET << std::endl; // DBG
+		}
+		else
+		{
+			_location = "/home/fdi-cecc/webserv/www/error_pages/error.html";
+			std::cout << RED << "[errorpage not found] " << _location << RESET << std::endl; // DBG
+		}
+
+		_contentType							= "text/html";
+		content									= prepFile();
+		std::string				   reasonPhrase = "Unknown Status";
+		std::map<int, std::string> statusMap	= getStatusCodeMap();
+		if (statusMap.find(_statusCode) != statusMap.end())
+			reasonPhrase = statusMap[_statusCode];
+
+		std::stringstream ss;
+		ss << _statusCode;
+
+		replaceContent(content, "{{STATUS_CODE}}", ss.str());
+		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
+	}
 	else
 		content = prepFile();
 
-	// else if (_request->getStatusCode() == 200)
-	// 	content = prepFile();
-	// else
-	// 	//errorpages
-
-	//status 301/302 etc.. 
-	
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
@@ -301,4 +334,9 @@ std::string Response::getResponse()
 std::map<std::string, std::string> Response::getCgiHeaders() const
 {
 	return _cgiHeaders;
+}
+
+int Response::getStatusCode() const
+{
+	return _statusCode;
 }

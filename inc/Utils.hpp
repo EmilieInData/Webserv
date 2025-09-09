@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/05 16:25:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:29:40 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ size_t visLen(const std::string &str);
 // others
 std::string intToString(const int &num);
 std::string upperKey(std::string const &key);
+void replaceContent(std::string &htmlContent, const std::string &target, const std::string &newContent);
 
 // check file extension
 bool isBinary(std::string location);
@@ -101,5 +102,8 @@ bool isFolder(std::string location);
 
 // cleanup
 void deleteArray(char **array);
+
+// reference
+std::map<int, std::string> getStatusCodeMap();
 
 #endif
