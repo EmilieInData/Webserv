@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 16:33:05 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:09:52 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ std::string Response::prepFile()
 	// Check if it's a binary file (image)
 	//check if _location is empty first? TODO
 
-	// std::cout << PINK << "LOCATION (prepFile): " << _location << RESET << std::endl;
+	std::cout << RED << "LOCATION (prepFile): " << _location << RESET << std::endl;
 
 	if (isBinary(_location))
 	{
@@ -227,13 +227,26 @@ void Response::prepResponse()
 		else
 			_contentType = "text/plain";
 	}
-	else
-		content = prepFile();
 
 	if (isErrorPage && _contentType != "cgi-script")
 	{
-		_contentType = "text/html";
+		const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
 
+		// Check if the status code exists in the errorPages map
+		std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
+		if (errorPageIt != errorPages.end())
+		{
+			_location = _request->getFullPath().first + "/error_pages/" + errorPageIt->second; // TODO change error page locatio in parsing
+			std::cout << RED << "[errorpage found] " << _location << RESET << std::endl; // DBG
+		}
+		else
+		{
+			_location = "/home/fdi-cecc/webserv/www/error_pages/error.html";
+			std::cout << RED << "[errorpage not found] " << _location << RESET << std::endl; // DBG
+		}
+
+		_contentType							= "text/html";
+		content									= prepFile();
 		std::string				   reasonPhrase = "Unknown Status";
 		std::map<int, std::string> statusMap	= getStatusCodeMap();
 		if (statusMap.find(_statusCode) != statusMap.end())
@@ -245,6 +258,8 @@ void Response::prepResponse()
 		replaceContent(content, "{{STATUS_CODE}}", ss.str());
 		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
 	}
+	else
+		content = prepFile();
 
 	std::ostringstream output;
 	output << content.length();
