@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 14:28:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 12:14:50 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ private:
 	std::string						   _contentType;
 	std::string						   _scriptOutput;
 	std::string						   _scriptType;
+	std::string						   _scriptName;
 
 	Script(Script const &src);
 	Script &operator=(Script const &rhs);
@@ -41,7 +42,7 @@ public:
 	Script();
 	~Script();
 
-	void		runScript(HttpRequest const &request);
+	void		runScript(HttpRequest const &request, std::string const &interpreterPath);
 	char	  **setEnv(HttpRequest const &request); // TODO put back to char** after testing
 	void		setScriptType(std::string const &cgiPath);
 	int			getStatusCode() const;

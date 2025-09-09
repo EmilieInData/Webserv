@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/08 17:20:24 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:21:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ private:
 	int									body_state;
 	std::string							fullRequest;
 	std::string							_rspType;
+	std::string							_cgiInterpreterPath;
 	std::pair<int, std::string>			incoming;
 	ServerManager					   &server;
 	LocationConf						blockLoc;
@@ -126,6 +127,7 @@ public:
 	LocationConf						findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
 	LocationConf						getBlockLoc()const;
 	std::string							getRawBody() const;
+	std::string							&getInterpreterPath() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

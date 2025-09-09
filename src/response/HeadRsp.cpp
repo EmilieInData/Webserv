@@ -86,7 +86,6 @@ void HeadRsp::setCacheControl()
 void HeadRsp::buildHeader()
 {
 	_header = _protocol + " " + _statusCode + HEADNL;
-
 	_header += "Server: webserv/1.0" + std::string(HEADNL);
 	_header += "Date: " + getHttpDate() + std::string(HEADNL);
 	_header += _connectionType;
@@ -97,16 +96,12 @@ void HeadRsp::buildHeader()
 	{
 		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
 		{
-			if (it->first != "Status")
+			if (it->first != "Status" && it->first != "Content-Type")
 			{
 				_header += it->first + ": " + it->second + HEADNL;
 			}
 		}
-
-		if (cgiHeaders.find("Content-Type") == cgiHeaders.end())
-		{
-			_header += "Content-Type: text/plain" + std::string(HEADNL);
-		}
+		_header += _contentType;
 	}
 	else 
 	{
@@ -115,7 +110,6 @@ void HeadRsp::buildHeader()
 	}
 
 	_header += _contentLength;
-
 	_header += HEADNL;
 }
 
