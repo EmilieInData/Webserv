@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/08 13:39:00 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:51:52 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,7 +250,7 @@ size_t	ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i)
 		throw std::invalid_argument(" Parsing error, 'error_page' html adress is missed\n");
 	for (size_t j = 0; j < num.size(); j++)
 		_errorPage[num[j]] = path;
-	checkErrorPage(_errorPage);
+	// checkErrorPage(_errorPage);
 	return i + 1;
 }
 

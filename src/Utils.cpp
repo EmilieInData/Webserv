@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 16:29:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:52:14 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,29 +252,45 @@ bool isErrorPage(std::string const &value)
 	return false;
 }
 
+// bool isHtmlAddress(std::string const &value)
+// {
+// 	if (value == "/404.html" || value == "/50x.html" || value == "/4xx.html")
+// 		return true;
+// 	return false;
+// }
+
+
+//pas d’espaces ou caractères interdits.
+
+
 bool isHtmlAddress(std::string const &value)
 {
-	if (value == "/404.html" || value == "/50x.html" || value == "/4xx.html")
-		return true;
-	return false;
+	if (value[0] != '/')
+		return false;
+	for (size_t i = 0; i < value.length(); i++)
+		{
+			if (value[i] != '_' && value[i] != '-' && value[i] != '.' && value[i] != '/' && !isalnum(value[i]))
+				return false;
+		}
+	return true;
 }
 
-void checkErrorPage(std::map<int, std::string> const &value)
-{
-	std::map<int, std::string>::const_iterator it;
+// void checkErrorPage(std::map<int, std::string> const &value)
+// {
+// 	std::map<int, std::string>::const_iterator it;
 
-	for (it = value.begin(); it != value.end(); it++)
-	{
-		if ((it->first == 404 && it->second != "/404.html") ||
-			((it->first == 500 || it->first == 501) && it->second != "/50x.html") ||
-			((it->first == 400 || it->first == 401 || it->first == 403 || it->first == 405 ||
-			  it->first == 410 || it->first == 413 || it->first == 414) &&
-			 it->second != "/4xx.html"))
-			throw std::invalid_argument(" Parsing error, 'error_page' number &"
-										" html adress don't match\n");
-	}
-	return;
-}
+// 	for (it = value.begin(); it != value.end(); it++)
+// 	{
+// 		if ((it->first == 404 && it->second != "/404.html") ||
+// 			((it->first == 500 || it->first == 501) && it->second != "/50x.html") ||
+// 			((it->first == 400 || it->first == 401 || it->first == 403 || it->first == 405 ||
+// 			  it->first == 410 || it->first == 413 || it->first == 414) &&
+// 			 it->second != "/4xx.html"))
+// 			throw std::invalid_argument(" Parsing error, 'error_page' number &"
+// 										" html adress don't match\n");
+// 	}
+// 	return;
+// }
 
 void setupSignal()
 {
