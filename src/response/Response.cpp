@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 22:54:16 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 23:29:13 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,9 +210,30 @@ void Response::prepResponse()
 	bool		isErrorPage = (_statusCode >= 400);
 
 	_contentType = _request->getRspType();
-	std::cout << PINK << "Content type(prepResponse) : " << _contentType << std::endl; // DBG
 
-	if (_contentType == "cgi-script")
+	if (isErrorPage)
+	{
+		// const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
+		// std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
+		// if (errorPageIt != errorPages.end())
+		// 	_location = _request->getFullPath().first + errorPageIt->second;
+		// else
+		_location = _request->getFullPath().first + "/error_pages/error.html"; 
+
+		_contentType = "text/html";
+		content = prepFile();
+
+		std::string reasonPhrase = "Unknown Status";
+		std::map<int, std::string> statusMap = getStatusCodeMap(); 
+		if (statusMap.find(_statusCode) != statusMap.end())
+			reasonPhrase = statusMap[_statusCode];
+		
+		std::stringstream ss;
+		ss << _statusCode;
+		replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
+		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
+	}
+	else if (_contentType == "cgi-script")
 	{
 		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
@@ -220,38 +241,7 @@ void Response::prepResponse()
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
 		else
-			_contentType = "text/plain";
-	}
-
-	if (isErrorPage && _contentType != "cgi-script")
-	{
-		const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
-
-		// Check if the status code exists in the errorPages map
-		std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
-		if (errorPageIt != errorPages.end())
-		{
-			_location = _request->getFullPath().first + errorPageIt->second; // TODO change error page locatio in parsing
-			std::cout << RED << "[errorpage found] " << _location << RESET << std::endl; // DBG
-		}
-		else
-		{
-			_location = "/home/fdi-cecc/webserv/www/error_pages/error.html";
-			std::cout << RED << "[errorpage not found] " << _location << RESET << std::endl; // DBG
-		}
-
-		_contentType							= "text/html";
-		content									= prepFile();
-		std::string				   reasonPhrase = "Unknown Status";
-		std::map<int, std::string> statusMap	= getStatusCodeMap();
-		if (statusMap.find(_statusCode) != statusMap.end())
-			reasonPhrase = statusMap[_statusCode];
-
-		std::stringstream ss;
-		ss << _statusCode;
-
-		replaceContent(content, "{{STATUS_CODE}}", ss.str());
-		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
+			_contentType = "text/plain"; 
 	}
 	else
 		content = prepFile();
