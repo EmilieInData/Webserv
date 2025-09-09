@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 18:53:00 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 22:54:16 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Response::Response(HttpRequest const &request) : _request(&request)
 	_clientFd	   = -1;
 	_response	   = "";
 	_location	   = "";
-	_statusCode	   = _request->getStatusCode();
+	_statusCode	   = -1;
 	_method		   = "";
 	_contentType   = "";
 	_contentLength = "";
@@ -49,12 +49,7 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 	_statusCode = _request->getStatusCode();
 	_method		= method;
 	if (_statusCode >= 400)
-	{
-		_location = "/home/fdi-cecc/webserv/www/error_pages/404.html";
-		std::cout << RED << "[STATCO]> " << _statusCode << " [LOC]> " << _location << RESET
-				  << std::endl; // DBG
 		return;
-	}
 	std::cout << PINK << "FullPath.first(set content): " << fullPath.first << "\n"
 			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (!_blockLoc.getReturnDirective().empty())
