@@ -102,7 +102,6 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
 		close(pipeIn[PIPE_READ]);
 
-		// Redirect script's stdout to write to pipeOut
 		close(pipeOut[PIPE_READ]);
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
 		dup2(pipeOut[PIPE_WRITE], STDERR_FILENO);
@@ -253,7 +252,7 @@ void Script::parseOutput()
 	if (separatorPos == std::string::npos)
 	{
 		separatorPos = _scriptOutput.find("\n\n");
-		separatorLen = 2; // The length of "\n\n"
+		separatorLen = 2;
 	}
 
 	std::string headersPart;
