@@ -25,11 +25,11 @@ void Script::setScriptType(std::string const &cgiPath)
 	{
 		printBoxError("Invalid script type");
 		exit(1);
-		//TODO implement proper throw/error
+		// TODO implement proper throw/error
 	}
 }
 
-void Script::runScript(HttpRequest const &request)
+void Script::runScript(HttpRequest const &request, std::string const &interpreterPath)
 {
 	_scriptOutput.clear();
 	_outputBody.clear();
@@ -47,18 +47,24 @@ void Script::runScript(HttpRequest const &request)
 
 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
 	{
-		//TODO what error number here?
+		// TODO what error number here?
 		printBoxError("Pipe Error");
 		_scriptOutput = "";
 	}
 
 	char **envServ = setEnv(request);
 
+	// Print all environment variables before execution
+	std::cout << RED << "[ENV variables before execution]" << std::endl;
+	for (int i = 0; envServ[i] != NULL; i++)
+		std::cout << envServ[i] << std::endl;
+	std::cout << RESET << std::endl;
+
 	pid_t child = fork();
 
 	if (child < 0)
 	{
-		//TODO also here, what error?
+		// TODO also here, what error?
 		printBoxError("Fork error");
 		close(pipeOut[PIPE_WRITE]);
 		close(pipeOut[PIPE_READ]);
@@ -96,9 +102,9 @@ void Script::runScript(HttpRequest const &request)
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
 		close(pipeIn[PIPE_READ]);
 
-		// Redirect script's stdout to write to pipeOut
 		close(pipeOut[PIPE_READ]);
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
+		dup2(pipeOut[PIPE_WRITE], STDERR_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
 		if (_scriptType == ".py")
@@ -106,9 +112,8 @@ void Script::runScript(HttpRequest const &request)
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php-cgi";
 
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(scriptFile.c_str()),
-						NULL};
-
+		char *argv[] = {const_cast<char *>(interpreterPath.c_str()),
+						const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
@@ -196,20 +201,21 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 
 	Headers *reqHeaders = request.getReqHeaders();
 
-	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader("content-type");
+	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader(
+		"content-type");
 	if (it_ct != reqHeaders->getHeaderEnd())
 	{
-		const std::vector<std::string>& values = it_ct->second;
-		std::string contentTypeValue = values[0]; 
+		const std::vector<std::string> &values			 = it_ct->second;
+		std::string						contentTypeValue = values[0];
 		for (size_t i = 1; i < values.size(); ++i)
 		{
-			contentTypeValue += ";" + values[i]; 
+			contentTypeValue += ";" + values[i];
 		}
 		envVars.push_back("CONTENT_TYPE=" + contentTypeValue);
 	}
 
-if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
-    envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
+	if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
+		envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
 
 	for (std::map<std::string, std::vector<std::string> >::const_iterator it =
 			 reqHeaders->getHeaderBegin();
@@ -240,35 +246,45 @@ if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
 
 void Script::parseOutput()
 {
-	size_t clrfPos = _scriptOutput.find("\r\n\r\n");
+	size_t separatorPos = _scriptOutput.find("\r\n\r\n");
+	size_t separatorLen = 4; 
 
-	if (clrfPos == std::string::npos)
+	if (separatorPos == std::string::npos)
+	{
+		separatorPos = _scriptOutput.find("\n\n");
+		separatorLen = 2;
+	}
+
+	std::string headersPart;
+	if (separatorPos != std::string::npos)
+	{
+		headersPart = _scriptOutput.substr(0, separatorPos);
+		_outputBody = _scriptOutput.substr(separatorPos + separatorLen); 
+	}
+	else
 	{
 		_outputBody = _scriptOutput;
 		return;
 	}
 
-	std::string headers = _scriptOutput.substr(0, clrfPos);
-	_outputBody			= _scriptOutput.substr(clrfPos + 4);
-
-	std::stringstream streamHeaders(headers);
-	std::string		  headerLine;
-	while (std::getline(streamHeaders, headerLine))
+	std::stringstream ss(headersPart);
+	std::string		  line;
+	while (std::getline(ss, line))
 	{
-		if (!headerLine.empty() && headerLine[headerLine.size() - 1] == '\r')
-			headerLine.erase(headerLine.size() - 1);
+		if (!line.empty() && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1); 
 
-		size_t colon = headerLine.find(':');
-		if (colon != std::string::npos)
+		size_t colonPos = line.find(':');
+		if (colonPos != std::string::npos)
 		{
-			std::string key	  = headerLine.substr(0, colon);
-			std::string value = headerLine.substr(colon + 1);
+			std::string key	  = upperKey(line.substr(0, colonPos));
+			std::string value = line.substr(colonPos + 1);
 
-			size_t first = value.find_first_not_of(" \t");
-			if (first != std::string::npos)
-				value = value.substr(first);
+			size_t firstChar = value.find_first_not_of(" \t");
+			if (firstChar != std::string::npos)
+				value = value.substr(firstChar);
 
-			_outputHeaders[upperKey(key)] = value;
+			_outputHeaders[key] = value;
 		}
 	}
 }

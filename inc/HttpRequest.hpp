@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/08 15:03:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 12:11:06 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ private:
 	int									body_state;
 	std::string							fullRequest;
 	std::string							_rspType;
+	std::string							_cgiInterpreterPath;
 	std::pair<int, std::string>			incoming;
 	ServerManager					   &server;
 
@@ -124,6 +125,7 @@ public:
 	std::pair<int, std::string>			getAddrPort() const;
 	std::pair<std::string, std::string> getHost() const;
 	std::string							getRawBody() const;
+	std::string							&getInterpreterPath() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
