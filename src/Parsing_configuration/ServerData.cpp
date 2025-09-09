@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/29 10:56:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:24:14 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,12 @@ std::string const&	ServerData::getRoot() const
 	return _root;
 }
 
-std::map<std::string, LocationConf>&	ServerData::getLocations() const
+std::map<std::string, LocationConf>&	ServerData::getLocations()
+{
+	return _locations;
+}
+
+std::map<std::string, LocationConf> const&	ServerData::getLocations() const
 {
 	return const_cast<std::map<std::string, LocationConf>&>(_locations);
 }

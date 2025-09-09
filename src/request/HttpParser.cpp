@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/08 20:53:10 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:22:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,25 +250,65 @@ ServerData const &	HttpParser::checkIfServerExist( std::vector<ServerData> const
 
 }
 
-void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path, bool _autoindex, std::string const & method )
+// LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+// {
+// 	std::map<std::string, LocationConf>::const_iterator	it;
+// 	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
+	
+// 	for(it = loc.begin(); it != loc.end(); it++)
+// 	{
+// 		if (path.find(it->first) == 0)
+// 		{
+// 			if (tmp == loc.end() || tmp->first.length() < it->first.length())
+// 				tmp = it;
+// 		}
+// 	}
+//     if (tmp == loc.end())
+//         return NULL;
+//     return &tmp->second;
+// }
+
+
+//--> redirection <--
+//         int code = it->second.first;
+//         const std::string &redirect_to = it->second.second;
+
+//         std::cout << "Redirection détectée: " << path.second 
+//                   << " -> " << redirect_to << std::endl;
+
+//         // Ici au lieu de throw, tu pourrais générer la réponse HTTP directement
+//         throw std::invalid_argument("REDIRECT_" + std::to_string(code) + "_" + redirect_to);
+//     }
+// }
+
+void	HttpParser::checkIfPathExist( std::pair<std::string, std::string> const& path, LocationConf& blockLoc, std::string const& method)
 {
+		//virer autoindex en arg car block location && passer la classe request a la place de path && method
 	std::string full( path.first + path.second );
 	
-	if (path.second == "/redirect/")
-		full = path.first + "/redirect/index.html";
-	else if (path.second == "/" || path.second.empty())
+	// LocationConf const* block = findLocation(path.second, loc);
+	// std::cout << PINK << "KEY= " << block->getKey() << std::endl;
+	
+	//check redirection
+	if (!blockLoc.getReturnDirective().empty())
+	{
+		full = path.first + blockLoc.getReturnDirective()[1];// TO CHANGE
+		// HTTP/1.1 302 Found
+		// Location: /newpage
+		// Content-Length: 0
+		//checker le code ??
+		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+	}	
+	if (path.second == "/" || path.second.empty())
 		full = path.first + "/index.html";
 
 	std:: cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
 	if ( access( full.c_str(), F_OK ) == -1 )
-	{// TO BORROW
-		std:: cout << PINK << "it's here 404\n" << RESET;// TO BORROW
 		throw std::invalid_argument( E_404 );
-	}// TO BORROW
 	
 	if (isBinary(full) && method != "DELETE") //CLEO
 	{
-		std::cout << PINK << "inside binary\n" << RESET;
+		// std::cout << PINK << "inside binary\n" << RESET; // TO BORROW
 		std::ifstream file(full.c_str(), std::ios::binary);
 		if (!file.is_open())
 			throw std::invalid_argument(E_403);
@@ -278,22 +318,33 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
     {
 		if ( method == "DELETE" ) throw std::invalid_argument(E_403); //CLEO
 
-		std::cout << PINK << "inside folder\n" << RESET;
+		// std::cout << PINK << "inside folder\n" << RESET; TO BORROW
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
-	    if (access(full.c_str(), R_OK) != 0) //TODO check if there is an index
+		
+		std::string index = full + "/index.html";
+		if (access(index.c_str(), F_OK) == 0)
 		{
-			closedir(dir);
-			throw std::invalid_argument(E_403);
+			if (access(index.c_str(), R_OK) != 0)
+			{
+				closedir(dir);
+				throw std::invalid_argument(E_403);
+			}
 		}
-		(void) _autoindex;
-		// if ( pas d'index && _autoindex == false)
+		else
+		{
+			if (access(full.c_str(), R_OK) != 0 || blockLoc.getAutoindex() == false)
+			{
+				closedir(dir);
+				throw std::invalid_argument(E_403);
+			}
+		}
 		closedir(dir);
 	}
 	else
 	{
-		std::cout << PINK << "inside page\n" << RESET;
+		// std::cout << PINK << "inside page\n" << RESET; // TO BORROW
 		std::ifstream page(full.c_str());
 		if (!page.is_open() && method != "DELETE" ) 
 			throw std::invalid_argument(E_403);
@@ -305,7 +356,6 @@ void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & 
 			throw std::invalid_argument(E_403);
 		throw std::invalid_argument(E_204);
 	}
-
 }
 
 // void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {

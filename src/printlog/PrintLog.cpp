@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PrintLog.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 12:57:47 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:20:36 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ void printServerLocations(ServerData const &serv)
 	graTextElement(serv.getRoot());
 	graTextHeader("Locations");
 
-	std::map<std::string, LocationConf>::iterator it;
-	std::map<std::string, LocationConf>::iterator ite = serv.getLocations().end();
+	std::map<std::string, LocationConf>::const_iterator it;
+	std::map<std::string, LocationConf>::const_iterator ite = serv.getLocations().end();
 
 	for (it = serv.getLocations().begin(); it != ite; it++)
 	{

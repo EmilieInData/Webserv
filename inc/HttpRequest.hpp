@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/09 12:11:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:21:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ private:
 	std::pair<std::string, std::string> host;
 	std::pair<std::string, std::string> _fullPath;
 	std::string							location;
-	bool								_autoindex; //ADD by Emilie
+	// bool								_autoindex; //ADD by Emilie
 	Headers							   *headers;
 	std::string							body;
 	std::size_t							body_len;
@@ -81,15 +81,15 @@ private:
 	std::string							_cgiInterpreterPath;
 	std::pair<int, std::string>			incoming;
 	ServerManager					   &server;
+	LocationConf						blockLoc;
 
 	HttpRequest();
 
-	void checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it,
-				   ServerData													   &serv);
-	void finalHeadersParsingRoutine();
-	void setFullPath(ServerData const &serv);
-	void setLocation(std::map<std::string, LocationConf> &location, std::string const &path);
-	void manyBodiesRoutine(std::size_t found);
+	void	checkHost( std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData & serv );
+	void	finalHeadersParsingRoutine();
+	void	setFullPath(ServerData const &serv);
+	void	setLocation(std::map<std::string, LocationConf> const& location,std::string const &path );
+	void	manyBodiesRoutine( std::size_t found );
 
 	void runSimpleTest();
 
@@ -121,9 +121,11 @@ public:
 												 std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
 	void								fileUpload();
 	Headers							   *getReqHeaders() const;
-	ServerManager					   &getServ() const;
-	std::pair<int, std::string>			getAddrPort() const;
+	ServerManager						&getServ() const;
+	std::pair<int, std::string> 		getAddrPort() const;
 	std::pair<std::string, std::string> getHost() const;
+	LocationConf						findLocation(std::string path, std::map<std::string, LocationConf> const& loc);
+	LocationConf						getBlockLoc()const;
 	std::string							getRawBody() const;
 	std::string							&getInterpreterPath() const;
 	//PROVISOIR
