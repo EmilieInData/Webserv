@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/05 14:28:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/09 11:48:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ private:
 	std::string						   _contentType;
 	std::string						   _scriptOutput;
 	std::string						   _scriptType;
+	std::string						   _scriptName;
 
 	Script(Script const &src);
 	Script &operator=(Script const &rhs);

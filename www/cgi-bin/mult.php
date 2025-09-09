@@ -1,47 +1,80 @@
-#!/usr/bin/php
+#!/usr/bin/php-cgi
 <?php
-// --- Script Logic ---
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-$result = null;
-$error_message = null;
-$params = [];
+    // Set default values
+    $result = null;
+    $error_message = '';
+    $val_a = null;
+    $val_b = null;
 
-// Manually parse the query string from the environment variable.
-if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
-    parse_str($_SERVER['QUERY_STRING'], $params);
-}
+    // Check if the required parameters 'a' and 'b' are present in the URL
+    if (isset($_GET['a']) && isset($_GET['b'])) {
+        $val_a = $_GET['a'];
+        $val_b = $_GET['b'];
 
-// Check if the parsed parameters 'a' and 'b' exist and are numeric.
-if (isset($params['a']) && isset($params['b']) && is_numeric($params['a']) && is_numeric($params['b'])) {
-    // Perform the multiplication.
-    $val_a = (float)$params['a'];
-    $val_b = (float)$params['b'];
-    $result = $val_a * $val_b;
-} else {
-    // Set an error message if parameters are missing or invalid.
-    $error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=8&b=7</strong>";
-}
+        // Check if both parameters are numeric
+        if (is_numeric($val_a) && is_numeric($val_b)) {
+            // Perform the multiplication
+            $result = (float)$val_a * (float)$val_b;
+        } else {
+            // Set an error message for non-numeric input
+            $error_message = 'Error: Both parameters must be numbers.';
+        }
+    } else {
+        // Set an error message if parameters are missing
+        $error_message = 'Please provide two numbers to multiply. Example: ?a=5&b=10';
+    }
 
-// --- HTTP Header & Output ---
-
-header("Content-Type: text/html");
+    // --- Start HTTP Output ---
+    // This line is crucial for CGI; it separates headers from the body.
+    echo "Content-Type: text/html\r\n\r\n";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CGI Big Number Multiplier</title>
+    <title>PHP Multiplier</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #f0f2f5; 
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            padding: 40px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .result {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .error {
+            font-size: 1.2rem;
+            color: #d9534f;
+        }
+    </style>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif;">
+<body>
+    <div class="container">
+        <h1>PHP Multiplication Result</h1>
+        
+        <?php if ($result !== null): ?>
+            <p class="result"><?php echo htmlspecialchars($result); ?></p>
+            <p>Calculation: <?php echo htmlspecialchars($val_a) . ' × ' . htmlspecialchars($val_b); ?></p>
+        
+        <?php else: ?>
+            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
+        
+        <?php endif; ?>
 
-<?php if ($error_message): ?>
-    <p><?php echo $error_message; ?></p>
-<?php else: ?>
-    <div style="font-size: 400px; font-weight: bold; color: blue; text-align: center;">
-        <?php echo $result; ?>
     </div>
-<?php endif; ?>
-
 </body>
 </html>

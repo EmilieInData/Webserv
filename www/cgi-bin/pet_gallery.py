@@ -62,10 +62,17 @@ def get_form():
         return SimpleFieldStorage(os.environ, sys.stdin.buffer)
 import urllib.parse
 
-# --- CONFIGURATION ---
-# IMPORTANT: Update these with the correct ABSOLUTE paths for your server.
-IMAGE_DIR = "/home/palmiro/42/webserv/www/uploads/gallery_images"
-DATA_FILE = "/home/palmiro/42/webserv/www/uploads/gallery_data.json"
+# --- CONFIGURATION (Portable) ---
+
+# The full path to the directory containing this script (e.g., /home/fdi-cecc/webserv/www/cgi-bin)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go up two levels from /cgi-bin to the project's www root
+WWW_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
+
+# Define paths based on the www root
+IMAGE_DIR = os.path.join(WWW_ROOT, "uploads", "gallery_images")
+DATA_FILE = os.path.join(WWW_ROOT, "uploads", "gallery_data.json")
 # The relative path from the HTML to the images
 IMAGE_WEB_PATH = "/uploads/gallery_images/"
 
