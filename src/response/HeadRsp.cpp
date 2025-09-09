@@ -94,8 +94,6 @@ void HeadRsp::buildHeader()
 
 	if (!cgiHeaders.empty())
 	{
-		// Add all CGI headers provided by the script EXCEPT for Status,
-		// and we will handle Content-Type separately for clarity.
 		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
 		{
 			if (it->first != "Status" && it->first != "Content-Type")
@@ -103,13 +101,10 @@ void HeadRsp::buildHeader()
 				_header += it->first + ": " + it->second + HEADNL;
 			}
 		}
-        // Now, add the Content-Type that Response::prepResponse determined.
-        // This correctly uses the script's header or the fallback.
 		_header += _contentType;
 	}
 	else 
 	{
-		// This block is for static files and is correct.
 		_header += _contentType;
 		_header += _cacheControl;
 	}

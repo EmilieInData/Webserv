@@ -19,7 +19,7 @@ Script::~Script() {}
 void Script::setScriptType(std::string const &cgiPath)
 {
 	size_t lastDot = cgiPath.find_last_of('.');
-	_scriptType = cgiPath.substr(lastDot);
+	_scriptType	   = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
 	if (_scriptType != ".py" && _scriptType != ".php")
 	{
@@ -29,7 +29,7 @@ void Script::setScriptType(std::string const &cgiPath)
 	}
 }
 
-void Script::runScript(HttpRequest const &request)
+void Script::runScript(HttpRequest const &request, std::string const &interpreterPath)
 {
 	_scriptOutput.clear();
 	_outputBody.clear();
@@ -54,6 +54,12 @@ void Script::runScript(HttpRequest const &request)
 
 	char **envServ = setEnv(request);
 
+	// Print all environment variables before execution
+	std::cout << RED << "[ENV variables before execution]" << std::endl;
+	for (int i = 0; envServ[i] != NULL; i++)
+		std::cout << envServ[i] << std::endl;
+	std::cout << RESET << std::endl;
+
 	pid_t child = fork();
 
 	if (child < 0)
@@ -77,7 +83,7 @@ void Script::runScript(HttpRequest const &request)
 		size_t lastSlash = scriptPath.find_last_of("/");
 		if (lastSlash != std::string::npos)
 		{
-			scriptDir = scriptPath.substr(0, lastSlash);
+			scriptDir  = scriptPath.substr(0, lastSlash);
 			scriptFile = scriptPath.substr(lastSlash + 1);
 			if (chdir(scriptDir.c_str()) != 0)
 			{
@@ -99,6 +105,7 @@ void Script::runScript(HttpRequest const &request)
 		// Redirect script's stdout to write to pipeOut
 		close(pipeOut[PIPE_READ]);
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
+		dup2(pipeOut[PIPE_WRITE], STDERR_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
 		if (_scriptType == ".py")
@@ -106,9 +113,8 @@ void Script::runScript(HttpRequest const &request)
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php-cgi";
 
-		char *argv[] = {const_cast<char *>(runPath.c_str()), const_cast<char *>(scriptFile.c_str()),
-						NULL};
-
+		char *argv[] = {const_cast<char *>(interpreterPath.c_str()),
+						const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(runPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
@@ -132,7 +138,7 @@ void Script::runScript(HttpRequest const &request)
 
 		close(pipeIn[PIPE_WRITE]);
 
-		char buffer[4096];
+		char	buffer[4096];
 		ssize_t bytesRead;
 
 		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
@@ -190,17 +196,18 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 					  request.getFullPath().second); // TODO here and above not clear, check subject.
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
-	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second);			  // TODO get ip address
-	envVars.push_back("SERVER_NAME=" + request.getHost().first);				  // TODO get server name
+	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
+	envVars.push_back("SERVER_NAME=" + request.getHost().first);	  // TODO get server name
 	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
 
 	Headers *reqHeaders = request.getReqHeaders();
 
-	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader("content-type");
+	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader(
+		"content-type");
 	if (it_ct != reqHeaders->getHeaderEnd())
 	{
-		const std::vector<std::string> &values = it_ct->second;
-		std::string contentTypeValue = values[0];
+		const std::vector<std::string> &values			 = it_ct->second;
+		std::string						contentTypeValue = values[0];
 		for (size_t i = 1; i < values.size(); ++i)
 		{
 			contentTypeValue += ";" + values[i];
@@ -240,12 +247,9 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 
 void Script::parseOutput()
 {
-	// Find the blank line that separates headers from the body.
-	// First, try the HTTP-standard CRLF separator.
 	size_t separatorPos = _scriptOutput.find("\r\n\r\n");
-	size_t separatorLen = 4; // The length of "\r\n\r\n"
+	size_t separatorLen = 4; 
 
-	// If CRLF is not found, fall back to the simpler LF separator.
 	if (separatorPos == std::string::npos)
 	{
 		separatorPos = _scriptOutput.find("\n\n");
@@ -256,27 +260,25 @@ void Script::parseOutput()
 	if (separatorPos != std::string::npos)
 	{
 		headersPart = _scriptOutput.substr(0, separatorPos);
-		_outputBody = _scriptOutput.substr(separatorPos + separatorLen); // Use the correct length
+		_outputBody = _scriptOutput.substr(separatorPos + separatorLen); 
 	}
 	else
 	{
-		// If no separator is found, assume the entire output is the body.
 		_outputBody = _scriptOutput;
 		return;
 	}
 
-	// The rest of your parsing logic can remain the same.
 	std::stringstream ss(headersPart);
-	std::string line;
+	std::string		  line;
 	while (std::getline(ss, line))
 	{
 		if (!line.empty() && line[line.size() - 1] == '\r')
-			line.erase(line.size() - 1); // Trim trailing \r if it exists
+			line.erase(line.size() - 1); 
 
 		size_t colonPos = line.find(':');
 		if (colonPos != std::string::npos)
 		{
-			std::string key = line.substr(0, colonPos);
+			std::string key	  = upperKey(line.substr(0, colonPos));
 			std::string value = line.substr(colonPos + 1);
 
 			size_t firstChar = value.find_first_not_of(" \t");

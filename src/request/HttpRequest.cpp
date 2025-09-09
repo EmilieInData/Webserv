@@ -143,8 +143,8 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
-			server.getScript().runScript(*this);
-		else	
+			server.getScript().runScript(*this, _cgiInterpreterPath);
+		else
 			fileUpload();
 	}
 	// FABIO end of request parsing here
@@ -351,9 +351,28 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> &location, std
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
 	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
 	setRspType(); // FABIO added here, seems the best place for now
-	// if (_rspType == "cgi-script")
-	// 	server.getScript().runScript(*this);
-	// TODO if script fails throw error here
+	if (_rspType == "cgi-script")
+	{
+		// 1. Get the file extension from the full path
+		std::string requestFile = _fullPath.second;
+		size_t		dotPos		= requestFile.find_last_of('.');
+		if (dotPos != std::string::npos)
+		{
+			std::string extension = requestFile.substr(dotPos);
+
+			const std::map<std::string, std::string>		  &cgiPassMap = it->second.getCgiPass();
+			std::map<std::string, std::string>::const_iterator cgi_it = cgiPassMap.find(extension);
+
+			if (cgi_it != cgiPassMap.end())
+			{
+				this->_cgiInterpreterPath = cgi_it->second;
+				std::cout << GREEN << "Found CGI interpreter for " << extension << ": "
+						  << _cgiInterpreterPath << RESET << std::endl;
+			}
+			else
+				throw std::invalid_argument(E_404); // TODO enter right error code
+		}
+	}
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
 	_autoindex = it->second.getAutoindex(); //ADD by EMILIE
