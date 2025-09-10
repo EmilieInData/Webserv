@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/09 22:45:24 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/10 12:10:40 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,13 +140,13 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	{
 		this->setStatusCode(e.what());
 	}
-	if (this->state == DONE)
+/*	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
 			server.getScript().runScript(*this, _cgiInterpreterPath);
 		else
 			fileUpload();
-	}
+	}*/
 	// FABIO end of request parsing here
 
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
@@ -483,7 +483,7 @@ std::string HttpRequest::getHttpVersion() const
 
 int HttpRequest::getStatusCode() const
 {
-	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
+//	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
 	return this->code;
 }
 
