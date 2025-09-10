@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/10 12:10:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/10 16:24:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,13 +140,13 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	{
 		this->setStatusCode(e.what());
 	}
-/*	if (this->state == DONE)
+	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
 			server.getScript().runScript(*this, _cgiInterpreterPath);
-		else
+		else if (getHttpMethod() == "POST")
 			fileUpload();
-	}*/
+	}
 	// FABIO end of request parsing here
 
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
@@ -354,31 +354,33 @@ void HttpRequest::setStatusCode(std::string error)
 	std::cout << error << std::endl;
 }
 
-void HttpRequest::setLocation(std::map<std::string, LocationConf> const& location, std::string const &path)
+void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locations, std::string const &path)
 {
-	std::size_t found = path.rfind("/");
 	std::cout << PINK << "request path: " << path << std::endl << RESET; //TO BORROW
 
-	//	if ( found == std::string::npos ) //BADREQUEST
+	std::map<std::string, LocationConf>::const_iterator best_match = locations.end();
 
-	this->location = path.substr(0, found + 1);
-	std::cout << PINK << "LOCATION REQ: " << this->location << std::endl;
-// EMILIE this not ok because for ./error_pages/ esta buscando / solo
-	std::map<std::string, LocationConf>::const_iterator it = location.find(this->location);
+	for (std::map<std::string, LocationConf>::const_iterator it = locations.begin(); it != locations.end(); ++it)
+		if (path.find(it->first) == 0)
+			if (best_match == locations.end() || it->first.length() > best_match->first.length())
+				best_match = it;
 
-	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
-	//		std::cout << "LOCATION CONF: " << itt->first << std::endl;
+	if (best_match == locations.end())
+		throw std::invalid_argument(E_404);
+
+	this->location = best_match->first;
+	std::cout << PINK << "MATCHED LOCATION: " << this->location << std::endl;
+
 	setRspType(); // FABIO added here, seems the best place for now
 	if (_rspType == "cgi-script")
 	{
-		// 1. Get the file extension from the full path
 		std::string requestFile = _fullPath.second;
 		size_t		dotPos		= requestFile.find_last_of('.');
 		if (dotPos != std::string::npos)
 		{
 			std::string extension = requestFile.substr(dotPos);
 
-			const std::map<std::string, std::string>		  &cgiPassMap = it->second.getCgiPass();
+			const std::map<std::string, std::string> &cgiPassMap = best_match->second.getCgiPass();
 			std::map<std::string, std::string>::const_iterator cgi_it = cgiPassMap.find(extension);
 
 			if (cgi_it != cgiPassMap.end())
@@ -388,13 +390,11 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locatio
 						  << _cgiInterpreterPath << RESET << std::endl;
 			}
 			else
-				throw std::invalid_argument(E_404); // TODO enter right error code
+			{
+				throw std::invalid_argument(E_501);
+			}
 		}
 	}
-	if (it == location.end())
-		throw std::invalid_argument(E_404);
-	// _autoindex = it->second.getAutoindex(); //ADD by EMILIE
-	//	std::cout << "LOCATION EXIST IN SERVER: " << (*it).first << std::endl;
 }
 
 void HttpRequest::setRspType()
