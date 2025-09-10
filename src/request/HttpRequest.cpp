@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/10 12:10:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:48:16 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	{
 		this->setStatusCode(e.what());
 	}
-/*	if (this->state == DONE)
+	/*	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
 			server.getScript().runScript(*this, _cgiInterpreterPath);
@@ -200,12 +200,13 @@ void HttpRequest::printBodies() // DBG
 	}
 }
 
-LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+LocationConf const *HttpParser::findLocation(std::string								path,
+											 std::map<std::string, LocationConf> const &loc)
 {
-	std::map<std::string, LocationConf>::const_iterator	it;
-	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-	
-	for(it = loc.begin(); it != loc.end(); it++)
+	std::map<std::string, LocationConf>::const_iterator it;
+	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
+
+	for (it = loc.begin(); it != loc.end(); it++)
 	{
 		if (path.find(it->first) == 0)
 		{
@@ -213,9 +214,9 @@ LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::str
 				tmp = it;
 		}
 	}
-    if (tmp == loc.end())
-        return NULL;
-    return &tmp->second;
+	if (tmp == loc.end())
+		return NULL;
+	return &tmp->second;
 }
 
 void HttpRequest::finalHeadersParsingRoutine()
@@ -225,7 +226,6 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 		this->headers->setManyValuesHeader("content-type");
-	//this->headers->printHeader();
 
 	ServerData serv = HttpParser::checkIfServerExist(this->server.getServersList(), this->incoming);
 
@@ -236,15 +236,14 @@ void HttpRequest::finalHeadersParsingRoutine()
 	setFullPath(serv);
 
 	this->max_body_size = serv.getBodySize();
-	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
-	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
-	setLocation(serv.getLocations(), this->_fullPath.second);
 
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
-	
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
+
+	if (blockLoc.getKey().empty())
+		throw std::invalid_argument(E_404);
+
 	HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
-	
+
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(
@@ -271,7 +270,6 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
-	// static int k = -1;			// TODO no needed
 	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
@@ -294,8 +292,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 			}
 			//FABIO create new struct body
 			this->boundary_flag = false;
-			// k++;
-			// std::cout << std::endl << GREEN << "              NEWBODY " << k << RESET << std::endl;
 			this->body_state = HEADERS2;
 			break;
 		case HEADERS2:
@@ -304,8 +300,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 				this->body_state = BODY2;
 				break;
 			}
-			// std::cout << "HEADER " << k << ": " << tmp.substr(0, 70)
-			// 		  << std::endl; // FABIO structbody->header->setHeader( tmp )
 			newBody.bodyHeader.setHeader(tmp);
 			this->body_state = HEADERS2;
 			break;
@@ -321,7 +315,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	{
 		this->body = this->body.erase(f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
-		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
 		makeNew		= true;
 		this->state = DONE;
@@ -331,7 +324,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	{
 		this->body = this->body.erase(f2, this->body.length()); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
-		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
 		makeNew			  = true;
 		this->fullRequest = this->fullRequest.erase(0, f2 + 6);
@@ -354,7 +346,8 @@ void HttpRequest::setStatusCode(std::string error)
 	std::cout << error << std::endl;
 }
 
-void HttpRequest::setLocation(std::map<std::string, LocationConf> const& location, std::string const &path)
+void HttpRequest::setLocation(std::map<std::string, LocationConf> const &location,
+							  std::string const							&path)
 {
 	std::size_t found = path.rfind("/");
 	std::cout << PINK << "request path: " << path << std::endl << RESET; //TO BORROW
@@ -363,7 +356,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locatio
 
 	this->location = path.substr(0, found + 1);
 	std::cout << PINK << "LOCATION REQ: " << this->location << std::endl;
-// EMILIE this not ok because for ./error_pages/ esta buscando / solo
+	// EMILIE this not ok because for ./error_pages/ esta buscando / solo
 	std::map<std::string, LocationConf>::const_iterator it = location.find(this->location);
 
 	//	for ( std::map<std::string, LocationConf>::iterator itt = location.begin(); itt != location.end(); ++itt)
@@ -391,6 +384,7 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locatio
 				throw std::invalid_argument(E_404); // TODO enter right error code
 		}
 	}
+	std::cout << RED << "[SOMEWHAT HERE] > " << __func__ << RESET << std::endl; // DBG
 	if (it == location.end())
 		throw std::invalid_argument(E_404);
 	// _autoindex = it->second.getAutoindex(); //ADD by EMILIE
@@ -483,7 +477,7 @@ std::string HttpRequest::getHttpVersion() const
 
 int HttpRequest::getStatusCode() const
 {
-//	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
+	//	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
 	return this->code;
 }
 
@@ -621,12 +615,13 @@ std::string HttpRequest::getRawBody() const
 		create file with name and copy bits
 	} */
 
-LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+LocationConf HttpRequest::findLocation(std::string								  path,
+									   std::map<std::string, LocationConf> const &loc)
 {
-	std::map<std::string, LocationConf>::const_iterator	it;
-	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-	
-	for(it = loc.begin(); it != loc.end(); it++)
+	std::map<std::string, LocationConf>::const_iterator it;
+	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
+
+	for (it = loc.begin(); it != loc.end(); it++)
 	{
 		if (path.find(it->first) == 0)
 		{
@@ -634,12 +629,12 @@ LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, L
 				tmp = it;
 		}
 	}
-    if (tmp == loc.end())
-        return LocationConf();
-    return tmp->second;
+	if (tmp == loc.end())
+		return LocationConf();
+	return tmp->second;
 }
 
-LocationConf	HttpRequest::getBlockLoc()const
+LocationConf HttpRequest::getBlockLoc() const
 {
 	return blockLoc;
 }
