@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/08 17:22:42 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 22:45:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -483,6 +483,7 @@ std::string HttpRequest::getHttpVersion() const
 
 int HttpRequest::getStatusCode() const
 {
+	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
 	return this->code;
 }
 

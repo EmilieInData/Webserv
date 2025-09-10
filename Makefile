@@ -1,7 +1,7 @@
 NAME		= webserv
 
 CC			= c++ 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address # -Wno-error=catch-value -Wno-error=implicit-fallthrough # FABIO added these flags for my computer at home
+CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address #-Wno-error=catch-value -Wno-error=implicit-fallthrough # FABIO added these flags for my computer at home
 DEP_FLAG	= -MMD -MP
 INCLUDE		= -I$(INC_DIR)
 
