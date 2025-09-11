@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Script.hpp"
+#include "ServerManager.hpp"
 
 Script::Script() {}
 
@@ -29,7 +30,7 @@ void Script::setScriptType(std::string const &cgiPath)
 	}
 }
 
-void Script::runScript(HttpRequest const &request, std::string const &interpreterPath)
+void Script::runScript(HttpRequest const &request, std::string const &interpreterPath, ServerManager &server)
 {
 	_scriptOutput.clear();
 	_outputBody.clear();
@@ -52,9 +53,8 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 		_scriptOutput = "";
 	}
 
-	char **envServ = setEnv(request);
+	char **envServ = setEnv(request, server);
 
-	// Print all environment variables before execution
 	std::cout << RED << "[ENV variables before execution]" << std::endl;
 	for (int i = 0; envServ[i] != NULL; i++)
 		std::cout << envServ[i] << std::endl;
@@ -87,8 +87,7 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 			scriptFile = scriptPath.substr(lastSlash + 1);
 			if (chdir(scriptDir.c_str()) != 0)
 			{
-				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno)
-						  << std::endl;
+				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno) << std::endl;
 				exit(1);
 			}
 		}
@@ -112,12 +111,10 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 		else if (_scriptType == ".php")
 			runPath = "/usr/bin/php-cgi";
 
-		char *argv[] = {const_cast<char *>(interpreterPath.c_str()),
-						const_cast<char *>(scriptFile.c_str()), NULL};
+		char *argv[] = {const_cast<char *>(interpreterPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(runPath.c_str(), argv, envServ);
 
-		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno)
-				  << std::endl; // DBG
+		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
 		exit(1);
 	}
 	else
@@ -153,18 +150,15 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
-			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status)
-					  << std::endl;
+			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
 		}
 		else if (WIFSIGNALED(status))
 		{
-			std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status)
-					  << std::endl;
+			std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
 		}
 		else
 		{
-			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length()
-					  << " bytes" << RESET << std::endl;
+			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
 			printRaw(_scriptOutput);
 			parseOutput();
 		}
@@ -181,7 +175,7 @@ std::string Script::getContentType() const
 	return _contentType;
 }
 
-char **Script::setEnv(HttpRequest const &request) // TODO make it return a char**
+char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 {
 	std::vector<std::string> envVars;
 
@@ -191,18 +185,55 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 	envVars.push_back("REQUEST_METHOD=" + request.getHttpMethod());
 	envVars.push_back("SCRIPT_NAME=" + request.getFullPath().second);
 	envVars.push_back("SCRIPT_FILENAME=" + _cgiPath);
-	envVars.push_back("PATH_INFO=" +
-					  request.getFullPath().second); // TODO here and above not clear, check subject.
+	envVars.push_back("PATH_INFO=" + request.getFullPath().second);
 	envVars.push_back("QUERY_STRING=" + request.getQuery());
 	envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
-	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second); // TODO get ip address
-	envVars.push_back("SERVER_NAME=" + request.getHost().first);	  // TODO get server name
-	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first)); // TODO get port
+	envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second);
+	envVars.push_back("SERVER_NAME=" + request.getHost().first);
+	envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first));
 
-	Headers *reqHeaders = request.getReqHeaders();
+	Headers							  *reqHeaders = request.getReqHeaders();
+	std::map<std::string, std::string> httpEnvVars;
 
-	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader(
-		"content-type");
+	for (std::map<std::string, std::vector<std::string> >::const_iterator it = reqHeaders->getHeaderBegin(); it != reqHeaders->getHeaderEnd(); it++)
+	{
+		std::string envEntry = "HTTP_" + it->first;
+		std::transform(envEntry.begin(), envEntry.end(), envEntry.begin(), ::toupper);
+		std::replace(envEntry.begin(), envEntry.end(), '-', '_');
+
+		if (!it->second.empty())
+			httpEnvVars[envEntry] = it->second[0];
+	}
+
+	std::string scriptName = request.getFullPath().second;
+
+	if (scriptName == "/cgi-bin/login.py")
+	{
+		std::string username = getQueryValue(request.getQuery(), "username");
+		if (username.empty())
+			username = "guest";
+		std::string sessionId = serverManager.createSession(username);
+		envVars.push_back("WEBSERV_SESSION_ID=" + sessionId);
+	}
+	else if (scriptName == "/cgi-bin/profile.py")
+	{
+		if (httpEnvVars.count("HTTP_COOKIE"))
+		{
+			const std::string &cookieValue = httpEnvVars["HTTP_COOKIE"];
+			std::string sessionId = getCookieValue(cookieValue, "session_id");
+
+			CookieData *session = serverManager.getSession(sessionId);
+			if (session)
+			{
+				envVars.push_back("WEBSERV_USERNAME=" + session->username);
+			}
+		}
+	}
+
+	if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
+		envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
+
+	std::map<std::string, std::vector<std::string> >::const_iterator it_ct = reqHeaders->getHeader("content-type");
 	if (it_ct != reqHeaders->getHeaderEnd())
 	{
 		const std::vector<std::string> &values			 = it_ct->second;
@@ -214,24 +245,10 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 		envVars.push_back("CONTENT_TYPE=" + contentTypeValue);
 	}
 
-	if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
-		envVars.push_back("CONTENT_LENGTH=" + reqHeaders->getHeaderOnlyOneValue("content-length", 0));
-
-	for (std::map<std::string, std::vector<std::string> >::const_iterator it =
-			 reqHeaders->getHeaderBegin();
-		 it != reqHeaders->getHeaderEnd(); it++)
+	for (std::map<std::string, std::string>::const_iterator it = httpEnvVars.begin(); it != httpEnvVars.end(); ++it)
 	{
-		std::string envEntry = "HTTP_" + it->first;
-		std::transform(envEntry.begin(), envEntry.end(), envEntry.begin(), ::toupper);
-		std::replace(envEntry.begin(), envEntry.end(), '-', '_');
-
-		if (!it->second.empty())
-			envVars.push_back(envEntry + "=" + it->second[0]);
+		envVars.push_back(it->first + "=" + it->second);
 	}
-	// std::cout << RED << "[ENV variables]" << std::endl; // DBG to remove
-	// for (size_t i = 0; i < envVars.size(); i++)
-	// 	std::cout << envVars[i] << std::endl;
-	// std::cout << RESET << std::endl;
 
 	char **envp = new char *[envVars.size() + 1];
 	for (size_t i = 0; i < envVars.size(); i++)
@@ -247,7 +264,7 @@ char **Script::setEnv(HttpRequest const &request) // TODO make it return a char*
 void Script::parseOutput()
 {
 	size_t separatorPos = _scriptOutput.find("\r\n\r\n");
-	size_t separatorLen = 4; 
+	size_t separatorLen = 4;
 
 	if (separatorPos == std::string::npos)
 	{
@@ -259,7 +276,7 @@ void Script::parseOutput()
 	if (separatorPos != std::string::npos)
 	{
 		headersPart = _scriptOutput.substr(0, separatorPos);
-		_outputBody = _scriptOutput.substr(separatorPos + separatorLen); 
+		_outputBody = _scriptOutput.substr(separatorPos + separatorLen);
 	}
 	else
 	{
@@ -272,7 +289,7 @@ void Script::parseOutput()
 	while (std::getline(ss, line))
 	{
 		if (!line.empty() && line[line.size() - 1] == '\r')
-			line.erase(line.size() - 1); 
+			line.erase(line.size() - 1);
 
 		size_t colonPos = line.find(':');
 		if (colonPos != std::string::npos)
