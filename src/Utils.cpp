@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:52:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:50:32 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -449,6 +449,7 @@ std::map<int, std::string> getStatusCodeMap()
 	m[403] = "Forbidden";
 	m[404] = "Not Found";
 	m[405] = "Method Not Allowed";
+	m[408] = "Request Timeout";
 	m[500] = "Internal Server Error";
 	m[501] = "Not Implemented";
 	m[502] = "Bad Gateway";

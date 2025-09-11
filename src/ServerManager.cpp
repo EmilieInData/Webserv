@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 12:53:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:39:33 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,26 +195,31 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
 								std::pair<int, std::string> incoming)
 {
-	try
-	{
+	(void)incoming;
+
+
+//	try
+//	{
 		Response	resp(req);
 		std::string fullPath = req.getFullPath().first +
-							   req.getFullPath().second; // TODO make error management for bad request
+								   req.getFullPath().second; // TODO make error management for bad request
 		//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
 		//				 req.getHttpMethod());
-		resp.setContent(req.getFullPath(), req.getHttpMethod());
+		if (req.getStatusCode() < 400)
+			resp.setContent(req.getFullPath(), req.getHttpMethod());
 		resp.setClientFd(connection.clientFd);
+		resp.prepResponse();
 		resp.sendResponse();
 		_rspCount++;
 		printResponse(*this, incoming, resp.getResponse(), fullPath);
-	}
-	catch (const std::exception &e) // TODO check with errors because they happen in HttpRequest
-	{
-		std::cerr << "Error processing request: " << e.what() << std::endl;
-		std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
-									"0\r\nConnection: close\r\n\r\n";
-		send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
-	}
+//	}
+//	catch (const std::exception &e) // TODO check with errors because they happen in HttpRequest
+//	{
+//		std::cerr << "Error processing request: " << e.what() << std::endl;
+//		std::string errorResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: "
+//									"0\r\nConnection: close\r\n\r\n";
+//		send(connection.clientFd, errorResponse.c_str(), errorResponse.length(), 0);
+//	}
 }
 
 void ServerManager::servIncoming(struct pollfd *polls, const size_t socketsize)

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/10 16:24:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:45:31 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,21 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
+}
+
+void HttpRequest::setStatusCode(std::string error)
+{
+	char code_str[4];
+
+	std::strncpy(code_str, error.c_str(), 3);
+
+	code_str[3] = '\0';
+
+	this->state = ERR;
+
+	this->code = std::atoi(code_str);
+	std::cout << "ERROR CODE: " << code << std::endl;
+	std::cout << error << std::endl;
 }
 
 void HttpRequest::printBodies() // DBG
@@ -339,20 +354,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	}
 }
 
-void HttpRequest::setStatusCode(std::string error)
-{
-	char code_str[4];
-
-	std::strncpy(code_str, error.c_str(), 3);
-
-	code_str[3] = '\0';
-
-	this->state = ERR;
-
-	this->code = std::atoi(code_str);
-	std::cout << "ERROR CODE: " << code << std::endl;
-	std::cout << error << std::endl;
-}
 
 void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locations, std::string const &path)
 {
