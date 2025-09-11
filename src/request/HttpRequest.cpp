@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/10 16:24:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:14:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -483,14 +483,8 @@ std::string HttpRequest::getHttpVersion() const
 
 int HttpRequest::getStatusCode() const
 {
-//	std::cout << RED << __func__ << " > " << this->code << RESET << std::endl;
 	return this->code;
 }
-
-// bool HttpRequest::getAutoindex() const
-// {
-// 	return this->_autoindex;
-// }
 
 int HttpRequest::getParsingState() const
 {
@@ -642,4 +636,11 @@ LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, L
 LocationConf	HttpRequest::getBlockLoc()const
 {
 	return blockLoc;
+}
+
+std::string	HttpRequest::getUriFirst()const
+{
+	if (getHost().second.empty())
+		return uri->getScheme() + "://" + uri->getAuthority();
+	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;
 }

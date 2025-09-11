@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/09 13:21:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:03:49 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ public:
 	LocationConf						getBlockLoc()const;
 	std::string							getRawBody() const;
 	std::string							&getInterpreterPath() const;
+	std::string							getUriFirst() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

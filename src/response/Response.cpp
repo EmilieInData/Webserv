@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 23:29:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:13:32 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,20 @@ void Response::prepResponse()
 		ss << _statusCode;
 		replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
 		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
+	}
+	else if (_statusCode == 301 || _statusCode == 302 || _statusCode == 307 || _statusCode == 308) 
+	{
+		std::map<int, std::string> statusMap = getStatusCodeMap(); 
+		std::stringstream ss;
+		ss << _statusCode;
+		
+		// std::cout << ERROR << _location << ERROR << _request->getUriFirst() << ERROR << _blockLoc.getReturnDirective()[1] << std::endl;
+		_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n""Location: {{LOCATION}}\r\n""\r\n";
+		replaceContent(_response, "{{STATUS_CODE}}", ss.str());
+		replaceContent(_response, "{{REASON_PHRASE}}", statusMap[_statusCode]);
+		replaceContent(_response, "{{LOCATION}}", _request->getUriFirst()  + _blockLoc.getReturnDirective()[1]);
+	//  "http://localhost:8080/static/red.html");
+		return ;
 	}
 	else if (_contentType == "cgi-script")
 	{

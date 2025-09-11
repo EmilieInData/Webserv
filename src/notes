@@ -131,9 +131,14 @@
 // gerer si pas d'adresse de redirection ce qu'on doit faire et quelel num de redirection accepter
 // if (!isInt(buffer[i]) || num < 100 || num > 599) // TO CHECK IF CORRECT
 
-//recreer les defaultErrorPages in Respond ou les supprimer
-//checker avec cleo si OK la redirection qui envoie bien 301 et nouvelle request
-//Fabio = changer les chemins absolu avec son nom pour le nom de root 
+// ✅ location / { ... }
+// ✅ location /images/ { ... }
+// ✅ location = /favicon.ico { ... }
+// ✅ location ^~ /static/ { ... }
+
+// Des regex → elles doivent toujours être précédées de ~ ou ~*
+// ✅ location ~ \.php$ { ... }
+// ✅ location ~* \.(jpg|jpeg|png)$ { ... }
 
 --> TO ASK
 

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:52:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 19:07:27 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,27 +227,28 @@ unsigned int strToSize(std::string const &value)
 	return (num);
 }
 
-std::map<int, std::pair<std::string, std::string> > defaultErrorPages()
-{
-	std::map<int, std::pair<std::string, std::string> > map;
+// std::map<int, std::pair<std::string, std::string> > defaultErrorPages()
+// {
+// 	std::map<int, std::pair<std::string, std::string> > map;
 
-	map[400] = std::make_pair("400 - Bad Request", "/4xx.html");
-	map[401] = std::make_pair("401 - Unauthorized", "/4xx.html");
-	map[403] = std::make_pair("403 - Forbidden", "/4xx.html");
-	map[404] = std::make_pair("404 - Not Found", "/404.html");
-	map[405] = std::make_pair("405 - Method Not Allowed", "/4xx.html");
-	map[410] = std::make_pair("410 - Gone", "/4xx.html");
-	map[413] = std::make_pair("413 - Request Entity Too Large", "/4xx.html");
-	map[414] = std::make_pair("414 - URI Too Long", "/4xx.html");
-	map[500] = std::make_pair("500 - Internal Server Error", "/50x.html");
-	map[501] = std::make_pair("501 - Not Implemented", "/50x.html");
-	return map;
-}
+// 	map[400] = std::make_pair("400 - Bad Request", "/4xx.html");
+// 	map[401] = std::make_pair("401 - Unauthorized", "/4xx.html");
+// 	map[403] = std::make_pair("403 - Forbidden", "/4xx.html");
+// 	map[404] = std::make_pair("404 - Not Found", "/404.html");
+// 	map[405] = std::make_pair("405 - Method Not Allowed", "/4xx.html");
+// 	map[410] = std::make_pair("410 - Gone", "/4xx.html");
+// 	map[413] = std::make_pair("413 - Request Entity Too Large", "/4xx.html");
+// 	map[414] = std::make_pair("414 - URI Too Long", "/4xx.html");
+// 	map[500] = std::make_pair("500 - Internal Server Error", "/50x.html");
+// 	map[501] = std::make_pair("501 - Not Implemented", "/50x.html");
+// 	return map;
+// }
 
-bool isErrorPage(std::string const &value)
-{
+bool isErrorPage(std::string const &value) // EMILIE WE KEEP OR NOT ?
+{ //de  100 a  599 inclus
 	if (value == "400" || value == "401" || value == "403" || value == "404" || value == "405" ||
-		value == "410" || value == "413" || value == "414" || value == "500" || value == "501")
+		value == "408" || value == "413" || value == "414" || value == "421" || value == "500" ||
+		value == "501" || value == "502" || value == "503")
 		return true;
 	return false;
 }
@@ -443,12 +444,18 @@ std::map<int, std::string> getStatusCodeMap()
 	m[204] = "No Content";
 	m[301] = "Moved Permanently";
 	m[302] = "Found";
+	m[307] = "Temporary Redirect";
+	m[308] = "Permanent Redirect";
 	m[304] = "Not Modified";
 	m[400] = "Bad Request";
 	m[401] = "Unauthorized";
 	m[403] = "Forbidden";
 	m[404] = "Not Found";
 	m[405] = "Method Not Allowed";
+	m[408] = "Request Timeout";
+	m[413] = "Request Entity Too Large";
+	m[414] = "URI Too Long";
+	m[421] = "Misdirected Request";
 	m[500] = "Internal Server Error";
 	m[501] = "Not Implemented";
 	m[502] = "Bad Gateway";

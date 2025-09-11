@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:51:52 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 19:07:55 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ ABlockBase::ABlockBase()
 	_root = "/www";
 	_index.push_back("index.html");
 	_bodySize = 1048576;
-	// _returnDirective.push_back("301");
-	// _returnDirective.push_back("/static/red.html");
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
 	_cgiPass[".py"] = "/usr/bin/python3";
@@ -223,7 +221,7 @@ size_t	ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i)
 		throw std::invalid_argument(" Parsing error, miss 'error_page' arguments\n");
 	for(; i < buffer.size(); i++)
 	{
-		if (isErrorPage(buffer[i]))
+		if (isErrorPage(buffer[i])) // 100 a 599 inclued
 		{
 			for(size_t j = 0; j < num.size(); j++)
 			{
