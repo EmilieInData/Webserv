@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 15:26:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 16:23:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 
 	_contentType = _request->getRspType();
 
-	if ( this->_statusCode != 200 )
+	if ( this->_statusCode >= 300 )
 	{
 		errorRoutine(content, incoming);
 	}
@@ -306,6 +306,7 @@ void Response::sendResponse()
 	int			attempts	= 0;
 	const int	maxAttempts = 100;
 
+	
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
 

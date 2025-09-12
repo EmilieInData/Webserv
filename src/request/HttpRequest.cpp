@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 15:25:53 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:39:48 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->fullRequest.push_back(buffer[i]);
 
 	std::size_t found = fullRequest.find(CRLF);
-	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
+	// std::cout << "FULLREQUEST: " << fullRequest << std::endl;
 
 	// static int i = 0;
 

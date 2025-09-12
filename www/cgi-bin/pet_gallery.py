@@ -4,6 +4,7 @@ import json
 import uuid
 import html
 import sys
+import urllib.parse
 # import cgi # Deprecated in Python 3.11+. Use email.parser and cgi.FieldStorage alternative if needed.
 
 try:
@@ -60,21 +61,34 @@ def get_form():
         return cgi.FieldStorage()
     except NameError:
         return SimpleFieldStorage(os.environ, sys.stdin.buffer)
-import urllib.parse
 
 # --- CONFIGURATION (Portable) ---
-
-# The full path to the directory containing this script (e.g., /home/fdi-cecc/webserv/www/cgi-bin)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Go up two levels from /cgi-bin to the project's www root
 WWW_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
-
-# Define paths based on the www root
 IMAGE_DIR = os.path.join(WWW_ROOT, "uploads", "gallery_images")
 DATA_FILE = os.path.join(WWW_ROOT, "uploads", "gallery_data.json")
-# The relative path from the HTML to the images
 IMAGE_WEB_PATH = "/uploads/gallery_images/"
+
+# --- NEW FUNCTION TO HANDLE REDIRECTS ---
+def perform_html_redirect(url):
+    """
+    Prints an HTML page that immediately redirects the browser to the specified URL.
+    This is used as a workaround for servers that don't handle CGI Status headers.
+    """
+    print("Content-Type: text/html")
+    print() # End of headers
+    print(f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Redirecting...</title>
+        <meta http-equiv="refresh" content="0; url={url}" />
+    </head>
+    <body>
+        <p>Redirecting you to the gallery. If you are not redirected, <a href="{url}">click here</a>.</p>
+    </body>
+    </html>
+    """)
 
 def handle_delete(params):
     """Deletes a pet's image and its entry from the JSON data file."""
@@ -82,44 +96,45 @@ def handle_delete(params):
     if not image_id_to_delete:
         return
 
-    # Load existing data
     try:
         with open(DATA_FILE, 'r') as f:
             pets = json.load(f)
     except (IOError, json.JSONDecodeError):
         pets = []
 
-    # Find and remove the pet entry
     pets_to_keep = [pet for pet in pets if pet['image'] != image_id_to_delete]
     
-    # If a pet was removed, delete its image file
     if len(pets_to_keep) < len(pets):
         try:
             file_path = os.path.join(IMAGE_DIR, image_id_to_delete)
             if os.path.exists(file_path):
                 os.remove(file_path)
         except OSError:
-            pass # Ignore errors during file deletion
+            pass
     
-    # Save the updated list back to the JSON file
     with open(DATA_FILE, 'w') as f:
         json.dump(pets_to_keep, f, indent=4)
 
 
 def handle_post():
     """Processes the uploaded form data, saves the file, and updates the JSON."""
-    form = cgi.FieldStorage()
+    form = get_form() # Use the helper function to get form data
     
     pet_name = form.getvalue("pet_name", "Unnamed Pet")
     picture_item = form["pet_picture"]
 
-    if picture_item.filename:
+    if hasattr(picture_item, 'filename') and picture_item.filename:
         extension = os.path.splitext(picture_item.filename)[1]
         unique_filename = f"{uuid.uuid4()}{extension}"
         
         file_path = os.path.join(IMAGE_DIR, unique_filename)
         with open(file_path, 'wb') as f:
-            f.write(picture_item.file.read())
+            # Check if picture_item is a dictionary (from fallback) or a FieldStorage object
+            if isinstance(picture_item, dict) and 'file' in picture_item:
+                f.write(picture_item['file'].read())
+            else:
+                 f.write(picture_item.file.read())
+
 
         try:
             with open(DATA_FILE, 'r') as f:
@@ -132,28 +147,23 @@ def handle_post():
         with open(DATA_FILE, 'w') as f:
             json.dump(pets, f, indent=4)
 
-    # --- Post/Redirect/Get Pattern ---
+    # --- MODIFIED: Use HTML redirect instead of Status header ---
     script_url = os.environ.get("SCRIPT_NAME", "")
-    print(f"Status: 303 See Other")
-    print(f"Location: {script_url}")
-    print()
+    perform_html_redirect(script_url)
+
 
 def handle_get():
     """Displays the gallery and the upload form, and handles delete actions."""
     query_string = os.environ.get("QUERY_STRING", "")
     params = urllib.parse.parse_qs(query_string)
 
-    # --- NEW: Check if the action is 'delete' ---
     if params.get("action", [None])[0] == 'delete':
         handle_delete(params)
-        # Redirect back to the clean gallery page after deletion
+        # --- MODIFIED: Use HTML redirect instead of Status header ---
         script_url = os.environ.get("SCRIPT_NAME", "")
-        print(f"Status: 303 See Other")
-        print(f"Location: {script_url}")
-        print()
-        return # Stop execution to complete the redirect
+        perform_html_redirect(script_url)
+        return
 
-    # --- If not deleting, proceed to display the page ---
     try:
         with open(DATA_FILE, 'r') as f:
             pets = json.load(f)
@@ -161,8 +171,7 @@ def handle_get():
         pets = []
 
     print("Content-Type: text/html")
-    print("Status: 200 OK")
-    print()
+    print() # End of headers
     
     script_url = os.environ.get("SCRIPT_NAME", "")
     
@@ -199,7 +208,6 @@ def handle_get():
             safe_name = html.escape(pet['name'])
             image_url = os.path.join(IMAGE_WEB_PATH, pet['image'])
             image_id = pet['image']
-            # --- NEW: Added the delete link ---
             delete_url = f"{script_url}?action=delete&id={image_id}"
             print(f"""
             <div class="card">
