@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 11:19:20 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:01:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,9 +217,8 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
 				resp.setCookie("session_id=" + sessionId + "; HttpOnly; Max-Age=3600; Path=/");
 			}
 		}
-		resp.setContent(req.getFullPath(), req.getHttpMethod());
 		resp.setClientFd(connection.clientFd);
-		resp.prepResponse();
+		resp.prepResponse(incoming);
 		resp.sendResponse();
 		_rspCount++;
 		printResponse(*this, incoming, resp.getResponse(), fullPath);
@@ -398,3 +397,5 @@ ss -ltn // Linux Only
 telnet 127.0.0.1 8080
 http://localhost:8080 // via browser
 */
+
+
