@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 16:25:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:29:24 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #define RESPONSE_HPP
 
 #include "HeadRsp.hpp"
-#include "Utils.hpp"
 #include "LocationConf.hpp"
+#include "Utils.hpp"
 
 /* TODO maybe this class can inherit
 from HttpRequest? */
@@ -26,20 +26,23 @@ class HttpRequest;
 class Response
 {
 private:
-	const HttpRequest*				  	_request;
-	int								   	_clientFd;
-	int									_statusCode;
-	std::string						   	_response;
-	std::string						   	_location;
-	std::string						   	_method;
-	std::ostringstream				   	_output;
-	std::string						   	_contentType;
-	std::string						   	_contentLength;
-	std::map<std::string, std::string>	_cgiHeaders;
-	LocationConf						_blockLoc;
+	const HttpRequest				  *_request;
+	int								   _clientFd;
+	int								   _statusCode;
+	std::string						   _response;
+	std::string						   _location;
+	std::string						   _method;
+	std::ostringstream				   _output;
+	std::string						   _contentType;
+	std::string						   _contentLength;
+	std::string						   _cookieToSet;
+	std::map<std::string, std::string> _cgiHeaders;
+	LocationConf					   _blockLoc;
 
 	Response &operator=(Response const &copy);
 	Response();
+
+	void		errorRoutine(std::string & content, std::pair<int, std::string> incoming);
 
 public:
 	Response(HttpRequest const &request);
@@ -50,17 +53,19 @@ public:
 	void		setClientFd(int _clientFd);
 	void		setResponse(std::string response);
 	void		setContent(std::pair<std::string, std::string> fullPath, std::string method);
-	void		prepResponse();
+	void		prepResponse( std::pair<int, std::string> incoming );
 	void		sendResponse();
 	std::string getType();
 	std::string getLength();
 	std::string getResponse();
+	void		setCookie(const std::string &cookieValue);
 	void		printRawResponse();
 	// bool		getAutoindex() const;
-	std::string doAutoindex(std::string str, DIR *dir);
-	void		doHtmlAutoindex(std::string &uri, std::ostringstream &html);
+	std::string						   doAutoindex(std::string str, DIR *dir);
+	void							   doHtmlAutoindex(std::string &uri, std::ostringstream &html);
 	std::map<std::string, std::string> getCgiHeaders() const;
-	int			getStatusCode() const;
+	int								   getStatusCode() const;
+	std::string							   getCookie() const;
 };
 
 #endif

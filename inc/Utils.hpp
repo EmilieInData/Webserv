@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/12 14:09:59 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:54:24 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <dirent.h>
 #include <fcntl.h>
 #include <fstream>
 #include <iomanip>
@@ -32,15 +33,13 @@
 #include <stack>
 #include <string>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <utility>
 #include <vector>
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-
 
 #include "PrintLog.hpp"
 
@@ -55,8 +54,8 @@ class ServerManager;
 #define GREY "\033[38;5;236m"
 #define RED "\033[31m"
 
-#define CLIENT_HEADER_TIMEOUT	5
-#define CLIENT_BODY_TIMEOUT		5
+#define CLIENT_HEADER_TIMEOUT 5
+#define CLIENT_BODY_TIMEOUT 5
 
 // listen
 bool		isInt(std::string const &value);
@@ -87,6 +86,7 @@ void handleSignal(int signum);
 // timestamp
 const std::string timeStamp();
 const std::string getHttpDate();
+std::string		  generateCookieId();
 
 // use colors without affecting linelength
 size_t visLen(const std::string &str);
@@ -95,6 +95,8 @@ size_t visLen(const std::string &str);
 std::string intToString(const int &num);
 std::string upperKey(std::string const &key);
 void		replaceContent(std::string &htmlContent, const std::string &target, const std::string &newContent);
+std::string getQueryValue(const std::string &query, const std::string &key);
+std::string getCookieValue(const std::string &cookie, const std::string &key);
 
 // check file extension
 bool isBinary(std::string location);

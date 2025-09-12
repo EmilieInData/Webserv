@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/11 18:14:30 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:57:46 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->fullRequest.push_back(buffer[i]);
 
 	std::size_t found = fullRequest.find(CRLF);
-	//	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
+	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
 
 	// static int i = 0;
 
@@ -143,7 +143,11 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
-			server.getScript().runScript(*this, _cgiInterpreterPath);
+		 {
+			server.getScript().runScript(*this, _cgiInterpreterPath, server);
+			this->code = server.getScript().getStatusCode();
+			std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
+		}
 		else if (getHttpMethod() == "POST")
 			fileUpload();
 	}
@@ -152,6 +156,21 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	//	std::cout << "STATE IN FCT: " << this->state << std::endl;
 
 	//	this->state = DONE; //solo poner en caso de debug para que no se quede colgado
+}
+
+void HttpRequest::setStatusCode(std::string error)
+{
+	char code_str[4];
+
+	std::strncpy(code_str, error.c_str(), 3);
+
+	code_str[3] = '\0';
+
+	this->state = ERR;
+
+	this->code = std::atoi(code_str);
+	std::cout << "ERROR CODE: " << code << std::endl;
+	std::cout << error << std::endl;
 }
 
 void HttpRequest::printBodies() // DBG
@@ -200,12 +219,13 @@ void HttpRequest::printBodies() // DBG
 	}
 }
 
-LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+LocationConf const *HttpParser::findLocation(std::string								path,
+											 std::map<std::string, LocationConf> const &loc)
 {
-	std::map<std::string, LocationConf>::const_iterator	it;
-	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-	
-	for(it = loc.begin(); it != loc.end(); it++)
+	std::map<std::string, LocationConf>::const_iterator it;
+	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
+
+	for (it = loc.begin(); it != loc.end(); it++)
 	{
 		if (path.find(it->first) == 0)
 		{
@@ -213,9 +233,9 @@ LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::str
 				tmp = it;
 		}
 	}
-    if (tmp == loc.end())
-        return NULL;
-    return &tmp->second;
+	if (tmp == loc.end())
+		return NULL;
+	return &tmp->second;
 }
 
 void HttpRequest::finalHeadersParsingRoutine()
@@ -240,11 +260,13 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
 
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
-	
+	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
+								 this->req_line->getMethod());
+
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
+	std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;
 	HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
-	
+
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
 		this->boundary = HttpParser::parseContentTypeBoundary(
@@ -339,28 +361,16 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	}
 }
 
-void HttpRequest::setStatusCode(std::string error)
-{
-	char code_str[4];
 
-	std::strncpy(code_str, error.c_str(), 3);
-
-	code_str[3] = '\0';
-
-	this->state = ERR;
-
-	this->code = std::atoi(code_str);
-	std::cout << "ERROR CODE: " << code << std::endl;
-	std::cout << error << std::endl;
-}
-
-void HttpRequest::setLocation(std::map<std::string, LocationConf> const& locations, std::string const &path)
+void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locations,
+							  std::string const							&path)
 {
 	std::cout << PINK << "request path: " << path << std::endl << RESET; //TO BORROW
 
 	std::map<std::string, LocationConf>::const_iterator best_match = locations.end();
 
-	for (std::map<std::string, LocationConf>::const_iterator it = locations.begin(); it != locations.end(); ++it)
+	for (std::map<std::string, LocationConf>::const_iterator it = locations.begin();
+		 it != locations.end(); ++it)
 		if (path.find(it->first) == 0)
 			if (best_match == locations.end() || it->first.length() > best_match->first.length())
 				best_match = it;
@@ -615,12 +625,13 @@ std::string HttpRequest::getRawBody() const
 		create file with name and copy bits
 	} */
 
-LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+LocationConf HttpRequest::findLocation(std::string								  path,
+									   std::map<std::string, LocationConf> const &loc)
 {
-	std::map<std::string, LocationConf>::const_iterator	it;
-	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-	
-	for(it = loc.begin(); it != loc.end(); it++)
+	std::map<std::string, LocationConf>::const_iterator it;
+	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
+
+	for (it = loc.begin(); it != loc.end(); it++)
 	{
 		if (path.find(it->first) == 0)
 		{
@@ -628,12 +639,12 @@ LocationConf	HttpRequest::findLocation(std::string path, std::map<std::string, L
 				tmp = it;
 		}
 	}
-    if (tmp == loc.end())
-        return LocationConf();
-    return tmp->second;
+	if (tmp == loc.end())
+		return LocationConf();
+	return tmp->second;
 }
 
-LocationConf	HttpRequest::getBlockLoc()const
+LocationConf HttpRequest::getBlockLoc() const
 {
 	return blockLoc;
 }
@@ -643,4 +654,9 @@ std::string	HttpRequest::getUriFirst()const
 	if (getHost().second.empty())
 		return uri->getScheme() + "://" + uri->getAuthority();
 	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;
+}
+
+std::vector<ServerData>	HttpRequest::getServersList() const
+{
+	return this->server.getServersList();
 }

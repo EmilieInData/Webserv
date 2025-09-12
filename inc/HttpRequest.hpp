@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/11 18:03:49 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:53:42 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ public:
 	int			getParsingState() const;
 	bool		getAutoindex() const;
 	std::string getRspType() const;
+	std::string getQueryValue(const std::string &key) const;
 	MultiBody
 										fillBody(Headers const &header,
 												 std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class
@@ -129,8 +130,7 @@ public:
 	std::string							getRawBody() const;
 	std::string							&getInterpreterPath() const;
 	std::string							getUriFirst() const;
-	//PROVISOIR
-	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
+	std::vector<ServerData>				getServersList() const;
 };
 
 #endif
