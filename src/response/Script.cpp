@@ -220,7 +220,7 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 		if (httpEnvVars.count("HTTP_COOKIE"))
 		{
 			const std::string &cookieValue = httpEnvVars["HTTP_COOKIE"];
-			std::string sessionId = getCookieValue(cookieValue, "session_id");
+			std::string		   sessionId   = getCookieValue(cookieValue, "session_id");
 
 			CookieData *session = serverManager.getSession(sessionId);
 			if (session)

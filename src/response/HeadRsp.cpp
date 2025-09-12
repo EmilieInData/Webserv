@@ -99,8 +99,7 @@ void HeadRsp::setCacheControl()
 
 	if (_contentType == "text/html")
 		cache = "public, max-age=3600";
-	else if (_contentType == "image/jpg" || _contentType == "image/png" ||
-			 _contentType == "image/gif" || _contentType == "text/javascript")
+	else if (_contentType == "image/jpg" || _contentType == "image/png" || _contentType == "image/gif" || _contentType == "text/javascript")
 		cache = "public, max-age=300, must-revalidate";
 	else
 		cache = "no-cache, no-store, must-revalidate";
@@ -119,8 +118,7 @@ void HeadRsp::buildHeader()
 
 	if (!cgiHeaders.empty())
 	{
-		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin();
-			 it != cgiHeaders.end(); ++it)
+		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
 		{
 			if (it->first != "Status" && it->first != "Content-Type")
 			{
@@ -136,7 +134,7 @@ void HeadRsp::buildHeader()
 	}
 	if (!_response->getCookie().empty())
 
-	_header += _contentLength;
+		_header += _contentLength;
 	_header += HEADNL;
 	std::cout << RED << "[BUILT HEADER]\n" << _header << RESET << std::endl; // DBG
 }
