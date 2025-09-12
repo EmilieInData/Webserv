@@ -116,13 +116,13 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		dup2(pipeOut[PIPE_WRITE], STDERR_FILENO);
 		close(pipeOut[PIPE_WRITE]);
 
-		if (_scriptType == ".py")
-			runPath = "/usr/bin/python3";
-		else if (_scriptType == ".php")
-			runPath = "/usr/bin/php-cgi";
+		// if (_scriptType == ".py")
+		// 	runPath = "/usr/bin/python3";
+		// else if (_scriptType == ".php")
+		// 	runPath = "/usr/bin/php-cgi";
 
 		char *argv[] = {const_cast<char *>(interpreterPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
-		execve(runPath.c_str(), argv, envServ);
+		execve(interpreterPath.c_str(), argv, envServ);
 
 		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
 		exit(1);

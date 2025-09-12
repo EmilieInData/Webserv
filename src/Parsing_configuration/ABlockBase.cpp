@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ABlockBase.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:51:52 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 18:35:22 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ ABlockBase::ABlockBase()
 	// _returnDirective.push_back("/static/red.html");
 	_allowedMethods.push_back("GET");
 	_allowedMethods.push_back("POST");
-	_cgiPass[".py"] = "/usr/bin/python3";
-	_cgiPass[".php"] = "/usr/bin/php-cgi";
+	// _cgiPass[".py"] = "/usr/bin/python3";
+	// _cgiPass[".php"] = "/usr/bin/php-cgi";
 }
   
 ABlockBase::~ABlockBase() {} 
@@ -92,8 +92,8 @@ size_t	ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
 {
 	if ( i >= buffer.size() || buffer[i].empty())
 		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
-	// if (buffer[i][0] != '/') // FABIO paused it to use relative paths for testing
-	// 	throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
+	if (buffer[i][0] != '/')
+		throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
 	if (i + 1 >= buffer.size())
 		throw std::invalid_argument(" Parsing error, miss semicolon after"
 			" 'root' argument\n");

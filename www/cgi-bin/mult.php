@@ -1,80 +1,41 @@
 #!/usr/bin/php-cgi
 <?php
-    // Set default values
-    $result = null;
-    $error_message = '';
-    $val_a = null;
-    $val_b = null;
 
-    // Check if the required parameters 'a' and 'b' are present in the URL
-    if (isset($_GET['a']) && isset($_GET['b'])) {
-        $val_a = $_GET['a'];
-        $val_b = $_GET['b'];
+// 1. For CGI, PRINT the header string directly to standard output.
+// The double CRLF (\r\n\r\n) is crucial: it ends the header and adds the mandatory blank line
+// that separates headers from the body. Your C++ server requires this.
 
-        // Check if both parameters are numeric
-        if (is_numeric($val_a) && is_numeric($val_b)) {
-            // Perform the multiplication
-            $result = (float)$val_a * (float)$val_b;
-        } else {
-            // Set an error message for non-numeric input
-            $error_message = 'Error: Both parameters must be numbers.';
-        }
-    } else {
-        // Set an error message if parameters are missing
-        $error_message = 'Please provide two numbers to multiply. Example: ?a=5&b=10';
-    }
+// --- Script Logic ---
+$result = null;
+$error_message = null;
 
-    // --- Start HTTP Output ---
-    // This line is crucial for CGI; it separates headers from the body.
-    // echo "Content-Type: text/html\r\n\r\n";
+// Check if 'a' and 'b' are set and are numeric in the GET request.
+if (isset($_GET['a']) && isset($_GET['b']) && is_numeric($_GET['a']) && is_numeric($_GET['b'])) {
+    $val_a = (int)$_GET['a'];
+    $val_b = (int)$_GET['b'];
+    $result = $val_a * $val_b; // Multiplication as per filename
+} else {
+    // This block runs if parameters were missing or not valid numbers.
+    $error_message = "Error: Please provide two numbers in the URL. Example: <strong>?a=5&b=10</strong>";
+}
+
+// --- HTML Output ---
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>PHP Multiplier</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            background-color: #f0f2f5; 
-            color: #333;
-            text-align: center;
-        }
-        .container {
-            padding: 40px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .result {
-            font-size: 5rem;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .error {
-            font-size: 1.2rem;
-            color: #d9534f;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>PHP Multiplication Result</h1>
-        
-        <?php if ($result !== null): ?>
-            <p class="result"><?php echo htmlspecialchars($result); ?></p>
-            <p>Calculation: <?php echo htmlspecialchars($val_a) . ' × ' . htmlspecialchars($val_b); ?></p>
-        
-        <?php else: ?>
-            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
-        
-        <?php endif; ?>
+<html>
+<head><title>CGI Big Number Multiplier</title></head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
 
-    </div>
+<?php
+// Check if an error occurred and display the appropriate message.
+if ($error_message !== null) {
+    echo "<p>{$error_message}</p>";
+} else {
+    // If successful, display the result with custom style.
+    echo '<div style="font-size: 40px; font-weight: bold; color: blue; text-align: center;">';
+    echo $result;
+    echo '</div>';
+}
+?>
+
 </body>
 </html>
