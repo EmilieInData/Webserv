@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/11 18:00:08 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 11:17:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ private:
 
 	Response &operator=(Response const &copy);
 	Response();
+
+	void		errorRoutine(std::string & content);
 
 public:
 	Response(HttpRequest const &request);
