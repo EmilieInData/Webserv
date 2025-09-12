@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 12:41:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:26:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ Response::Response(HttpRequest const &request) : _request(&request)
 	_contentType   = "";
 	_contentLength = "";
 	_blockLoc	   = _request->getBlockLoc();
+//	std::cout << "ERROR PAGE :" << _blockLoc.getErrorPage().begin()->second << std::endl;
 }
 
 Response::~Response() {}
@@ -204,7 +205,7 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 
 extern const std::map<int, std::string> statusCodeMap;
 
-void Response::prepResponse()
+void Response::prepResponse( std::pair<int, std::string> incoming )
 {
 	std::string content;
 
@@ -212,7 +213,7 @@ void Response::prepResponse()
 
 	if ( this->_statusCode != 200 )
 	{
-		errorRoutine(content);
+		errorRoutine(content, incoming);
 	}
 	else if (_contentType == "cgi-script")
 	{
@@ -236,7 +237,7 @@ void Response::prepResponse()
 	_response = header.getHeader() + content;
 }
 
-void	Response::errorRoutine(std::string & content) {
+void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
 	switch ( this->_statusCode )
 	{
 		case 204:
@@ -245,12 +246,25 @@ void	Response::errorRoutine(std::string & content) {
 			std::cout << "REDIRECTTT" << std::endl;
 			break;
 		default:
-			const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
-			std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
-			if (errorPageIt != errorPages.end())
-				_location = _request->getFullPath().first + errorPageIt->second;
-			else
-				_location = _request->getFullPath().first + "error.html"; 
+			const std::map<int, std::string> errorPages	= _blockLoc.getErrorPage();
+			if (!errorPages.empty())
+			{
+				std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
+				if (errorPageIt != errorPages.end())
+					_location = _request->getFullPath().first + errorPageIt->second;
+			}
+			else { 
+				ServerData serv = HttpParser::checkIfServerExist(this->_request->getServersList(), incoming);
+				std::map<int, std::string> const  errorPages2 = serv.getErrorPage();
+
+				std::map<int, std::string>::const_iterator errorPageIt = errorPages2.find(_statusCode);
+				if (errorPageIt != errorPages2.end())
+					_location = serv.getRoot() + errorPageIt->second;
+				else
+					_location = serv.getRoot() + "/error_pages/error.html"; 
+		
+			}
+		
 
 			std::cout << "LOCATIONNNNNNN: " << _location << std::endl;
 			_contentType = "text/html";
@@ -286,8 +300,6 @@ void Response::printRawResponse() // DBG
 
 void Response::sendResponse()
 {
-//	prepResponse();
-
 	size_t		totalSent	= 0;
 	size_t		totalSize	= _response.size();
 	const char *data		= _response.c_str();
