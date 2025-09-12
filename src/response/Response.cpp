@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 15:26:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 16:55:02 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,17 +69,11 @@ void Response::setClientFd(int clientFd)
 
 std::string Response::prepFile()
 {
-	// Check if it's a binary file (image)
-	//check if _location is empty first? TODO
-
 	std::cout << RED << "LOCATION (prepFile): " << _location << RESET << std::endl;
 
 	if (isBinary(_location))
 	{
-		// std::cout << PINK << "inside BINARY (prepFile): " << RESET << std::endl;
 		std::ifstream file(_location.c_str(), std::ios::binary);
-		if (!file.is_open())
-			return ""; // TODO ERROR MESSAGE?
 		std::ostringstream buffer;
 		buffer << file.rdbuf();
 		file.close();
@@ -88,17 +82,12 @@ std::string Response::prepFile()
 	else if (isFolder(_location))
 	{
 		_contentType = "text/html";
-		// std::cout << PINK << std::string(__func__) + " cnt type = " + _contentType << RESET << std::endl; // DBG
 		DIR *dir = opendir(_location.c_str());
-		if (!dir)
-			return ""; //check if is enought
 		std::string index = _location + "/index.html";
 		if (access(index.c_str(), F_OK) == 0)
 		{
 			_location += "/index.html";
 			std::ifstream page(_location.c_str());
-			if (!page.is_open())
-				return ""; // TODO ERROR MESSAGE?
 			std::ostringstream pageContent;
 			pageContent << page.rdbuf();
 			page.close();
@@ -109,10 +98,7 @@ std::string Response::prepFile()
 	}
 	else
 	{
-		// std::cout << PINK << "inside ELSE (prepFile): " << RESET << std::endl; TO BORROW
 		std::ifstream page(_location.c_str());
-		if (!page.is_open())
-			return ""; // TODO ERROR MESSAGE?
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
 		page.close();
@@ -212,9 +198,7 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 	_contentType = _request->getRspType();
 
 	if ( this->_statusCode != 200 )
-	{
 		errorRoutine(content, incoming);
-	}
 	else if (_contentType == "cgi-script")
 	{
 		
@@ -229,12 +213,15 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 	else
 		content = prepFile();
 
+	if (_statusCode == 301)
+		return;	
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
 
 	HeadRsp header(*this);
 	_response = header.getHeader() + content;
+	
 }
 
 void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
@@ -243,8 +230,18 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 		case 204:
 			break;
 		case 301:
+		{
+			std::map<int, std::string> status = getStatusCodeMap(); 
+			std::stringstream str;
+			str << _statusCode;
+
+			_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n""Location: {{LOCATION}}\r\n""\r\n";
+			replaceContent(_response, "{{STATUS_CODE}}", str.str());
+			replaceContent(_response, "{{REASON_PHRASE}}", status[_statusCode]);
+			replaceContent(_response, "{{LOCATION}}", _request->getUriFirst()  + _blockLoc.getReturnDirective()[1]);
 			std::cout << "REDIRECTTT" << std::endl;
 			break;
+		}
 		default:
 			const std::map<int, std::string> errorPages	= _blockLoc.getErrorPage();
 			if (!errorPages.empty())

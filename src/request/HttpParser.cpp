@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 11:49:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 16:15:18 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,7 +337,9 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
 	}
 	if (path.second == "/" || path.second.empty())
-		full = path.first + "/index.html";
+		full = path.first;
+		// full = path.first + "/index.html";
+
 
 	std::cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
 	if (access(full.c_str(), F_OK) == -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 15:25:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:53:42 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,10 +129,8 @@ public:
 	LocationConf						getBlockLoc()const;
 	std::string							getRawBody() const;
 	std::string							&getInterpreterPath() const;
+	std::string							getUriFirst() const;
 	std::vector<ServerData>				getServersList() const;
-//	std::map<int, std::string>const&	getErrorPage() const;
-	//PROVISOIR
-	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };
 
 #endif
