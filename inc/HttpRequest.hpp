@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/11 17:59:42 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:35:21 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,8 @@ public:
 	LocationConf						getBlockLoc()const;
 	std::string							getRawBody() const;
 	std::string							&getInterpreterPath() const;
+	std::vector<ServerData>				getServersList() const;
+//	std::map<int, std::string>const&	getErrorPage() const;
 	//PROVISOIR
 	//	std::map<std::string, std::vector<std::string> >::iterator getHeader( std::string const & title );
 };

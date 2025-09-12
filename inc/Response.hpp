@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:29:43 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 11:17:50 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:29:24 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ private:
 	Response &operator=(Response const &copy);
 	Response();
 
-	void		errorRoutine(std::string & content);
+	void		errorRoutine(std::string & content, std::pair<int, std::string> incoming);
 
 public:
 	Response(HttpRequest const &request);
@@ -53,7 +53,7 @@ public:
 	void		setClientFd(int _clientFd);
 	void		setResponse(std::string response);
 	void		setContent(std::pair<std::string, std::string> fullPath, std::string method);
-	void		prepResponse();
+	void		prepResponse( std::pair<int, std::string> incoming );
 	void		sendResponse();
 	std::string getType();
 	std::string getLength();

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 11:17:50 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:35:59 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 								 this->req_line->getMethod());
 
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
+	std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;
 	HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
 
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
@@ -649,4 +650,16 @@ LocationConf HttpRequest::getBlockLoc() const
 {
 	return blockLoc;
 }
+
+std::vector<ServerData>	HttpRequest::getServersList() const
+{
+	return this->server.getServersList();
+}
+
+
+/*
+std::map<int, std::string>const&	HttpRequest::getErrorPage() const {
+	return this->server.getErrorPage();
+}
+*/
 
