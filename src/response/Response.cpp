@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 15:16:54 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:26:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,6 +217,7 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 	}
 	else if (_contentType == "cgi-script")
 	{
+		
 		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");

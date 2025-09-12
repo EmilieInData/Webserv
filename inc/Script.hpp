@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/11 18:16:52 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 13:54:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,17 @@ public:
 	Script();
 	~Script();
 
-	void		runScript(HttpRequest const &request, std::string const &interpreterPath, ServerManager &server);
-	char	  **setEnv(HttpRequest const &request, ServerManager &server); // TODO put back to char** after testing
-	void		setScriptType(std::string const &cgiPath);
-	int			getStatusCode() const;
-	std::string getMessage() const;
-	std::string getContentType() const;
-	std::string getScriptOutput() const;
-	void		parseOutput();
-	std::string getOutputBody() const;
+	void							   runScript(HttpRequest &request, std::string const &interpreterPath, ServerManager &server);
+	char							 **setEnv(HttpRequest const &request, ServerManager &server); // TODO put back to char** after testing
+	void							   setScriptType(std::string const &cgiPath);
+	std::string						   getMessage() const;
+	std::string						   getContentType() const;
+	std::string						   getScriptOutput() const;
+	void							   parseOutput();
+	std::string						   getOutputBody() const;
 	std::map<std::string, std::string> getOutputHeaders() const;
+	void							   setStatusCode(int statusCode);
+	int								   getStatusCode() const;
 };
 
 #endif

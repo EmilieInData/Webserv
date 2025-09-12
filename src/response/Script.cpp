@@ -20,17 +20,22 @@ Script::~Script() {}
 void Script::setScriptType(std::string const &cgiPath)
 {
 	size_t lastDot = cgiPath.find_last_of('.');
-	_scriptType	   = cgiPath.substr(lastDot);
+	if (lastDot == std::string::npos)
+	{
+		_statusCode = 501;
+		return;
+	}
+	_scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
-	if (_scriptType != ".py" && _scriptType != ".php")
+	if (_scriptType != ".py")// && _scriptType != ".php")
 	{
 		printBoxError("Invalid script type");
-		exit(1);
-		// TODO implement proper throw/error
+		_statusCode = 501;
+		return;
 	}
 }
 
-void Script::runScript(HttpRequest const &request, std::string const &interpreterPath, ServerManager &server)
+void Script::runScript(HttpRequest &request, std::string const &interpreterPath, ServerManager &server)
 {
 	_scriptOutput.clear();
 	_outputBody.clear();
@@ -50,7 +55,9 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 	{
 		// TODO what error number here?
 		printBoxError("Pipe Error");
+		request.setStatusCode(E_500);
 		_scriptOutput = "";
+		return;
 	}
 
 	char **envServ = setEnv(request, server);
@@ -70,8 +77,11 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 		close(pipeOut[PIPE_READ]);
 		close(pipeIn[PIPE_WRITE]);
 		close(pipeIn[PIPE_READ]);
+		// _statusCode = 500;
+		request.setStatusCode(E_500);
 		_scriptOutput = "";
 		deleteArray(envServ);
+		return;
 	}
 
 	else if (child == 0)
@@ -151,14 +161,17 @@ void Script::runScript(HttpRequest const &request, std::string const &interprete
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
 			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
+			_statusCode = 500;
 		}
 		else if (WIFSIGNALED(status))
 		{
 			std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
+			_statusCode = 500;
 		}
 		else
 		{
 			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
+			_statusCode = 200;
 			printRaw(_scriptOutput);
 			parseOutput();
 		}
@@ -220,7 +233,7 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 		if (httpEnvVars.count("HTTP_COOKIE"))
 		{
 			const std::string &cookieValue = httpEnvVars["HTTP_COOKIE"];
-			std::string sessionId = getCookieValue(cookieValue, "session_id");
+			std::string		   sessionId   = getCookieValue(cookieValue, "session_id");
 
 			CookieData *session = serverManager.getSession(sessionId);
 			if (session)
@@ -314,4 +327,10 @@ std::string Script::getOutputBody() const
 std::map<std::string, std::string> Script::getOutputHeaders() const
 {
 	return _outputHeaders;
+}
+
+int Script::getStatusCode() const
+{
+	std::cout << RED << __func__ << " [status code check] " << _statusCode << RESET << std::endl; // DBG
+	return _statusCode;
 }
