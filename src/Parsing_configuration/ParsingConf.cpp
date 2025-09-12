@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/30 16:27:45 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:43:21 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	ParsingConf::checkLocation(std::string& line)
 				if  (first == "{" || first == "}" || first == ";" )
 					throw std::invalid_argument("Parsing error, miss an argument"
 						" after 'location'\n");
-				if (first[0] != '/')
+				if (first[0] != '/') //TODO EMILIE HERE to change LOCATION ARG
 					throw std::invalid_argument("Parsing error, wrong location's"
 						" direction\n");
 				return;
@@ -218,7 +218,6 @@ size_t	ParsingConf::fillServers(std::vector<std::string>& buffer, size_t& i,
 		{
 			if (!blocks.back()->checkFlag("location"))
 				num = i;
-			//checker si i + 1 == "{" ??
 			for(; i < buffer.size(); i++)
 			{
 				if(buffer[i] == "}")
@@ -291,8 +290,6 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 			return i;
 		else
 		 	throw std::invalid_argument(" Parsing error, invalid directives: " + buffer[i]);
-		// std::cout << BLUE << itLocation->second.getAutoindex() << RESET << std::endl;
-
 	}
 	return i;
 }
