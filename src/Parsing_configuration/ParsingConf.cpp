@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 19:21:07 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/11 14:53:41 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:43:21 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,8 +290,6 @@ size_t	ParsingConf::fillLocations(std::vector<std::string>& buffer, size_t& i,
 			return i;
 		else
 		 	throw std::invalid_argument(" Parsing error, invalid directives: " + buffer[i]);
-		// std::cout << BLUE << itLocation->second.getAutoindex() << RESET << std::endl;
-
 	}
 	return i;
 }

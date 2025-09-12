@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/11 19:07:55 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 15:42:01 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,9 +191,9 @@ size_t	ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer, size_t
 		|| buffer[i + 1] == "{" || buffer[i + 1] == "}")
 		throw std::invalid_argument(" Parsing error, miss 'return' directive arguments\n");
 	_returnDirective.clear();
-	if (isInt(buffer[i]))
+	if (strToInt(buffer[i]))
 		num = strToInt(buffer[i]);
-	if (!isInt(buffer[i]) || num < 100 || num > 599) // TO CHECK IF CORRECT
+	if (!strToInt(buffer[i]) || num < 300 || num > 310) // HERE
 			throw std::invalid_argument(" Parsing error, 'return' directive"
 				" argument is not correct\n");
 	_returnDirective.push_back(buffer[i]);
@@ -221,7 +221,7 @@ size_t	ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i)
 		throw std::invalid_argument(" Parsing error, miss 'error_page' arguments\n");
 	for(; i < buffer.size(); i++)
 	{
-		if (isErrorPage(buffer[i])) // 100 a 599 inclued
+		if (isErrorPage(buffer[i]))
 		{
 			for(size_t j = 0; j < num.size(); j++)
 			{

@@ -150,3 +150,10 @@
 
 //test char no printable 
 // printf "server\x01{}\n" > ../conf/test.conf
+
+--> TO FIX
+
+// http://localhost:8080/error_pages/hgfh , image not downloaded
+// http://localhost:8080/uploads/ , image not downloaded
+// http://localhost:8080/static/, image not downloaded
+// if we put wronf return directive code it's still open redirect/ in browser

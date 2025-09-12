@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/11 19:07:27 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:01:41 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,42 +227,18 @@ unsigned int strToSize(std::string const &value)
 	return (num);
 }
 
-// std::map<int, std::pair<std::string, std::string> > defaultErrorPages()
-// {
-// 	std::map<int, std::pair<std::string, std::string> > map;
+bool isErrorPage(std::string const &value)
+{
+	int				   num;
+	std::istringstream str(value);
 
-// 	map[400] = std::make_pair("400 - Bad Request", "/4xx.html");
-// 	map[401] = std::make_pair("401 - Unauthorized", "/4xx.html");
-// 	map[403] = std::make_pair("403 - Forbidden", "/4xx.html");
-// 	map[404] = std::make_pair("404 - Not Found", "/404.html");
-// 	map[405] = std::make_pair("405 - Method Not Allowed", "/4xx.html");
-// 	map[410] = std::make_pair("410 - Gone", "/4xx.html");
-// 	map[413] = std::make_pair("413 - Request Entity Too Large", "/4xx.html");
-// 	map[414] = std::make_pair("414 - URI Too Long", "/4xx.html");
-// 	map[500] = std::make_pair("500 - Internal Server Error", "/50x.html");
-// 	map[501] = std::make_pair("501 - Not Implemented", "/50x.html");
-// 	return map;
-// }
-
-bool isErrorPage(std::string const &value) // EMILIE WE KEEP OR NOT ?
-{ //de  100 a  599 inclus
-	if (value == "400" || value == "401" || value == "403" || value == "404" || value == "405" ||
-		value == "408" || value == "413" || value == "414" || value == "421" || value == "500" ||
-		value == "501" || value == "502" || value == "503")
-		return true;
-	return false;
+	str >> num;
+	if (str.fail())
+		return false;
+	if (num < 100 || num > 599)	
+		return false;
+	return true;
 }
-
-// bool isHtmlAddress(std::string const &value)
-// {
-// 	if (value == "/404.html" || value == "/50x.html" || value == "/4xx.html")
-// 		return true;
-// 	return false;
-// }
-
-
-//pas d’espaces ou caractères interdits.
-
 
 bool isHtmlAddress(std::string const &value)
 {
@@ -275,23 +251,6 @@ bool isHtmlAddress(std::string const &value)
 		}
 	return true;
 }
-
-// void checkErrorPage(std::map<int, std::string> const &value)
-// {
-// 	std::map<int, std::string>::const_iterator it;
-
-// 	for (it = value.begin(); it != value.end(); it++)
-// 	{
-// 		if ((it->first == 404 && it->second != "/404.html") ||
-// 			((it->first == 500 || it->first == 501) && it->second != "/50x.html") ||
-// 			((it->first == 400 || it->first == 401 || it->first == 403 || it->first == 405 ||
-// 			  it->first == 410 || it->first == 413 || it->first == 414) &&
-// 			 it->second != "/4xx.html"))
-// 			throw std::invalid_argument(" Parsing error, 'error_page' number &"
-// 										" html adress don't match\n");
-// 	}
-// 	return;
-// }
 
 void setupSignal()
 {
@@ -362,14 +321,6 @@ bool isBinary(std::string location)
 	return (extension == ".jpg" || extension == ".jpeg" || extension == ".png" ||
 			extension == ".gif" || extension == ".ico");
 }
-
-// bool isFolder(std::string location)
-// {
-// 	char c = location[location.size() -1];
-// 	if (c == '/')
-// 		return true;
-// 	return false;
-// }
 
 bool isFolder(std::string location)
 {
