@@ -51,17 +51,17 @@ void HeadRsp::setProtocol()
 
 void HeadRsp::setRspStatusCode()
 {
-	const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
+	// const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
 
-	if (!cgiHeaders.empty())
-	{
-		std::map<std::string, std::string>::const_iterator it = cgiHeaders.find("Status");
-		if (it != cgiHeaders.end())
-		{
-			_statusCode = it->second;
-			return;
-		}
-	}
+	// if (!cgiHeaders.empty())
+	// {
+	// 	std::map<std::string, std::string>::const_iterator it = cgiHeaders.find("Status");
+	// 	if (it != cgiHeaders.end())
+	// 	{
+	// 		_statusCode = it->second;
+	// 		return;
+	// 	}
+	// }
 
 	int				  code = _response->getStatusCode();
 	std::stringstream ss;

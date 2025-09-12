@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 12:13:35 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:11:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		 {
 			server.getScript().runScript(*this, _cgiInterpreterPath, server);
 			this->code = server.getScript().getStatusCode();
+			std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
 		}
 		else if (getHttpMethod() == "POST")
 			fileUpload();

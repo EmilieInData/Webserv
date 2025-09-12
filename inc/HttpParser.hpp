@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 11:51:46 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/12 12:45:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@
 #define E_413 "413 Payload Too Large"
 #define E_414 "414 URI Too Long"
 #define E_421 "421 Misdirected Request"
+#define E_500 "500 Internal Server Error"
 #define E_501 "501 Not Implemented"
+#define E_502 "502 Bad Gateway"
+#define E_503 "503 Service Unavailable"
+#define E_504 "504 Gateway Timeout"
 
 #include "LocationConf.hpp"
 #include <string>
