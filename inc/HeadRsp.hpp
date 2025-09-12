@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 14:04:30 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 15:31:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 17:49:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ private:
 	std::string _contentLength;
 	std::string _connectionType;
 	std::string _cacheControl;
+	std::string _cookieString;
 
 	HeadRsp &operator=(HeadRsp const &copy);
 	HeadRsp();
@@ -50,6 +51,7 @@ public:
 	void		setConnectionType();
 	void		setCacheControl();
 	void		buildHeader();
+	void		setCookieString();
 	std::string getHeader();
 
 	/* TODO do we need getters

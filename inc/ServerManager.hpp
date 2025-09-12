@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/11 14:56:40 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 11:17:50 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,16 @@
 #include "Script.hpp"
 #include "ServerData.hpp"
 #include "Utils.hpp"
+
+struct CookieData
+{
+	int			userId;
+	std::string username;
+	bool		isAuthenticated;
+	time_t		lastAccessTime;
+
+	CookieData() : userId(-1), isAuthenticated(false), lastAccessTime(0) {}
+};
 
 struct ClientConnection
 {
@@ -51,6 +61,7 @@ private:
 	int									   _rspCount;
 	Script								   _script;
 	std::set<std::pair<int, std::string> > _uniqueListens;
+	std::map<std::string, CookieData>	   _sessions;
 	ServerManager();
 	ServerManager(ServerManager const &copy);
 	ServerManager &operator=(ServerManager const &copy);
@@ -72,9 +83,11 @@ public:
 	void								   servQuit();
 	void								   servInput();
 	Script								  &getScript();
-	void servRespond(ClientConnection &connection, HttpRequest &req,
-					 std::pair<int, std::string> incoming);
-	bool servReceive(ClientConnection &connection, HttpRequest &req);
+	void		servRespond(ClientConnection &connection, HttpRequest &req,
+							std::pair<int, std::string> incoming);
+	bool		servReceive(ClientConnection &connection, HttpRequest &req);
+	CookieData *getSession(const std::string &sessionId);
+	std::string createSession(const std::string &username);
 	// TODO create servQuit() to stop all servers;
 };
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cookie Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 2em; }
+        #status { margin-top: 1em; padding: 1em; background-color: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Cookie Session Test</h1>
+
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" value="testuser">
+    </div>
+    <br>
+    <div>
+        <button id="loginBtn">Login</button>
+        <button id="checkBtn">Check Status</button>
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="status">
+        Server response will appear here.
+    </div>
+
+    <script>
+        const usernameInput = document.getElementById('username');
+        const statusDiv = document.getElementById('status');
+
+        // LOGIN: Send a request to the server to create a session
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const user = usernameInput.value;
+            statusDiv.textContent = 'Attempting to log in...';
+
+            fetch('/cgi-bin/login.py?username=' + user)
+                .then(response => response.text())
+                .then(data => {
+                    statusDiv.innerHTML = "<b>Server says:</b> " + data + "<p>A cookie should now be set in your browser!</p>";
+                })
+                .catch(err => {
+                    statusDiv.textContent = 'Error: ' + err;
+                });
+        });
+
+        // CHECK STATUS: Send a request that includes the cookie
+        document.getElementById('checkBtn').addEventListener('click', () => {
+            statusDiv.textContent = 'Checking login status...';
+            
+            fetch('/cgi-bin/profile.py')
+                .then(response => response.text())
+                .then(data => {
+                    statusDiv.innerHTML = "<b>Server says:</b> " + data;
+                })
+                .catch(err => {
+                    statusDiv.textContent = 'Error: ' + err;
+                });
+        });
+        
+        // LOGOUT: Send a request to clear the session
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            statusDiv.textContent = 'Logging out...';
+
+            fetch('/cgi-bin/logout.py')
+                .then(response => response.text())
+                .then(data => {
+                    statusDiv.innerHTML = "<b>Server says:</b> " + data + "<p>The cookie should now be deleted.</p>";
+                })
+                .catch(err => {
+                    statusDiv.textContent = 'Error: ' + err;
+                });
+        });
+    </script>
+</body>
+</html>
