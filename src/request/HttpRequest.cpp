@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 11:17:50 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/12 12:13:35 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,10 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
+		 {
 			server.getScript().runScript(*this, _cgiInterpreterPath, server);
+			this->code = server.getScript().getStatusCode();
+		}
 		else if (getHttpMethod() == "POST")
 			fileUpload();
 	}

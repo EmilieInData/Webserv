@@ -315,3 +315,4 @@ std::map<std::string, std::string> Script::getOutputHeaders() const
 {
 	return _outputHeaders;
 }
+
