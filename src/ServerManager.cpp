@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 12:53:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 19:21:21 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ bool ServerManager::servReceive(ClientConnection &connection, HttpRequest &req)
 	{
 		printBoxMsg("New connection accepted");
 
-		char	  buffer[10];
+		char	  buffer[1024];
 		int		  attempts	  = 0;
 		const int maxAttempts = 100;
 
@@ -198,15 +198,22 @@ void ServerManager::servRespond(ClientConnection &connection, HttpRequest &req,
 	try
 	{
 		Response	resp(req);
-		std::string fullPath = req.getFullPath().first +
-							   req.getFullPath().second; // TODO make error management for bad request
-		//	printRequest(*this, _socketFd[connection.socketIndex], connection.fullRequest, fullPath,
-		//				 req.getHttpMethod());
+		if (req.getFullPath().second == "/cgi-bin/login.py")
+		{
+			std::string username = getQueryValue(req.getQuery(), "username"); 
+			if (!username.empty())
+			{
+				std::string sessionId = createSession(username);
+
+				resp.setCookie("session_id=" + sessionId + "; HttpOnly; Max-Age=3600; Path=/");
+			}
+		}
+		std::string fullPath = req.getFullPath().first + req.getFullPath().second; // DBG
 		resp.setContent(req.getFullPath(), req.getHttpMethod());
 		resp.setClientFd(connection.clientFd);
 		resp.sendResponse();
 		_rspCount++;
-		printResponse(*this, incoming, resp.getResponse(), fullPath);
+		printResponse(*this, incoming, resp.getResponse(), fullPath); // DBG
 	}
 	catch (const std::exception &e) // TODO check with errors because they happen in HttpRequest
 	{
@@ -292,7 +299,7 @@ std::vector<ServerData> ServerManager::getServersList() const
 	return _serverData;
 }
 
-Script	&ServerManager::getScript()
+Script &ServerManager::getScript()
 {
 	return _script;
 }
@@ -339,6 +346,41 @@ void ServerManager::servInput()
 		else
 			printBoxError("Command unavailable");
 	}
+}
+
+std::string ServerManager::createSession(const std::string &username)
+{
+	std::string sessionId = generateCookieId();
+
+	CookieData newSession;
+	newSession.username		   = username;
+	newSession.isAuthenticated = true;
+	newSession.lastAccessTime  = std::time(NULL);
+
+	this->_sessions[sessionId] = newSession;
+
+	return sessionId;
+}
+
+CookieData *ServerManager::getSession(const std::string &sessionId)
+{
+	if (this->_sessions.find(sessionId) == this->_sessions.end())
+	{
+		return NULL;
+	}
+
+	const int	SESSION_TIMEOUT = 3600; // TODO set as a macro?
+	time_t		now				= std::time(NULL);
+	CookieData &session			= this->_sessions[sessionId];
+
+	if (now - session.lastAccessTime > SESSION_TIMEOUT)
+	{
+		this->_sessions.erase(sessionId);
+		return NULL;
+	}
+
+	session.lastAccessTime = now;
+	return &session;
 }
 
 /* listening testing methods:

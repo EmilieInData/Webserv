@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:52:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 19:08:08 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ bool isSocket(std::string const &value)
 		if (value[i] == '.')
 		{
 			if (!value[i + 1] || value[i + 1] == '.' || value[i + 1] == ':' || i == 0)
-				throw std::invalid_argument(
-					" Parsing error, 'listen' socket address is not correct\n");
+				throw std::invalid_argument(" Parsing error, 'listen' socket address is not correct\n");
 			flag++;
 		}
 		if (value[i] == ':')
@@ -155,8 +154,7 @@ bool checkDns(std::vector<std::string> &tmp)
 	{
 		for (size_t j = 0; j < tmp[i].length(); j++)
 		{
-			if ((tmp[i][j] >= '0' && tmp[i][j] <= '9') || (tmp[i][j] >= 'a' && tmp[i][j] <= 'z') ||
-				(tmp[i][j] >= 'A' && tmp[i][j] <= 'Z') || tmp[i][j] == '.' || tmp[i][j] == '-')
+			if ((tmp[i][j] >= '0' && tmp[i][j] <= '9') || (tmp[i][j] >= 'a' && tmp[i][j] <= 'z') || (tmp[i][j] >= 'A' && tmp[i][j] <= 'Z') || tmp[i][j] == '.' || tmp[i][j] == '-')
 				continue;
 			return false;
 		}
@@ -213,8 +211,7 @@ unsigned int strToSize(std::string const &value)
 		{
 			tmp = value.substr(0, i);
 			if (i + 1 != value.length())
-				throw std::invalid_argument(
-					" Parsing error, wrong client_max_body_size' arguments\n");
+				throw std::invalid_argument(" Parsing error, wrong client_max_body_size' arguments\n");
 		}
 	}
 	unsigned int num = strToInt(tmp);
@@ -246,8 +243,7 @@ std::map<int, std::pair<std::string, std::string> > defaultErrorPages()
 
 bool isErrorPage(std::string const &value)
 {
-	if (value == "400" || value == "401" || value == "403" || value == "404" || value == "405" ||
-		value == "410" || value == "413" || value == "414" || value == "500" || value == "501")
+	if (value == "400" || value == "401" || value == "403" || value == "404" || value == "405" || value == "410" || value == "413" || value == "414" || value == "500" || value == "501")
 		return true;
 	return false;
 }
@@ -259,19 +255,17 @@ bool isErrorPage(std::string const &value)
 // 	return false;
 // }
 
-
 //pas d’espaces ou caractères interdits.
-
 
 bool isHtmlAddress(std::string const &value)
 {
 	if (value[0] != '/')
 		return false;
 	for (size_t i = 0; i < value.length(); i++)
-		{
-			if (value[i] != '_' && value[i] != '-' && value[i] != '.' && value[i] != '/' && !isalnum(value[i]))
-				return false;
-		}
+	{
+		if (value[i] != '_' && value[i] != '-' && value[i] != '.' && value[i] != '/' && !isalnum(value[i]))
+			return false;
+	}
 	return true;
 }
 
@@ -319,8 +313,7 @@ const std::string timeStamp()
 	int microseconds = tv.tv_usec % 1000;
 
 	std::ostringstream milSec;
-	milSec << buffer << "." << std::setfill('0') << std::setw(3) << milliseconds << "."
-		   << std::setfill('0') << std::setw(3) << microseconds << "] ";
+	milSec << buffer << "." << std::setfill('0') << std::setw(3) << milliseconds << "." << std::setfill('0') << std::setw(3) << microseconds << "] ";
 
 	timeStamp = "\033[35m" + milSec.str() + "\033[0m";
 	return timeStamp;
@@ -358,8 +351,7 @@ bool isBinary(std::string location)
 	if (dotPos != std::string::npos)
 		extension = location.substr(dotPos);
 
-	return (extension == ".jpg" || extension == ".jpeg" || extension == ".png" ||
-			extension == ".gif" || extension == ".ico");
+	return (extension == ".jpg" || extension == ".jpeg" || extension == ".png" || extension == ".gif" || extension == ".ico");
 }
 
 // bool isFolder(std::string location)
@@ -454,4 +446,64 @@ std::map<int, std::string> getStatusCodeMap()
 	m[502] = "Bad Gateway";
 	m[503] = "Service Unavailable";
 	return m;
+}
+
+std::string generateCookieId()
+{
+	std::stringstream cookieId;
+	cookieId << std::time(NULL);
+	cookieId << rand();
+
+	return cookieId.str();
+}
+
+std::string getQueryValue(const std::string &query, const std::string &key)
+{
+	if (query.empty())
+		return "";
+
+	std::string keyToFind = key + "=";
+	size_t		pos		  = query.find(keyToFind);
+
+	while (pos != std::string::npos)
+	{
+		if (pos == 0 || query[pos - 1] == '&')
+		{
+			size_t valueStart = pos + keyToFind.length();
+			size_t valueEnd	  = query.find('&', valueStart);
+
+			if (valueEnd == std::string::npos)
+				return query.substr(valueStart);
+			else
+				return query.substr(valueStart, valueEnd - valueStart);
+		}
+		pos = query.find(keyToFind, pos + 1);
+	}
+
+	return "";
+}
+
+std::string getCookieValue(const std::string &cookie, const std::string &key)
+{
+	if (cookie.empty())
+		return "";
+
+	std::string keyToFind = key + "=";
+	size_t		pos		  = cookie.find(keyToFind);
+
+	while (pos != std::string::npos)
+	{
+		if (pos == 0 || (cookie[pos - 1] == ' ' && cookie[pos - 2] == ';'))
+		{
+			size_t valueStart = pos + keyToFind.length();
+			size_t valueEnd	  = cookie.find(';', valueStart);
+
+			if (valueEnd == std::string::npos)
+				return cookie.substr(valueStart);
+			else
+				return cookie.substr(valueStart, valueEnd - valueStart);
+		}
+		pos = cookie.find(keyToFind, pos + 1);
+	}
+	return "";
 }

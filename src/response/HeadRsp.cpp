@@ -21,6 +21,7 @@ HeadRsp::HeadRsp(Response &response) : _response(&response)
 	setContentLength();
 	setConnectionType();
 	setCacheControl();
+	setCookieString();
 	buildHeader();
 }
 
@@ -29,6 +30,15 @@ HeadRsp::~HeadRsp() {};
 void HeadRsp::setContentType()
 {
 	_contentType = "Content-Type: " + _response->getType() + HEADNL;
+}
+
+void HeadRsp::setCookieString()
+{
+	std::string cookie = _response->getCookie();
+	if (!cookie.empty())
+		_cookieString = "Set-Cookie:" + cookie + std::string(HEADNL);
+	else
+		_cookieString = "";
 }
 
 void HeadRsp::setProtocol()
@@ -124,6 +134,7 @@ void HeadRsp::buildHeader()
 		_header += _contentType;
 		_header += _cacheControl;
 	}
+	if (!_response->getCookie().empty())
 
 	_header += _contentLength;
 	_header += HEADNL;

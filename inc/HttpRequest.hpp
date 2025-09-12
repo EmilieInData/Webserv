@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/09 13:21:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/11 17:59:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ public:
 	int			getParsingState() const;
 	bool		getAutoindex() const;
 	std::string getRspType() const;
+	std::string getQueryValue(const std::string &key) const;
 	MultiBody
 										fillBody(Headers const &header,
 												 std::string const &bodyContent); // FABIO function that fills the body struct to put in vector of class

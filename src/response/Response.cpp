@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/09 23:29:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/11 18:00:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,19 +218,19 @@ void Response::prepResponse()
 		// if (errorPageIt != errorPages.end())
 		// 	_location = _request->getFullPath().first + errorPageIt->second;
 		// else
-		_location = _request->getFullPath().first + "/error_pages/error.html"; 
+		// _location = _request->getFullPath().first + "/error_pages/error.html";
 
 		_contentType = "text/html";
-		content = prepFile();
+		content		 = prepFile();
 
-		std::string reasonPhrase = "Unknown Status";
-		std::map<int, std::string> statusMap = getStatusCodeMap(); 
+		std::string				   reasonPhrase = "Unknown Status";
+		std::map<int, std::string> statusMap	= getStatusCodeMap();
 		if (statusMap.find(_statusCode) != statusMap.end())
 			reasonPhrase = statusMap[_statusCode];
-		
+
 		std::stringstream ss;
 		ss << _statusCode;
-		replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
+		replaceContent(content, "{{STATUS_CODE}}", ss.str());
 		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
 	}
 	else if (_contentType == "cgi-script")
@@ -241,7 +241,7 @@ void Response::prepResponse()
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
 		else
-			_contentType = "text/plain"; 
+			_contentType = "text/plain";
 	}
 	else
 		content = prepFile();
@@ -324,4 +324,14 @@ std::map<std::string, std::string> Response::getCgiHeaders() const
 int Response::getStatusCode() const
 {
 	return _statusCode;
+}
+
+void Response::setCookie(const std::string &cookieValue)
+{
+	_cookieToSet = cookieValue;
+}
+
+std::string Response::getCookie() const
+{
+	return _cookieToSet;
 }
