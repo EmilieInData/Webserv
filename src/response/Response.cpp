@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 14:17:38 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:35:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,11 @@ std::string Response::prepFile()
 		if (_request->getHttpMethod() == "GET")
 			return doAutoindex(_request->getFullPath().second, dir);
 		else
+		{
+			closedir(dir);
 			return "";
-	}
+		}
+		}
 	else
 	{
 		std::ifstream	   page(_location.c_str());
@@ -129,7 +132,7 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 	}
 	html << "    </ul>\n</div>\n</body>\n</html>\n";
 	closedir(dir);
-	return html.str();
+	return html.str()
 }
 
 void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
