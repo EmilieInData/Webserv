@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 16:55:02 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 22:59:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,6 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 		errorRoutine(content, incoming);
 	else if (_contentType == "cgi-script")
 	{
-		
 		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");

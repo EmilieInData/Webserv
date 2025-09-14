@@ -27,7 +27,7 @@ void Script::setScriptType(std::string const &cgiPath)
 	}
 	_scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
-	if (_scriptType != ".py")// && _scriptType != ".php")
+	if (_scriptType != ".py" && _scriptType != ".php")
 	{
 		printBoxError("Invalid script type");
 		_statusCode = 501;

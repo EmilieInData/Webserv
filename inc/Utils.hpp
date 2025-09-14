@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/14 19:06:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 22:50:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ class ServerManager;
 #define RED "\033[31m"
 
 #define CLIENT_HEADER_TIMEOUT 5
-#define CLIENT_BODY_TIMEOUT 5
+#define CLIENT_BODY_TIMEOUT 5 // TODO change back
 
 // cookies
 struct CookieData

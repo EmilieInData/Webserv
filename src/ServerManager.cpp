@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 19:18:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 22:56:32 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ ServerManager::~ServerManager()
 {
 	for (std::map<int, ClientConnection *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 	{
-		close(it->first); // Ensure socket is closed
+		close(it->first);
 		delete it->second;
 	}
 }
@@ -117,11 +117,11 @@ void ServerManager::servRun()
 		_polls.push_back(pfd);
 	}
 
-	struct pollfd pfd_stdin;
-	pfd_stdin.fd	  = STDIN_FILENO;
-	pfd_stdin.events  = POLLIN;
-	pfd_stdin.revents = 0;
-	_polls.push_back(pfd_stdin);
+	struct pollfd pfdStdin;
+	pfdStdin.fd	  = STDIN_FILENO;
+	pfdStdin.events  = POLLIN;
+	pfdStdin.revents = 0;
+	_polls.push_back(pfdStdin);
 	_inputFd = STDIN_FILENO;
 
 	_running = true;
@@ -131,8 +131,8 @@ void ServerManager::servRun()
 	{
 		_polls.erase(std::remove_if(_polls.begin(), _polls.end(), PollFdIsInvalid()), _polls.end());
 
-		int ret = poll(_polls.data(), _polls.size(), 1000);
-		if (ret < 0)
+		int check = poll(_polls.data(), _polls.size(), 1000);
+		if (check < 0)
 		{
 			if (errno == EINTR)
 				continue;
@@ -142,47 +142,40 @@ void ServerManager::servRun()
 
 		checkErrors();
 
-		if (ret == 0)
+		if (check == 0)
 			continue;
 
 		for (size_t i = 0; i < _polls.size(); ++i)
 		{
 			if (_polls[i].revents > 0)
 			{
-				bool is_listening_socket = false;
+				bool socketListening = false;
 				for (size_t j = 0; j < _socketFd.size(); ++j)
 				{
 					if (_polls[i].fd == _socketFd[j])
 					{
-						is_listening_socket = true;
+						socketListening = true;
 						break;
 					}
 				}
 
-				if (is_listening_socket)
-				{
+				if (socketListening)
 					handleNewConnection(_polls[i].fd);
-				}
 				else if (_polls[i].fd == _inputFd)
-				{
 					servInput();
-				}
 				else
-				{
 					handleClient(_polls[i]);
-				}
 			}
 		}
 	}
 
-	// Cleanup listening sockets
 	for (size_t i = 0; i < _socketFd.size(); i++)
 		close(_socketFd[i]);
 }
 
-// ... (handleNewConnection, handleClient, handleRead, handleWrite are unchanged) ...
 void ServerManager::handleNewConnection(int listeningSocket)
 {
+	std::cout << RED << __func__ << RESET << std::endl; // DBG
 	struct sockaddr_in clientAddr;
 	socklen_t		   clientLen = sizeof(clientAddr);
 	int				   clientFd	 = accept(listeningSocket, (struct sockaddr *)&clientAddr, &clientLen);
@@ -215,6 +208,7 @@ void ServerManager::handleNewConnection(int listeningSocket)
 
 void ServerManager::handleClient(struct pollfd &pfd)
 {
+	std::cout << RED << __func__ << RESET << std::endl; // DBG
 	if (_clients.find(pfd.fd) == _clients.end())
 		return;
 
@@ -236,6 +230,7 @@ void ServerManager::handleClient(struct pollfd &pfd)
 
 void ServerManager::handleRead(int clientFd)
 {
+	std::cout << RED << __func__ << RESET << std::endl; // DBG
 	char	buffer[4096];
 	ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0);
 
@@ -243,16 +238,15 @@ void ServerManager::handleRead(int clientFd)
 
 	if (bytes > 0)
 	{
-		time(&conn->lastActivityTime); // Update last activity time
+		time(&conn->lastActivityTime);
 		conn->req.sendBuffer(buffer, bytes);
-		if (conn->req.getParsingState() <= 0) // DONE or ERROR
+		if (conn->req.getParsingState() <= 0) 
 		{
 			conn->requestComplete = true;
 			conn->resp			  = new Response(conn->req);
 			if (conn->req.getStatusCode() < 400)
 				conn->resp->setContent(conn->req.getFullPath(), conn->req.getHttpMethod());
 
-			// Session logic
 			if (conn->req.getFullPath().second == "/cgi-bin/login.py")
 			{
 				std::string username = getQueryValue(conn->req.getQuery(), "username");
@@ -262,6 +256,7 @@ void ServerManager::handleRead(int clientFd)
 					conn->resp->setCookie("session_id=" + sessionId + "; HttpOnly; Max-Age=3600; Path=/");
 				}
 			}
+			
 			conn->resp->setClientFd(clientFd);
 			conn->resp->prepResponse(conn->incoming);
 
@@ -291,6 +286,7 @@ void ServerManager::handleRead(int clientFd)
 
 void ServerManager::handleWrite(int clientFd)
 {
+	std::cout << RED << __func__ << RESET << std::endl; // DBG
 	ClientConnection *conn = _clients[clientFd];
 	if (!conn || !conn->requestComplete || !conn->resp)
 		return;
@@ -348,22 +344,22 @@ void ServerManager::checkErrors()
 		if (conn->requestComplete)
 			continue;
 
-		double time_diff = difftime(now, conn->lastActivityTime);
+		double timeDiff = difftime(now, conn->lastActivityTime);
 
 		int	 state	 = conn->req.getParsingState();
 		bool error = false;
 
-		if (state >= SKIP && state <= REQ_LINE && time_diff > REQ_LINE_TIMEOUT)
+		if (state >= SKIP && state <= REQ_LINE && timeDiff > REQ_LINE_TIMEOUT)
 		{
 			conn->req.setStatusCode(E_400);
 			error = true;
 		}
-		else if (state == HEADERS && time_diff > CLIENT_HEADER_TIMEOUT)
+		else if (state == HEADERS && timeDiff > CLIENT_HEADER_TIMEOUT)
 		{
 			conn->req.setStatusCode(E_408);
 			error = true;
 		}
-		else if (state == BODY && time_diff > CLIENT_BODY_TIMEOUT)
+		else if (state == BODY && timeDiff > CLIENT_BODY_TIMEOUT)
 		{
 			conn->req.setStatusCode(E_408);
 			error = true;
@@ -387,6 +383,7 @@ void ServerManager::checkErrors()
 		}
 	}
 }
+
 std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 {
 	for (size_t i = 0; i < _socketFd.size(); ++i)
@@ -422,10 +419,10 @@ void ServerManager::servInput()
 			cmd.erase(cmd.length() - 1);
 		if (cmd == "quit" || cmd == "q")
 			servQuit();
-		else if (cmd == "status")
+		else if (cmd == "status" || cmd == "s")
 			printServersStatus(*this);
 		else
-			printBoxError("Command unavailable");
+			printBoxError("Command unavailable - [q/s]");
 	}
 }
 
@@ -433,18 +430,22 @@ std::vector<ServerData> ServerManager::getServersList() const
 {
 	return _serverData;
 }
+
 Script &ServerManager::getScript()
 {
 	return _script;
 }
+
 int ServerManager::getReqCount() const
 {
 	return _reqCount;
 }
+
 int ServerManager::getRspCount() const
 {
 	return _rspCount;
 }
+
 std::set<std::pair<int, std::string> > ServerManager::getUniqueListens()
 {
 	return _uniqueListens;
