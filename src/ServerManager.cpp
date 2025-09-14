@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 22:56:32 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 23:49:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,11 +276,8 @@ void ServerManager::handleRead(int clientFd)
 	}
 	else
 	{
-		if (errno != EWOULDBLOCK && errno != EAGAIN)
-		{
-			printBoxError("Recv error");
-			closeConnection(clientFd);
-		}
+		printBoxError("Recv error");
+		closeConnection(clientFd);
 	}
 }
 
@@ -302,11 +299,8 @@ void ServerManager::handleWrite(int clientFd)
 	}
 	else
 	{
-		if (errno != EWOULDBLOCK && errno != EAGAIN)
-		{
-			printBoxError("Send error");
-			closeConnection(clientFd);
-		}
+		printBoxError("Send error");
+		closeConnection(clientFd);
 	}
 }
 
