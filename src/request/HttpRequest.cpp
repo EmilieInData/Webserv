@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 18:48:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:28:53 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 #include <stdlib.h>
 
 HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &server)
-	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
-	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
+	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""), boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
 {
 	std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second << std::endl;
 
@@ -143,7 +142,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 	if (this->state == DONE)
 	{
 		if (getRspType() == "cgi-script")
-		 {
+		{
 			server.getScript().runScript(*this, _cgiInterpreterPath, server);
 			this->code = server.getScript().getStatusCode();
 			std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
@@ -182,8 +181,7 @@ void HttpRequest::printBodies() // DBG
 		std::cout << GREEN << "Body content" << std::endl;
 		it->bodyHeader.printHeader();
 
-		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader(
-			"content-disposition");
+		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader("content-disposition");
 
 		if (cd_it != it->bodyHeader.getHeaderEnd())
 		{
@@ -198,15 +196,12 @@ void HttpRequest::printBodies() // DBG
 
 				if (start_quote != std::string::npos && end_quote != std::string::npos)
 				{
-					std::string filename = contDisp.substr(start_quote + 1,
-														   end_quote - (start_quote + 1));
-					std::cout << "[FILE UPLOAD] Filename: " << filename
-							  << " (Size: " << it->bodyContent.size() << " bytes)" << std::endl;
+					std::string filename = contDisp.substr(start_quote + 1, end_quote - (start_quote + 1));
+					std::cout << "[FILE UPLOAD] Filename: " << filename << " (Size: " << it->bodyContent.size() << " bytes)" << std::endl;
 				}
 				else
 				{
-					std::cout << "[FILE UPLOAD] Binary content (Size: " << it->bodyContent.size()
-							  << " bytes)" << std::endl;
+					std::cout << "[FILE UPLOAD] Binary content (Size: " << it->bodyContent.size() << " bytes)" << std::endl;
 				}
 			}
 			else
@@ -219,8 +214,7 @@ void HttpRequest::printBodies() // DBG
 	}
 }
 
-LocationConf const *HttpParser::findLocation(std::string								path,
-											 std::map<std::string, LocationConf> const &loc)
+LocationConf const *HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const &loc)
 {
 	std::map<std::string, LocationConf>::const_iterator it;
 	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
@@ -260,8 +254,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
 
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
-								 this->req_line->getMethod());
+	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(), this->req_line->getMethod());
 
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
 	std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;
@@ -269,8 +262,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
 	{
-		this->boundary = HttpParser::parseContentTypeBoundary(
-			this->headers->getHeaderValue("content-type"));
+		this->boundary = HttpParser::parseContentTypeBoundary(this->headers->getHeaderValue("content-type"));
 		if (!this->boundary.empty())
 		{
 			this->state			= BODY;
@@ -280,13 +272,10 @@ void HttpRequest::finalHeadersParsingRoutine()
 	}
 	if (this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
 	{
-		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length",
-																								   0),
-															  this->max_body_size);
-		this->state = BODY;
+		this->body_len = HttpParser::parseContentLengthHeader(this->headers->getHeaderOnlyOneValue("content-length", 0), this->max_body_size);
+		this->state	   = BODY;
 	}
-	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd() ||
-		this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
+	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd() || this->headers->getHeader("content-length") != this->headers->getHeaderEnd())
 		return;
 	this->state = DONE;
 }
@@ -294,7 +283,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 void HttpRequest::manyBodiesRoutine(std::size_t found)
 {
 	// static int k = -1;			// TODO no needed
-	static bool makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
+	static bool		 makeNew = true; // FABIO created boolean so that it only creates the bodies when needed
 	static MultiBody newBody;
 
 	while (found != std::string::npos && this->body_state != BODY2)
@@ -341,7 +330,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	std::size_t f = this->body.find("\r\n--" + this->boundary + "--\r\n"); //ULTIMO BODY
 	if (f != std::string::npos)
 	{
-		this->body = this->body.erase(f, this->body.length()); // FABIO poner body en la struct del ultimo body
+		this->body			= this->body.erase(f, this->body.length()); // FABIO poner body en la struct del ultimo body
 		newBody.bodyContent = this->body;
 		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
@@ -351,7 +340,7 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	std::size_t f2 = this->body.find("\r\n--" + this->boundary + "\r\n"); //OTRO BODY
 	if (f2 != std::string::npos)
 	{
-		this->body = this->body.erase(f2, this->body.length()); //FABIO poner body  en la struct
+		this->body			= this->body.erase(f2, this->body.length()); //FABIO poner body  en la struct
 		newBody.bodyContent = this->body;
 		// std::cout << "BODY   " << k << ": " << this->body.substr(0, 70) << std::endl;
 		this->_bodies.push_back(newBody);
@@ -361,16 +350,13 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 	}
 }
 
-
-void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locations,
-							  std::string const							&path)
+void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locations, std::string const &path)
 {
 	std::cout << PINK << "request path: " << path << std::endl << RESET; //TO BORROW
 
 	std::map<std::string, LocationConf>::const_iterator best_match = locations.end();
 
-	for (std::map<std::string, LocationConf>::const_iterator it = locations.begin();
-		 it != locations.end(); ++it)
+	for (std::map<std::string, LocationConf>::const_iterator it = locations.begin(); it != locations.end(); ++it)
 		if (path.find(it->first) == 0)
 			if (best_match == locations.end() || it->first.length() > best_match->first.length())
 				best_match = it;
@@ -390,14 +376,13 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locatio
 		{
 			std::string extension = requestFile.substr(dotPos);
 
-			const std::map<std::string, std::string> &cgiPassMap = best_match->second.getCgiPass();
-			std::map<std::string, std::string>::const_iterator cgi_it = cgiPassMap.find(extension);
+			const std::map<std::string, std::string>		  &cgiPassMap = best_match->second.getCgiPass();
+			std::map<std::string, std::string>::const_iterator cgi_it	  = cgiPassMap.find(extension);
 
 			if (cgi_it != cgiPassMap.end())
 			{
 				this->_cgiInterpreterPath = cgi_it->second;
-				std::cout << GREEN << "Found CGI interpreter for " << extension << ": "
-						  << _cgiInterpreterPath << RESET << std::endl;
+				std::cout << GREEN << "Found CGI interpreter for " << extension << ": " << _cgiInterpreterPath << RESET << std::endl;
 			}
 			else
 			{
@@ -438,8 +423,7 @@ void HttpRequest::setRspType()
 		_rspType = "application/octet-stream";
 }
 
-void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it,
-							ServerData														&serv)
+void HttpRequest::checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it, ServerData &serv)
 {
 	if (it == this->headers->getHeaderEnd())
 		throw std::invalid_argument(E_400);
@@ -517,8 +501,7 @@ void HttpRequest::fileUpload()
 
 	for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); ++it)
 	{
-		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader(
-			"content-disposition"); // checks if file
+		std::map<std::string, std::vector<std::string> >::const_iterator cd_it = it->bodyHeader.getHeader("content-disposition"); // checks if file
 		if (cd_it == it->bodyHeader.getHeaderEnd())
 		{
 			continue;
@@ -536,12 +519,9 @@ void HttpRequest::fileUpload()
 			if (start_quote == std::string::npos || end_quote == std::string::npos)
 				continue;
 
-			std::string nameOriginal = contDisp.substr(start_quote + 1,
-													   end_quote - (start_quote + 1));
+			std::string nameOriginal = contDisp.substr(start_quote + 1, end_quote - (start_quote + 1));
 			size_t		lastSlash	 = nameOriginal.find_last_of("/");
-			std::string nameClean	 = (lastSlash == std::string::npos)
-										   ? nameOriginal
-										   : nameOriginal.substr(lastSlash + 1);
+			std::string nameClean	 = (lastSlash == std::string::npos) ? nameOriginal : nameOriginal.substr(lastSlash + 1);
 
 			if (nameClean.empty())
 				continue;
@@ -572,8 +552,7 @@ void HttpRequest::fileUpload()
 				size_t end_quote   = contDisp.find("\"", start_quote + 1);
 				if (start_quote != std::string::npos && end_quote != std::string::npos)
 				{
-					std::string field_name = contDisp.substr(start_quote + 1,
-															 end_quote - (start_quote + 1));
+					std::string field_name = contDisp.substr(start_quote + 1, end_quote - (start_quote + 1));
 					formData[field_name]   = it->bodyContent;
 				}
 			}
@@ -581,8 +560,7 @@ void HttpRequest::fileUpload()
 	}
 
 	std::cout << RED << "[Form Data Received]" << RESET << std::endl;
-	for (std::map<std::string, std::string>::const_iterator map_it = formData.begin();
-		 map_it != formData.end(); ++map_it)
+	for (std::map<std::string, std::string>::const_iterator map_it = formData.begin(); map_it != formData.end(); ++map_it)
 	{
 		std::cout << map_it->first << ": " << map_it->second << std::endl;
 	}
@@ -625,8 +603,7 @@ std::string HttpRequest::getRawBody() const
 		create file with name and copy bits
 	} */
 
-LocationConf HttpRequest::findLocation(std::string								  path,
-									   std::map<std::string, LocationConf> const &loc)
+LocationConf HttpRequest::findLocation(std::string path, std::map<std::string, LocationConf> const &loc)
 {
 	std::map<std::string, LocationConf>::const_iterator it;
 	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
@@ -649,14 +626,14 @@ LocationConf HttpRequest::getBlockLoc() const
 	return blockLoc;
 }
 
-std::string	HttpRequest::getUriFirst()const
+std::string HttpRequest::getUriFirst() const
 {
 	if (getHost().second.empty())
 		return uri->getScheme() + "://" + uri->getAuthority();
 	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;
 }
 
-std::vector<ServerData>	HttpRequest::getServersList() const
+std::vector<ServerData> HttpRequest::getServersList() const
 {
 	return this->server.getServersList();
 }

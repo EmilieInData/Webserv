@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/14 14:05:00 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:23:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,35 +321,25 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 {
 	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
 	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
-	{
 		throw std::invalid_argument(E_405);
-	}
 
 	std::string full(path.first + path.second);
 
 	if (!blockLoc.getReturnDirective().empty())
-	{
 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
-	}
 
 	if (path.second == "/" || path.second.empty())
-	{
 		full = path.first;
-	}
 
 	std::cout << PINK << "FULL: " << full << std::endl << RESET;
 	if (access(full.c_str(), F_OK) == -1)
-	{
 		throw std::invalid_argument(E_404);
-	}
 
 	if (isBinary(full) && method != "DELETE")
 	{
 		std::ifstream file(full.c_str(), std::ios::binary);
 		if (!file.is_open())
-		{
 			throw std::invalid_argument(E_403);
-		}
 		file.close();
 	}
 	else if (isFolder(full))
@@ -357,22 +347,16 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		if (method == "POST")
 		{
 			if (access(full.c_str(), W_OK) != 0)
-			{
 				throw std::invalid_argument(E_403);
-			}
 			return;
 		}
 
 		if (method == "DELETE")
-		{
 			throw std::invalid_argument(E_403);
-		}
 
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
-		{
 			throw std::invalid_argument(E_403);
-		}
 
 		std::string index = full + "/index.html";
 		if (access(index.c_str(), F_OK) == 0)
@@ -399,9 +383,7 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		{
 			std::ifstream page(full.c_str());
 			if (!page.is_open())
-			{
 				throw std::invalid_argument(E_403);
-			}
 			page.close();
 		}
 	}
@@ -409,9 +391,7 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	if (method == "DELETE")
 	{
 		if (std::remove(full.c_str()) != 0)
-		{
 			throw std::invalid_argument(E_403);
-		}
 		throw std::invalid_argument(E_204);
 	}
 }
