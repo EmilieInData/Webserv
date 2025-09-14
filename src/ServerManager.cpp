@@ -6,19 +6,18 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 12:52:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:19:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ServerManager.hpp"
-#include <fcntl.h>
-#include <unistd.h>
-#include <iostream>
 #include <cerrno>
+#include <fcntl.h>
+#include <iostream>
+#include <unistd.h>
 
 Client::Client(int client_fd, struct sockaddr_in client_addr, ServerManager &manager, std::pair<int, std::string> incoming)
-	: fd(client_fd), addr(client_addr), addrLen(sizeof(addr)),
-	  request(incoming, manager), response(request), bytes_sent(0)
+	: fd(client_fd), addr(client_addr), addrLen(sizeof(addr)), request(incoming, manager), response(request), bytes_sent(0)
 {
 	time(&last_action_time);
 }
@@ -68,8 +67,8 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 
 	struct sockaddr_in newaddr;
 	std::memset(&newaddr, 0, sizeof(newaddr));
-	newaddr.sin_family = AF_INET;
-	newaddr.sin_port = htons(_listens.first);
+	newaddr.sin_family		= AF_INET;
+	newaddr.sin_port		= htons(_listens.first);
 	newaddr.sin_addr.s_addr = inet_addr(_listens.second.c_str());
 
 	if (bind(newsocket, (struct sockaddr *)&newaddr, sizeof(newaddr)) < 0)
@@ -89,21 +88,20 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 	graTextElement(_listens.second + ":" + intToString(_listens.first));
 }
 
-
 void ServerManager::servPollSetup()
 {
 	_polls.clear();
 	for (size_t i = 0; i < _socketFd.size(); ++i)
 	{
 		struct pollfd pfd;
-		pfd.fd = _socketFd[i];
-		pfd.events = POLLIN;
+		pfd.fd		= _socketFd[i];
+		pfd.events	= POLLIN;
 		pfd.revents = 0;
 		_polls.push_back(pfd);
 	}
 	struct pollfd stdinfd;
-	stdinfd.fd = STDIN_FILENO;
-	stdinfd.events = POLLIN;
+	stdinfd.fd		= STDIN_FILENO;
+	stdinfd.events	= POLLIN;
 	stdinfd.revents = 0;
 	_polls.push_back(stdinfd);
 }
@@ -130,15 +128,17 @@ void ServerManager::servRun()
 			if (_polls[i].revents == 0)
 				continue;
 
-			if (_polls[i].fd == STDIN_FILENO) {
-				if (_polls[i].revents & POLLIN) {
+			if (_polls[i].fd == STDIN_FILENO)
+			{
+				if (_polls[i].revents & POLLIN)
+				{
 					servInput();
 				}
 				continue;
 			}
 
 			bool is_listener = false;
-			for(size_t j = 0; j < _socketFd.size(); ++j)
+			for (size_t j = 0; j < _socketFd.size(); ++j)
 			{
 				if (_polls[i].fd == _socketFd[j])
 				{
@@ -169,11 +169,11 @@ void ServerManager::servRun()
 		}
 	}
 
-	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-    {
-        close(it->first);
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		close(it->first);
 		delete it->second;
-    }
+	}
 	_clients.clear();
 	for (size_t i = 0; i < _socketFd.size(); ++i)
 		close(_socketFd[i]);
@@ -182,8 +182,8 @@ void ServerManager::servRun()
 void ServerManager::handleNewConnection(int listener_fd)
 {
 	struct sockaddr_in client_addr;
-	socklen_t client_len = sizeof(client_addr);
-	int client_fd = accept(listener_fd, (struct sockaddr *)&client_addr, &client_len);
+	socklen_t		   client_len = sizeof(client_addr);
+	int				   client_fd  = accept(listener_fd, (struct sockaddr *)&client_addr, &client_len);
 
 	if (client_fd < 0)
 	{
@@ -200,23 +200,24 @@ void ServerManager::handleNewConnection(int listener_fd)
 	}
 
 	struct pollfd pfd;
-	pfd.fd = client_fd;
-	pfd.events = POLLIN;
+	pfd.fd		= client_fd;
+	pfd.events	= POLLIN;
 	pfd.revents = 0;
 	_polls.push_back(pfd);
 
 	std::pair<int, std::string> incoming = getSocketData(listener_fd);
-	_clients[client_fd] = new Client(client_fd, client_addr, *this, incoming);
+	_clients[client_fd]					 = new Client(client_fd, client_addr, *this, incoming);
 
 	printBoxMsg("New connection accepted on fd: " + intToString(client_fd));
 }
 
 void ServerManager::handleClientRead(int client_fd)
 {
-	char buffer[4096];
-	ssize_t bytes = recv(client_fd, buffer, sizeof(buffer), 0);
-	std::map<int, Client*>::iterator it = _clients.find(client_fd);
-	if (it == _clients.end()) return;
+	char							  buffer[4096];
+	ssize_t							  bytes = recv(client_fd, buffer, sizeof(buffer), 0);
+	std::map<int, Client *>::iterator it	= _clients.find(client_fd);
+	if (it == _clients.end())
+		return;
 
 	if (bytes <= 0)
 	{
@@ -234,7 +235,7 @@ void ServerManager::handleClientRead(int client_fd)
 
 	if (it->second->request.getParsingState() <= 0)
 	{
-		Response& resp = it->second->response;
+		Response &resp = it->second->response;
 
 		if (it->second->request.getStatusCode() < 400)
 		{
@@ -257,14 +258,15 @@ void ServerManager::handleClientRead(int client_fd)
 
 void ServerManager::handleClientWrite(int client_fd)
 {
-	std::map<int, Client*>::iterator it = _clients.find(client_fd);
-	if (it == _clients.end()) return;
+	std::map<int, Client *>::iterator it = _clients.find(client_fd);
+	if (it == _clients.end())
+		return;
 
-	std::string &resp = it->second->response_data;
-	size_t &bytes_sent = it->second->bytes_sent;
+	std::string &resp		= it->second->response_data;
+	size_t		&bytes_sent = it->second->bytes_sent;
 
-	size_t len_to_send = resp.length() - bytes_sent;
-	ssize_t sent = send(client_fd, resp.c_str() + bytes_sent, len_to_send, 0);
+	size_t	len_to_send = resp.length() - bytes_sent;
+	ssize_t sent		= send(client_fd, resp.c_str() + bytes_sent, len_to_send, 0);
 
 	if (sent < 0)
 	{
@@ -287,7 +289,7 @@ void ServerManager::removeClient(int client_fd)
 {
 	close(client_fd);
 
-	std::map<int, Client*>::iterator it = _clients.find(client_fd);
+	std::map<int, Client *>::iterator it = _clients.find(client_fd);
 	if (it != _clients.end())
 	{
 		delete it->second;
@@ -308,10 +310,10 @@ void ServerManager::removeClient(int client_fd)
 std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 {
 	struct sockaddr_in socketIn;
-	socklen_t socketInLen = sizeof(socketIn);
+	socklen_t		   socketInLen = sizeof(socketIn);
 	std::memset(&socketIn, 0, socketInLen);
 	char ipStr[INET_ADDRSTRLEN];
-	int portIn;
+	int	 portIn;
 
 	if (getsockname(socketFd, (struct sockaddr *)&socketIn, &socketInLen) < 0)
 		std::cerr << timeStamp() << "getsockname failed for socket num " << socketFd << std::endl;
@@ -348,33 +350,50 @@ void ServerManager::servInput()
 			printBoxError("Command unavailable");
 	}
 }
-std::vector<ServerData> ServerManager::getServersList() const { return _serverData; }
+std::vector<ServerData> ServerManager::getServersList() const
+{
+	return _serverData;
+}
 
-Script &ServerManager::getScript() { return _script; }
+Script &ServerManager::getScript()
+{
+	return _script;
+}
 
-int ServerManager::getReqCount() const { return _reqCount; }
+int ServerManager::getReqCount() const
+{
+	return _reqCount;
+}
 
-int ServerManager::getRspCount() const { return _rspCount; }
+int ServerManager::getRspCount() const
+{
+	return _rspCount;
+}
 
-std::set<std::pair<int, std::string> > ServerManager::getUniqueListens() { return _uniqueListens; }
+std::set<std::pair<int, std::string> > ServerManager::getUniqueListens()
+{
+	return _uniqueListens;
+}
 
-std::string ServerManager::createSession(const std::string &username) {
+std::string ServerManager::createSession(const std::string &username)
+{
 	std::string sessionId = generateCookieId();
-	CookieData newSession;
-	newSession.username = username;
+	CookieData	newSession;
+	newSession.username		   = username;
 	newSession.isAuthenticated = true;
-	newSession.lastAccessTime = std::time(NULL);
+	newSession.lastAccessTime  = std::time(NULL);
 	this->_sessions[sessionId] = newSession;
 	return sessionId;
 }
 
-CookieData *ServerManager::getSession(const std::string &sessionId) {
+CookieData *ServerManager::getSession(const std::string &sessionId)
+{
 	if (this->_sessions.find(sessionId) == this->_sessions.end())
 		return NULL;
 
-	const int SESSION_TIMEOUT = 3600;
-	time_t now = std::time(NULL);
-	CookieData &session = this->_sessions[sessionId];
+	const int	SESSION_TIMEOUT = 3600;
+	time_t		now				= std::time(NULL);
+	CookieData &session			= this->_sessions[sessionId];
 
 	if (now - session.lastAccessTime > SESSION_TIMEOUT)
 	{
