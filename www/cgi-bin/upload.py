@@ -7,7 +7,7 @@ import html
 # The directory where files will be saved.
 # IMPORTANT: This path is relative to where the script is executed from.
 # Make sure it exists and the web server has permission to write to it.
-UPLOAD_DIR = './www/uploads/'
+UPLOAD_DIR = '/www/uploads/'
 
 def send_response(status="200 OK", content_type="text/html", body=""):
     """Prints a complete and valid HTTP response to standard output."""
