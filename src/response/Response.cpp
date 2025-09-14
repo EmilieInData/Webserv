@@ -6,11 +6,12 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/12 18:48:22 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:17:38 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+
 #include "HttpRequest.hpp"
 #include "ServerManager.hpp"
 #include "Utils.hpp"
@@ -20,22 +21,21 @@
 
 Response::Response(HttpRequest const &request) : _request(&request)
 {
-	_clientFd	   = -1;
-	_response	   = "";
-	_location	   = "";
-	_statusCode	   = _request->getStatusCode();
+	_clientFd = -1;
+	_response = "";
+	_location = "";
+	// _statusCode	   = _request->getStatusCode();
 	_method		   = "";
 	_contentType   = "";
 	_contentLength = "";
 	_blockLoc	   = _request->getBlockLoc();
-//	std::cout << "ERROR PAGE :" << _blockLoc.getErrorPage().begin()->second << std::endl;
+	//	std::cout << "ERROR PAGE :" <<
+	//_blockLoc.getErrorPage().begin()->second << std::endl;
 }
 
 Response::~Response() {}
 
-Response::Response(Response const &copy)
-	: _clientFd(copy._clientFd), _response(copy._response), _location(copy._location),
-	  _method(copy._method), _contentLength(copy._contentLength)
+Response::Response(Response const &copy) : _clientFd(copy._clientFd), _response(copy._response), _location(copy._location), _method(copy._method), _contentLength(copy._contentLength)
 {
 	_output << copy._output.str();
 }
@@ -73,7 +73,7 @@ std::string Response::prepFile()
 
 	if (isBinary(_location))
 	{
-		std::ifstream file(_location.c_str(), std::ios::binary);
+		std::ifstream	   file(_location.c_str(), std::ios::binary);
 		std::ostringstream buffer;
 		buffer << file.rdbuf();
 		file.close();
@@ -81,24 +81,27 @@ std::string Response::prepFile()
 	}
 	else if (isFolder(_location))
 	{
-		_contentType = "text/html";
-		DIR *dir = opendir(_location.c_str());
+		_contentType	  = "text/html";
+		DIR		   *dir	  = opendir(_location.c_str());
 		std::string index = _location + "/index.html";
 		if (access(index.c_str(), F_OK) == 0)
 		{
 			_location += "/index.html";
-			std::ifstream page(_location.c_str());
+			std::ifstream	   page(_location.c_str());
 			std::ostringstream pageContent;
 			pageContent << page.rdbuf();
 			page.close();
 			closedir(dir);
 			return pageContent.str();
 		}
-		return doAutoindex(_request->getFullPath().second, dir);
+		if (_request->getHttpMethod() == "GET")
+			return doAutoindex(_request->getFullPath().second, dir);
+		else
+			return "";
 	}
 	else
 	{
-		std::ifstream page(_location.c_str());
+		std::ifstream	   page(_location.c_str());
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
 		page.close();
@@ -120,7 +123,8 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 		if (uri[uri.size() - 1] != '/')
 			html << "/";
 		html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-		// std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
+		// std::cout << BLUE << "URI: " << uri << "D_name: " <<
+		// entry->d_name << RESET
 		// 		  << std::endl; // TO BORROW
 	}
 	html << "    </ul>\n</div>\n</body>\n</html>\n";
@@ -183,7 +187,8 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 	html << "</head>\n<body>\n";
 	html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
 	html << "    <div class=\"image-container\">\n";
-	html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
+	html << "        <img src=\"/static/cat.png\" alt=\"Autoindex "
+			"banner\">\n";
 	html << "    </div>\n";
 	html << "    <div class=\"list-container\">\n";
 	html << "    <ul>\n";
@@ -191,19 +196,20 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 
 extern const std::map<int, std::string> statusCodeMap;
 
-void Response::prepResponse( std::pair<int, std::string> incoming )
+void Response::prepResponse(std::pair<int, std::string> incoming)
 {
 	std::string content;
 
+	_statusCode = _request->getStatusCode();
+
 	_contentType = _request->getRspType();
 
-	if ( this->_statusCode != 200 )
+	if (this->_statusCode >= 300)
 		errorRoutine(content, incoming);
 	else if (_contentType == "cgi-script")
 	{
-		
-		content		= _request->getServ().getScript().getOutputBody();
-		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
+		content												  = _request->getServ().getScript().getOutputBody();
+		_cgiHeaders											  = _request->getServ().getScript().getOutputHeaders();
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
 		if (it != _cgiHeaders.end())
 			_contentType = it->second;
@@ -214,69 +220,70 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 		content = prepFile();
 
 	if (_statusCode == 301)
-		return;	
+		return;
 	std::ostringstream output;
 	output << content.length();
 	_contentLength = output.str();
 
 	HeadRsp header(*this);
 	_response = header.getHeader() + content;
-	
 }
 
-void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
-	switch ( this->_statusCode )
+void Response::errorRoutine(std::string &content, std::pair<int, std::string> incoming)
+{
+	switch (this->_statusCode)
 	{
-		case 204:
-			break;
-		case 301:
+	case 204:
+		break;
+	case 301:
+	{
+		std::map<int, std::string> status = getStatusCodeMap();
+		std::stringstream		   str;
+		str << _statusCode;
+
+		_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n"
+					"Location: {{LOCATION}}\r\n"
+					"\r\n";
+		replaceContent(_response, "{{STATUS_CODE}}", str.str());
+		replaceContent(_response, "{{REASON_PHRASE}}", status[_statusCode]);
+		replaceContent(_response, "{{LOCATION}}", _request->getUriFirst() + _blockLoc.getReturnDirective()[1]);
+		std::cout << "REDIRECTTT" << std::endl;
+		break;
+	}
+	default:
+		const std::map<int, std::string> errorPages = _blockLoc.getErrorPage();
+		if (!errorPages.empty())
 		{
-			std::map<int, std::string> status = getStatusCodeMap(); 
-			std::stringstream str;
-			str << _statusCode;
-
-			_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n""Location: {{LOCATION}}\r\n""\r\n";
-			replaceContent(_response, "{{STATUS_CODE}}", str.str());
-			replaceContent(_response, "{{REASON_PHRASE}}", status[_statusCode]);
-			replaceContent(_response, "{{LOCATION}}", _request->getUriFirst()  + _blockLoc.getReturnDirective()[1]);
-			std::cout << "REDIRECTTT" << std::endl;
-			break;
+			std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
+			if (errorPageIt != errorPages.end())
+				_location = _request->getFullPath().first + errorPageIt->second;
 		}
-		default:
-			const std::map<int, std::string> errorPages	= _blockLoc.getErrorPage();
-			if (!errorPages.empty())
-			{
-				std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
-				if (errorPageIt != errorPages.end())
-					_location = _request->getFullPath().first + errorPageIt->second;
-			}
-			else { 
-				ServerData serv = HttpParser::checkIfServerExist(this->_request->getServersList(), incoming);
-				std::map<int, std::string> const  errorPages2 = serv.getErrorPage();
+		else
+		{
+			ServerData						 serv		 = HttpParser::checkIfServerExist(this->_request->getServersList(), incoming);
+			std::map<int, std::string> const errorPages2 = serv.getErrorPage();
 
-				std::map<int, std::string>::const_iterator errorPageIt = errorPages2.find(_statusCode);
-				if (errorPageIt != errorPages2.end())
-					_location = serv.getRoot() + errorPageIt->second;
-				else
-					_location = serv.getRoot() + "/error_pages/error.html"; 
-		
-			}
-		
+			std::map<int, std::string>::const_iterator errorPageIt = errorPages2.find(_statusCode);
+			if (errorPageIt != errorPages2.end())
+				_location = serv.getRoot() + errorPageIt->second;
+			else
+				_location = serv.getRoot() + "/error_pages/error.html";
+		}
 
-			std::cout << "LOCATIONNNNNNN: " << _location << std::endl;
-			_contentType = "text/html";
-			content = prepFile();
+		std::cout << "LOCATIONNNNNNN: " << _location << std::endl;
+		_contentType = "text/html";
+		content		 = prepFile();
 
-			std::string reasonPhrase = "Unknown Status";
-			std::map<int, std::string> statusMap = getStatusCodeMap(); 
-			if (statusMap.find(_statusCode) != statusMap.end())
-				reasonPhrase = statusMap[_statusCode];
-			
-			std::stringstream ss;
-			ss << _statusCode;
-			replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
-			replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
-			break;
+		std::string				   reasonPhrase = "Unknown Status";
+		std::map<int, std::string> statusMap	= getStatusCodeMap();
+		if (statusMap.find(_statusCode) != statusMap.end())
+			reasonPhrase = statusMap[_statusCode];
+
+		std::stringstream ss;
+		ss << _statusCode;
+		replaceContent(content, "{{STATUS_CODE}}", ss.str());
+		replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
+		break;
 	}
 }
 
@@ -303,10 +310,8 @@ void Response::sendResponse()
 	int			attempts	= 0;
 	const int	maxAttempts = 100;
 
-	
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
-
 		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0);
 		if (sent > 0)
 			totalSent += sent;

@@ -3,27 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 16:15:18 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 14:05:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpParser.hpp"
-#include "RequestLine.hpp"
-#include "ServerData.hpp"
-#include "Utils.hpp"
+
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <cctype>
 #include <cstdio>
 #include <cstring>
-#include <fcntl.h>
 #include <iostream>
-#include <unistd.h>
+
+#include "RequestLine.hpp"
+#include "ServerData.hpp"
+#include "Utils.hpp"
 
 std::vector<std::string> HttpParser::split(std::string const &str, char const delimiter)
 {
-
 	std::vector<std::string> tokens;
 	std::string				 t;
 
@@ -54,7 +56,6 @@ std::vector<std::string> HttpParser::split(std::string const &str, char const de
 
 std::vector<std::string> HttpParser::isspaceSplit(std::string const &str)
 {
-
 	std::vector<std::string> tokens;
 	std::string				 t;
 
@@ -107,10 +108,10 @@ bool HttpParser::isUnreservedForUri(char c)
 bool HttpParser::isReservedForUri(char c)
 {
 	if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' || c == '@')
-		return true; //gen-delims
+		return true; // gen-delims
 
 	if (c == '!' || c == '$' || c == '&' || c == '\\' || c == '(' || c == ')' || c == '*' || c == '+' || c == ',' || c == ';' || c == '=')
-		return true; //sub-delims
+		return true; // sub-delims
 
 	return false;
 }
@@ -129,7 +130,6 @@ bool HttpParser::isHexChar(char c)
 
 bool HttpParser::isDNS(std::string s)
 {
-
 	std::string::const_iterator it, ite = s.end();
 
 	for (it = s.begin(); it != ite; ++it)
@@ -141,7 +141,6 @@ bool HttpParser::isDNS(std::string s)
 
 std::string HttpParser::toLower(std::string const &str)
 {
-
 	std::string			  result = str;
 	std::string::iterator it, ite = result.end();
 
@@ -171,7 +170,6 @@ std::string HttpParser::trimSpaceAndTab(std::string &str)
 
 RequestLine HttpParser::parseRequestLine(std::string const &line)
 {
-
 	std::string::const_iterator s_it, s_ite = line.end();
 	int							spaces = 0;
 
@@ -196,7 +194,7 @@ RequestLine HttpParser::parseRequestLine(std::string const &line)
 }
 
 void HttpParser::parseReqTarget(std::string &uri)
-{ //request target = uri
+{ // request target = uri
 	std::string::iterator it, ite = uri.end();
 
 	if (uri.at(0) && uri.at(0) != '/')
@@ -250,7 +248,6 @@ std::string HttpParser::parseQuery(std::string const &uri)
 
 std::string HttpParser::parseFragment(std::string const &uri)
 {
-
 	std::size_t found = uri.find("#");
 
 	if (found != std::string::npos)
@@ -288,7 +285,8 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 	throw std::invalid_argument(E_421);
 }
 
-// LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
+// LocationConf const*	HttpParser::findLocation(std::string path,
+// std::map<std::string, LocationConf> const& loc)
 // {
 // 	std::map<std::string, LocationConf>::const_iterator	it;
 // 	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
@@ -313,55 +311,68 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 //         std::cout << "Redirection détectée: " << path.second
 //                   << " -> " << redirect_to << std::endl;
 
-//         // Ici au lieu de throw, tu pourrais générer la réponse HTTP directement
-//         throw std::invalid_argument("REDIRECT_" + std::to_string(code) + "_" + redirect_to);
+//         // Ici au lieu de throw, tu pourrais générer la réponse HTTP
+//         directement throw std::invalid_argument("REDIRECT_" +
+//         std::to_string(code) + "_" + redirect_to);
 //     }
 // }
 
 void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path, LocationConf &blockLoc, std::string const &method)
 {
-	//virer autoindex en arg car block location && passer la classe request a la place de path && method
+	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
+	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
+	{
+		throw std::invalid_argument(E_405);
+	}
+
 	std::string full(path.first + path.second);
 
-	// LocationConf const* block = findLocation(path.second, loc);
-	// std::cout << PINK << "KEY= " << block->getKey() << std::endl;
-
-	//check redirection
 	if (!blockLoc.getReturnDirective().empty())
 	{
-		full = path.first + blockLoc.getReturnDirective()[1]; // TO CHANGE
-		// HTTP/1.1 302 Found
-		// Location: /newpage
-		// Content-Length: 0
-		//checker le code ??
 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
 	}
+
 	if (path.second == "/" || path.second.empty())
-		full = path.first;
-		// full = path.first + "/index.html";
-
-
-	std::cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
-	if (access(full.c_str(), F_OK) == -1)
-		throw std::invalid_argument(E_404);
-
-	if (isBinary(full) && method != "DELETE") //CLEO
 	{
-		// std::cout << PINK << "inside binary\n" << RESET; // TO BORROW
+		full = path.first;
+	}
+
+	std::cout << PINK << "FULL: " << full << std::endl << RESET;
+	if (access(full.c_str(), F_OK) == -1)
+	{
+		throw std::invalid_argument(E_404);
+	}
+
+	if (isBinary(full) && method != "DELETE")
+	{
 		std::ifstream file(full.c_str(), std::ios::binary);
 		if (!file.is_open())
+		{
 			throw std::invalid_argument(E_403);
+		}
 		file.close();
 	}
 	else if (isFolder(full))
 	{
-		if (method == "DELETE")
-			throw std::invalid_argument(E_403); //CLEO
+		if (method == "POST")
+		{
+			if (access(full.c_str(), W_OK) != 0)
+			{
+				throw std::invalid_argument(E_403);
+			}
+			return;
+		}
 
-		// std::cout << PINK << "inside folder\n" << RESET; TO BORROW
+		if (method == "DELETE")
+		{
+			throw std::invalid_argument(E_403);
+		}
+
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
+		{
 			throw std::invalid_argument(E_403);
+		}
 
 		std::string index = full + "/index.html";
 		if (access(index.c_str(), F_OK) == 0)
@@ -384,34 +395,29 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	}
 	else
 	{
-		// std::cout << PINK << "inside page\n" << RESET; // TO BORROW
-		std::ifstream page(full.c_str());
-		if (!page.is_open() && method != "DELETE")
-			throw std::invalid_argument(E_403);
-		page.close();
+		if (method != "DELETE")
+		{
+			std::ifstream page(full.c_str());
+			if (!page.is_open())
+			{
+				throw std::invalid_argument(E_403);
+			}
+			page.close();
+		}
 	}
 
 	if (method == "DELETE")
-	{ //FABIO added throw for failure
+	{
 		if (std::remove(full.c_str()) != 0)
+		{
 			throw std::invalid_argument(E_403);
+		}
 		throw std::invalid_argument(E_204);
 	}
 }
 
-// void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
-// 	std::string full( path.first + path.second );
-
-// //	std::cout << "FULL: " << full << std::endl;
-
-// 	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
-
-// //	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
-// }
-
 void HttpParser::notAllowedMethod(std::map<std::string, LocationConf>::iterator location, std::vector<std::string> const &allowed_serv, std::string const &method)
 {
-
 	std::vector<std::string> const &allowed_loc = location->second.getAllowedMethods();
 
 	if (!allowed_loc.empty())
@@ -460,7 +466,6 @@ std::pair<std::string, std::string> HttpParser::parseHost(std::string const &str
 
 bool HttpParser::checkIfHostNameExistInServer(std::string &host_name, std::vector<std::string> const &serv_name)
 {
-
 	if (host_name == "localhost" || host_name == "127.0.0.1")
 		return true;
 
@@ -479,7 +484,6 @@ const int		  HttpParser::many_h_count	= 5;
 
 std::pair<std::string, std::string> HttpParser::parseHeaderSyntaxis(std::string h)
 {
-
 	std::size_t found = h.find(":");
 
 	if (found == std::string::npos)
@@ -541,7 +545,6 @@ std::vector<std::string> HttpParser::pushValues(std::string n, std::string v)
 
 void HttpParser::pushMoreValues(std::map<std::string, std::vector<std::string> >::iterator h, std::string v)
 {
-
 	if (oneValueHeader(h->first))
 	{
 		if (h->second.at(0) == trimSpaceAndTab(v))
@@ -587,7 +590,7 @@ std::string HttpParser::parseContentTypeBoundary(std::vector<std::string> const 
 
 	std::string boundary = v[1].substr(9, v[1].length());
 
-	//std::cout << "BOUNDARIE: " << boundary << std::endl;
+	// std::cout << "BOUNDARIE: " << boundary << std::endl;
 
 	if (boundary.length() > 70)
 		throw std::invalid_argument(E_400);
