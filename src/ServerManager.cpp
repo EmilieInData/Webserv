@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 14:19:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 16:05:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,10 +237,7 @@ void ServerManager::handleClientRead(int client_fd)
 	{
 		Response &resp = it->second->response;
 
-		if (it->second->request.getStatusCode() < 400)
-		{
-			resp.setContent(it->second->request.getFullPath(), it->second->request.getHttpMethod());
-		}
+		resp.setContent(it->second->request.getFullPath(), it->second->request.getHttpMethod());
 
 		resp.prepResponse(getSocketData(it->second->fd));
 		it->second->response_data = resp.getResponse();
@@ -280,7 +277,7 @@ void ServerManager::handleClientWrite(int client_fd)
 	if (bytes_sent == resp.length())
 	{
 		_rspCount++;
-		printResponse(*this, getSocketData(client_fd), resp, it->second->request.getFullPath().first);
+		printRaw(it->second->response.getResponse()); // DBG
 		removeClient(client_fd);
 	}
 }
