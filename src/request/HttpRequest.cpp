@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 15:57:46 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 19:32:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -655,6 +655,7 @@ std::string	HttpRequest::getUriFirst()const
 		return uri->getScheme() + "://" + uri->getAuthority();
 	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;
 }
+
 
 std::vector<ServerData>	HttpRequest::getServersList() const
 {
