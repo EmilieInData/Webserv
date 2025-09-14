@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 12:38:55 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 12:52:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,10 +349,15 @@ void ServerManager::servInput()
 	}
 }
 std::vector<ServerData> ServerManager::getServersList() const { return _serverData; }
+
 Script &ServerManager::getScript() { return _script; }
+
 int ServerManager::getReqCount() const { return _reqCount; }
+
 int ServerManager::getRspCount() const { return _rspCount; }
+
 std::set<std::pair<int, std::string> > ServerManager::getUniqueListens() { return _uniqueListens; }
+
 std::string ServerManager::createSession(const std::string &username) {
 	std::string sessionId = generateCookieId();
 	CookieData newSession;
@@ -362,6 +367,7 @@ std::string ServerManager::createSession(const std::string &username) {
 	this->_sessions[sessionId] = newSession;
 	return sessionId;
 }
+
 CookieData *ServerManager::getSession(const std::string &sessionId) {
 	if (this->_sessions.find(sessionId) == this->_sessions.end())
 		return NULL;
