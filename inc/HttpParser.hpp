@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 12:45:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 15:39:33 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define HTTPARSER_HPP
 
 #define E_204 "204 No Content"
+#define E_301 "301 Moved Permanently"
 #define E_400 "400 Bad Request"
 #define E_403 "403 Forbidden"
 #define E_404 "404 Not Found"

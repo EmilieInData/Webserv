@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:42:41 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/08 17:20:36 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 16:32:50 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,13 +136,13 @@ void printRequest(ServerManager &serv, int socketFd, std::string request, std::s
 
 void printRaw(std::string const &text)
 {
+	std::cout << RED << __func__ << RESET << std::endl; // DBG
 	// Check if content appears to be an image (basic detection)
-	if (text.size() > 10 && ((text.substr(0, 4) == "\xFF\xD8\xFF") ||	   // JPEG
-							 (text.substr(0, 8) == "\x89PNG\r\n\x1A\n") || // PNG
+	if (text.size() > 10 && ((text.substr(0, 4) == "\xFF\xD8\xFF") ||							// JPEG
+							 (text.substr(0, 8) == "\x89PNG\r\n\x1A\n") ||						// PNG
 							 (text.substr(0, 6) == "GIF87a" || text.substr(0, 6) == "GIF89a"))) // GIF
 	{
-		std::cout << GREEN << "[Image content detected - " << text.size()
-				  << " bytes - content not displayed]" << RESET << std::endl;
+		std::cout << GREEN << "[Image content detected - " << text.size() << " bytes - content not displayed]" << RESET << std::endl;
 		return;
 	}
 
@@ -160,10 +160,10 @@ void printRaw(std::string const &text)
 		{
 			if (bits == false)
 			{
-				std::cout << "bit content" << std::endl;
-				bits = true;
+				std::cout << "[Binary content detected - content not displayed]" << std::endl;
+				std::cout << RESET << std::endl;
+				return;
 			}
-			continue;
 		}
 	}
 	std::cout << RESET << std::endl;

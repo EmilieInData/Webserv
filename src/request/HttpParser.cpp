@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/14 14:23:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 16:28:42 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,11 +327,11 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 
 	if (!blockLoc.getReturnDirective().empty())
 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
-
+	
 	if (path.second == "/" || path.second.empty())
 		full = path.first;
-
-	std::cout << PINK << "FULL: " << full << std::endl << RESET;
+	std::cout << PINK << "Path fisrt (PARSER): " << path.first << "\nPath second (PARSER): " << path.second << std::endl << RESET; // TO BORROW
+	std::cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
 	if (access(full.c_str(), F_OK) == -1)
 		throw std::invalid_argument(E_404);
 
@@ -344,6 +344,9 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	}
 	else if (isFolder(full))
 	{
+		// std::cout << PINK << "METHOD: " << method << std::endl << RESET; // TO BORROW
+		// if (!path.second.empty() && path.second[path.second.size() - 1] != '/')
+		// 	throw std::invalid_argument(E_301);
 		if (method == "POST")
 		{
 			if (access(full.c_str(), W_OK) != 0)

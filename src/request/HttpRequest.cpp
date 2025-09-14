@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/14 14:28:53 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 16:47:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -628,6 +628,7 @@ LocationConf HttpRequest::getBlockLoc() const
 
 std::string HttpRequest::getUriFirst() const
 {
+	std::cout << "SCHEME: " << uri->getScheme() << "\n Authority: " << uri->getAuthority() << std::endl;
 	if (getHost().second.empty())
 		return uri->getScheme() + "://" + uri->getAuthority();
 	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;

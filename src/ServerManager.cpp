@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 14:19:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 16:33:29 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,7 +280,7 @@ void ServerManager::handleClientWrite(int client_fd)
 	if (bytes_sent == resp.length())
 	{
 		_rspCount++;
-		printResponse(*this, getSocketData(client_fd), resp, it->second->request.getFullPath().first);
+		printRaw(it->second->response.getResponse()); // DBG
 		removeClient(client_fd);
 	}
 }

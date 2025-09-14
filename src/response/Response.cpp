@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 14:37:49 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/14 17:21:42 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,18 +239,25 @@ void Response::errorRoutine(std::string &content, std::pair<int, std::string> in
 	case 204:
 		break;
 	case 301:
+	case 302:
+	case 307:
+	case 308:
 	{
+		// std::cout << "HEREEEEEE" << std::endl;
 		std::map<int, std::string> status = getStatusCodeMap();
 		std::stringstream		   str;
 		str << _statusCode;
 
-		_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n"
-					"Location: {{LOCATION}}\r\n"
-					"\r\n";
+		_response = "HTTP/1.1 {{STATUS_CODE}} {{REASON_PHRASE}}\r\n""Location: {{LOCATION}}\r\n""\r\n";
 		replaceContent(_response, "{{STATUS_CODE}}", str.str());
 		replaceContent(_response, "{{REASON_PHRASE}}", status[_statusCode]);
+		// if (_blockLoc.getReturnDirective().empty())
+		// 	replaceContent(_response, "{{LOCATION}}",  _request->getUriFirst() + '/');
+		// else
+		// if (_blockLoc.getReturnDirective().empty())
+		// 	std::cout << "RETURN DIRECTIVES EMPTY\n";
+		// std::cout << "Return directives: (RESPONSE)" << _blockLoc.getReturnDirective()[0] << std::endl;
 		replaceContent(_response, "{{LOCATION}}", _request->getUriFirst() + _blockLoc.getReturnDirective()[1]);
-		std::cout << "REDIRECTTT" << std::endl;
 		break;
 	}
 	default:
