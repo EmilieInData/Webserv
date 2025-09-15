@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 09:31:30 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 09:48:17 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,10 +113,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		if (this->state == BODY)
 		{
 			if (!this->boundary.empty() && this->getRspType() != "cgi-script")
-			{
 				manyBodiesRoutine(found);
-				sleep(10);
-			}
 			// For simple bodies OR for ANY request going to a CGI script,
 			// treat the entire body as a single raw string.
 			else

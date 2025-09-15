@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 09:24:07 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 10:12:05 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ std::string Response::prepFile()
 	}
 	else
 	{
+		std::cout << "DBG prepFile()" << std::endl;
 		std::ifstream page(_location.c_str());
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
@@ -251,6 +252,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			break;
 		}
 		default:
+		{
 			const std::map<int, std::string> errorPages	= _blockLoc.getErrorPage();
 			if (!errorPages.empty())
 			{
@@ -275,6 +277,8 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			_contentType = "text/html";
 			content = prepFile();
 
+			std::cout << "CONTENT: " << content << std::endl;
+
 			std::string reasonPhrase = "Unknown Status";
 			std::map<int, std::string> statusMap = getStatusCodeMap(); 
 			if (statusMap.find(_statusCode) != statusMap.end())
@@ -285,6 +289,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
 			replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
 			break;
+		}
 	}
 }
 
