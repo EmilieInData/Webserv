@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 12:55:31 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:36:28 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,17 @@ std::string Response::prepFile()
 			closedir(dir);
 			return pageContent.str();
 		}
-		return doAutoindex(_request->getFullPath().second, dir);
+		if (_request->getHttpMethod() == "GET")
+			return doAutoindex(_request->getFullPath().second, dir);
+		else
+		{
+			closedir(dir);
+			return "";
+		}
 	}
 	else
 	{
+		std::cout << "DBG prepFile()" << std::endl;
 		std::ifstream page(_location.c_str());
 		std::ostringstream pageContent;
 		pageContent << page.rdbuf();
@@ -201,7 +208,6 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 		errorRoutine(content, incoming);
 	else if (_contentType == "cgi-script")
 	{
-		
 		content		= _request->getServ().getScript().getOutputBody();
 		_cgiHeaders = _request->getServ().getScript().getOutputHeaders();
 		std::map<std::string, std::string>::const_iterator it = _cgiHeaders.find("Content-Type");
@@ -246,6 +252,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			break;
 		}
 		default:
+		{
 			const std::map<int, std::string> errorPages	= _blockLoc.getErrorPage();
 			if (!errorPages.empty())
 			{
@@ -270,6 +277,8 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			_contentType = "text/html";
 			content = prepFile();
 
+			std::cout << "CONTENT: " << content << std::endl;
+
 			std::string reasonPhrase = "Unknown Status";
 			std::map<int, std::string> statusMap = getStatusCodeMap(); 
 			if (statusMap.find(_statusCode) != statusMap.end())
@@ -280,6 +289,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			replaceContent(content, "{{STATUS_CODE}}", ss.str()); 
 			replaceContent(content, "{{REASON_PHRASE}}", reasonPhrase);
 			break;
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/14 19:32:30 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:03:24 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->fullRequest.push_back(buffer[i]);
 
 	std::size_t found = fullRequest.find(CRLF);
-	std::cout << "FULLREQUEST: " << fullRequest << std::endl;
+	// std::cout << "FULLREQUEST: " << fullRequest << std::endl; // DBG
 
 	// static int i = 0;
 
@@ -113,9 +113,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		if (this->state == BODY)
 		{
 			if (!this->boundary.empty() && this->getRspType() != "cgi-script")
-			{
 				manyBodiesRoutine(found);
-			}
 			// For simple bodies OR for ANY request going to a CGI script,
 			// treat the entire body as a single raw string.
 			else

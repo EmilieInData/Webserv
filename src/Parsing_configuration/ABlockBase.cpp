@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ABlockBase.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/12 15:42:01 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 19:20:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,8 @@ size_t	ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i)
 {
 	if ( i >= buffer.size() || buffer[i].empty())
 		throw std::invalid_argument(" Parsing error, miss 'root' argument\n");
-	// if (buffer[i][0] != '/') // FABIO paused it to use relative paths for testing
-	// 	throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
+	if (buffer[i][0] != '/') // FABIO paused it to use relative paths for testing
+		throw std::invalid_argument(" Parsing error, 'root' expects an absolute path\n");
 	if (i + 1 >= buffer.size())
 		throw std::invalid_argument(" Parsing error, miss semicolon after"
 			" 'root' argument\n");

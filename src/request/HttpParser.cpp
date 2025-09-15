@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 12:48:43 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:03:14 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,13 +320,12 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 
 void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path, LocationConf &blockLoc, std::string const &method)
 {
-	//virer autoindex en arg car block location && passer la classe request a la place de path && method
+	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
+	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
+		throw std::invalid_argument(E_405);
+
 	std::string full(path.first + path.second);
 
-	// LocationConf const* block = findLocation(path.second, loc);
-	// std::cout << PINK << "KEY= " << block->getKey() << std::endl;
-
-	//check redirection
 	if (!blockLoc.getReturnDirective().empty())
 	{
 		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
@@ -340,16 +339,13 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	}
 	if (path.second == "/" || path.second.empty())
 		full = path.first;
-		// full = path.first + "/index.html";
 
-
-	std::cout << PINK << "FULL: " << full << std::endl << RESET; // TO BORROW
+	std::cout << PINK << "FULL: " << full << std::endl << RESET;
 	if (access(full.c_str(), F_OK) == -1)
 		throw std::invalid_argument(E_404);
 
-	if (isBinary(full) && method != "DELETE") //CLEO
+	if (isBinary(full) && method != "DELETE")
 	{
-		// std::cout << PINK << "inside binary\n" << RESET; // TO BORROW
 		std::ifstream file(full.c_str(), std::ios::binary);
 		if (!file.is_open())
 			throw std::invalid_argument(E_403);
@@ -357,10 +353,16 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	}
 	else if (isFolder(full))
 	{
-		if (method == "DELETE")
-			throw std::invalid_argument(E_403); //CLEO
+		if (method == "POST")
+		{
+			if (access(full.c_str(), W_OK) != 0)
+				throw std::invalid_argument(E_403);
+			return;
+		}
 
-		// std::cout << PINK << "inside folder\n" << RESET; TO BORROW
+		if (method == "DELETE")
+			throw std::invalid_argument(E_403);
+
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
@@ -386,15 +388,17 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	}
 	else
 	{
-		// std::cout << PINK << "inside page\n" << RESET; // TO BORROW
-		std::ifstream page(full.c_str());
-		if (!page.is_open() && method != "DELETE")
-			throw std::invalid_argument(E_403);
-		page.close();
+		if (method != "DELETE")
+		{
+			std::ifstream page(full.c_str());
+			if (!page.is_open())
+				throw std::invalid_argument(E_403);
+			page.close();
+		}
 	}
 
 	if (method == "DELETE")
-	{ //FABIO added throw for failure
+	{
 		if (std::remove(full.c_str()) != 0)
 			throw std::invalid_argument(E_403);
 		throw std::invalid_argument(E_204);
