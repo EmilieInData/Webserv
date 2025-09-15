@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 13:57:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:38:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->fullRequest.push_back(buffer[i]);
 
 	std::size_t found = fullRequest.find(CRLF);
-	std::cout << "[FULLREQUEST]\n" << fullRequest << std::endl; // HERE
+	// std::cout << "[FULLREQUEST]\n" << fullRequest << std::endl; // DBG
 
 	// static int i = 0;
 
@@ -144,7 +144,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		 {
 			server.getScript().runScript(*this, _cgiInterpreterPath, server);
 			this->code = server.getScript().getStatusCode();
-			std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
+			// std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
 		}
 		else if (getHttpMethod() == "POST")
 			fileUpload();

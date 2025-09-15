@@ -26,7 +26,7 @@ bool Script::setScriptType(std::string const &cgiPath)
 		return false;
 	}
 	_scriptType = cgiPath.substr(lastDot);
-	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
+	// std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
 	if (_scriptType != ".py")												  // && _scriptType != ".php") // HERE
 	{
 		printBoxError("Invalid script type");
@@ -46,7 +46,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 	_scriptOutput = "";
 
 	std::string query = request.getQuery();
-	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
+	// std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
 	if (!setScriptType(_cgiPath))
 		return;
@@ -111,7 +111,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		char *argv[] = {const_cast<char *>(interpreterPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(interpreterPath.c_str(), argv, envServ);
 
-		std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
+		// std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
 		exit(1);
 	}
 	else
@@ -189,7 +189,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 				{
 					std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
 					_statusCode = 200;
-					printRaw(_scriptOutput);
+					// printRaw(_scriptOutput); // DBG
 					parseOutput();
 				}
 			}
@@ -362,6 +362,6 @@ std::map<std::string, std::string> Script::getOutputHeaders() const
 
 int Script::getStatusCode() const
 {
-	std::cout << RED << __func__ << " [status code check] " << _statusCode << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << " [status code check] " << _statusCode << RESET << std::endl; // DBG
 	return _statusCode;
 }

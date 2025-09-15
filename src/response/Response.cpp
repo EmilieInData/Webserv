@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 13:58:09 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:36:12 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 	{
 		case 201:
 		{
-			std::cout << RED << __func__ << RESET << std::endl; // DBG
+			// std::cout << RED << __func__ << RESET << std::endl; // DBG
 			break;
 		}
 		case 204:

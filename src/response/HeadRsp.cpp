@@ -78,7 +78,7 @@ void HeadRsp::setRspStatusCode()
 		_statusCode = ss.str() + " Unknown Status";
 	}
 
-	std::cout << RED << __func__ << " > " << _statusCode << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << " > " << _statusCode << RESET << std::endl; // DBG
 }
 
 void HeadRsp::setConnectionType()
@@ -136,7 +136,7 @@ void HeadRsp::buildHeader()
 
 		_header += _contentLength;
 	_header += HEADNL;
-	std::cout << RED << "[BUILT HEADER]\n" << _header << RESET << std::endl; // DBG
+	// std::cout << RED << "[BUILT HEADER]\n" << _header << RESET << std::endl; // DBG
 }
 
 std::string HeadRsp::getHeader()

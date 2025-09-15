@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 12:04:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:58:43 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,8 @@ void ServerManager::servRun()
 	}
 
 	struct pollfd pfdStdin;
-	pfdStdin.fd	  = STDIN_FILENO;
-	pfdStdin.events  = POLLIN;
+	pfdStdin.fd		 = STDIN_FILENO;
+	pfdStdin.events	 = POLLIN;
 	pfdStdin.revents = 0;
 	_polls.push_back(pfdStdin);
 	_inputFd = STDIN_FILENO;
@@ -175,7 +175,7 @@ void ServerManager::servRun()
 
 void ServerManager::handleNewConnection(int listeningSocket)
 {
-	std::cout << RED << __func__ << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << RESET << std::endl; // DBG
 	struct sockaddr_in clientAddr;
 	socklen_t		   clientLen = sizeof(clientAddr);
 	int				   clientFd	 = accept(listeningSocket, (struct sockaddr *)&clientAddr, &clientLen);
@@ -208,7 +208,7 @@ void ServerManager::handleNewConnection(int listeningSocket)
 
 void ServerManager::handleClient(struct pollfd &pfd)
 {
-	std::cout << RED << __func__ << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << RESET << std::endl; // DBG
 	if (_clients.find(pfd.fd) == _clients.end())
 		return;
 
@@ -230,7 +230,7 @@ void ServerManager::handleClient(struct pollfd &pfd)
 
 void ServerManager::handleRead(int clientFd)
 {
-	std::cout << RED << __func__ << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << RESET << std::endl; // DBG
 	char	buffer[4096];
 	ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0);
 
@@ -240,13 +240,17 @@ void ServerManager::handleRead(int clientFd)
 	{
 		time(&conn->lastActivityTime);
 		conn->req.sendBuffer(buffer, bytes);
-		if (conn->req.getParsingState() <= 0) 
+		if (conn->req.getParsingState() <= 0)
 		{
 			conn->requestComplete = true;
-			conn->resp			  = new Response(conn->req);
+			if (conn->resp)
+			{
+				delete conn->resp;
+				conn->resp = NULL;
+			}
+			conn->resp = new Response(conn->req);
 			if (conn->req.getStatusCode() < 400)
 				conn->resp->setContent(conn->req.getFullPath(), conn->req.getHttpMethod());
-
 			if (conn->req.getFullPath().second == "/cgi-bin/login.py")
 			{
 				std::string username = getQueryValue(conn->req.getQuery(), "username");
@@ -256,10 +260,8 @@ void ServerManager::handleRead(int clientFd)
 					conn->resp->setCookie("session_id=" + sessionId + "; HttpOnly; Max-Age=3600; Path=/");
 				}
 			}
-			
 			conn->resp->setClientFd(clientFd);
 			conn->resp->prepResponse(conn->incoming);
-
 			for (size_t i = 0; i < _polls.size(); ++i)
 			{
 				if (_polls[i].fd == clientFd)
@@ -283,7 +285,7 @@ void ServerManager::handleRead(int clientFd)
 
 void ServerManager::handleWrite(int clientFd)
 {
-	std::cout << RED << __func__ << RESET << std::endl; // DBG
+	// std::cout << RED << __func__ << RESET << std::endl; // DBG
 	ClientConnection *conn = _clients[clientFd];
 	if (!conn || !conn->requestComplete || !conn->resp)
 		return;
@@ -294,7 +296,7 @@ void ServerManager::handleWrite(int clientFd)
 	if (bytes_sent >= 0)
 	{
 		_rspCount++;
-		printResponse(*this, conn->incoming, response, conn->req.getFullPath().first + conn->req.getFullPath().second);
+		// printResponse(*this, conn->incoming, response, conn->req.getFullPath().first + conn->req.getFullPath().second); // DBG
 		closeConnection(clientFd);
 	}
 	else
@@ -340,7 +342,7 @@ void ServerManager::checkErrors()
 
 		double timeDiff = difftime(now, conn->lastActivityTime);
 
-		int	 state	 = conn->req.getParsingState();
+		int	 state = conn->req.getParsingState();
 		bool error = false;
 
 		if (state >= SKIP && state <= REQ_LINE && timeDiff > REQ_LINE_TIMEOUT)
@@ -360,11 +362,26 @@ void ServerManager::checkErrors()
 		}
 
 		if (error)
-			timed_out_clients.push_back(it->first);
+		{
+			conn->requestComplete = true;
+			if (conn->resp)
+			{
+				delete conn->resp;
+				conn->resp = NULL;
+			}
+			conn->resp = new Response(conn->req);
+			conn->resp->setClientFd(conn->clientFd);
+			conn->resp->prepResponse(conn->incoming);
+			for (size_t i = 0; i < _polls.size(); ++i)
+			{
+				if (_polls[i].fd == conn->clientFd)
+				{
+					_polls[i].events = POLLOUT;
+					break;
+				}
+			}
+		}
 	}
-
-	for (size_t i = 0; i < timed_out_clients.size(); ++i)
-		closeConnection(timed_out_clients[i]);
 }
 
 std::pair<int, std::string> ServerManager::getSocketData(int socketFd)

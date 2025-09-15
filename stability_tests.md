@@ -28,7 +28,7 @@ ps aux | grep webserv
 top -p <PID>
 ```
 
-**Terminal 3: Start Siege**
+#### Terminal 3: Start Siege
 ```bash
 siege -c50 -t5M -b http://localhost:8080/index.html
 ```
