@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 15:08:30 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:33:39 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 #include "RequestLine.hpp"
 #include "ServerData.hpp"
 #include "Utils.hpp"
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-#include <fcntl.h>
-#include <iostream>
-#include <unistd.h>
+// #include <cctype>
+// #include <cstdio>
+// #include <cstring>
+// #include <fcntl.h>
+// #include <iostream>
+// #include <unistd.h>
 
 std::vector<std::string> HttpParser::split(std::string const &str, char const delimiter)
 {
@@ -288,56 +288,12 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 	throw std::invalid_argument(E_421);
 }
 
-// LocationConf const*	HttpParser::findLocation(std::string path, std::map<std::string, LocationConf> const& loc)
-// {
-// 	std::map<std::string, LocationConf>::const_iterator	it;
-// 	std::map<std::string, LocationConf>::const_iterator	tmp = loc.end();
-
-// 	for(it = loc.begin(); it != loc.end(); it++)
-// 	{
-// 		if (path.find(it->first) == 0)
-// 		{
-// 			if (tmp == loc.end() || tmp->first.length() < it->first.length())
-// 				tmp = it;
-// 		}
-// 	}
-//     if (tmp == loc.end())
-//         return NULL;
-//     return &tmp->second;
-// }
-
-//--> redirection <--
-//         int code = it->second.first;
-//         const std::string &redirect_to = it->second.second;
-
-//         std::cout << "Redirection détectée: " << path.second
-//                   << " -> " << redirect_to << std::endl;
-
-//         // Ici au lieu de throw, tu pourrais générer la réponse HTTP directement
-//         throw std::invalid_argument("REDIRECT_" + std::to_string(code) + "_" + redirect_to);
-//     }
-// }
-
 void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path, LocationConf &blockLoc, std::string const &method)
 {
-	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
-	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
-		throw std::invalid_argument(E_405);
-
+	
 	std::string full(path.first + path.second);
 	std::cout << ERROR << blockLoc.getKey() << std::endl;
 
-	// if (!blockLoc.getReturnDirective().empty())
-	// {
-	// 	if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
-	// 	|| blockLoc.getReturnDirective()[0] == "307" || blockLoc.getReturnDirective()[0] == "308")
-	// 	{
-	// 		full = path.first + blockLoc.getReturnDirective()[1];
-	// 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
-	// 	}
-	// 	else
-	// 		throw std::invalid_argument(E_500);
-	// }
 	if (!blockLoc.getReturnDirective().empty())
 	{
 		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
@@ -347,8 +303,6 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 			if (!dir)
 				throw std::invalid_argument(E_403);
 			full = path.first + blockLoc.getReturnDirective()[1];
-			if (path.second[path.second.size() - 1] != '/') // HERE
-				full = path.first + blockLoc.getReturnDirective()[1] + '/'; // HERE
 			closedir(dir);
 			throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
 		}
@@ -356,15 +310,17 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 			throw std::invalid_argument(E_500);
 	}
 	
-	// if (path.second == "/" || path.second.empty()) HERE
 	if (path.second.empty())
-
 		full = path.first;
 
 	std::cout << PINK << "FULL: " << full << std::endl << RESET;
 	if (access(full.c_str(), F_OK) == -1)
-		throw std::invalid_argument(E_404);
-
+	throw std::invalid_argument(E_404);
+	
+	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
+	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
+		throw std::invalid_argument(E_405);
+		
 	if (isBinary(full) && method != "DELETE")
 	{
 		std::ifstream file(full.c_str(), std::ios::binary);
@@ -426,16 +382,6 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		throw std::invalid_argument(E_204);
 	}
 }
-
-// void	HttpParser::checkIfPathExist( std::pair<std::string, std::string>  const & path ) {
-// 	std::string full( path.first + path.second );
-
-// //	std::cout << "FULL: " << full << std::endl;
-
-// 	if ( access( full.c_str(), F_OK ) == -1 ) throw std::invalid_argument( E_404 );
-
-// //	std::cout << "PATH EXIST IN SERVER: " << full << std::endl;
-// }
 
 void HttpParser::notAllowedMethod(std::map<std::string, LocationConf>::iterator location, std::vector<std::string> const &allowed_serv, std::string const &method)
 {
@@ -614,8 +560,6 @@ std::string HttpParser::parseContentTypeBoundary(std::vector<std::string> const 
 		throw std::invalid_argument(E_400);
 
 	std::string boundary = v[1].substr(9, v[1].length());
-
-	//std::cout << "BOUNDARIE: " << boundary << std::endl;
 
 	if (boundary.length() > 70)
 		throw std::invalid_argument(E_400);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/12 15:55:31 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:53:11 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -406,6 +406,7 @@ std::map<int, std::string> getStatusCodeMap()
 	m[501] = "Not Implemented";
 	m[502] = "Bad Gateway";
 	m[503] = "Service Unavailable";
+	m[504] = "Gateway Timeout";
 	return m;
 }
 

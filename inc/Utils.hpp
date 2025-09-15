@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/14 22:50:25 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:35:21 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,10 @@
 
 #include <algorithm>
 #include <arpa/inet.h>
+#include <cctype>
 #include <cerrno>
 #include <csignal>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -85,7 +87,6 @@ unsigned int strToSize(std::string const &value);
 std::map<int, std::pair<std::string, std::string> > defaultErrorPages();
 bool												isErrorPage(std::string const &value);
 bool												isHtmlAddress(std::string const &value);
-// void checkErrorPage(std::map<int, std::string> const &value);
 
 // signals
 void setupSignal();

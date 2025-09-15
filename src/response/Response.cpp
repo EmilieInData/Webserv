@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 13:36:28 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:20:21 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 	_method		= method;
 	if (_statusCode >= 400)
 		return;
-	std::cout << PINK << "FullPath.first(set content): " << fullPath.first << "\n"
-			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (!_blockLoc.getReturnDirective().empty())
 		_location = fullPath.first + _blockLoc.getReturnDirective()[1];
 	else if (fullPath.second == "/" || fullPath.second.empty())
@@ -127,8 +125,6 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 		if (uri[uri.size() - 1] != '/')
 			html << "/";
 		html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-		// std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
-		// 		  << std::endl; // TO BORROW
 	}
 	html << "    </ul>\n</div>\n</body>\n</html>\n";
 	closedir(dir);
@@ -190,7 +186,7 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 	html << "</head>\n<body>\n";
 	html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
 	html << "    <div class=\"image-container\">\n";
-	html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
+	html << "        <img src=\"/static/02_cat.png\" alt=\"Autoindex banner\">\n";
 	html << "    </div>\n";
 	html << "    <div class=\"list-container\">\n";
 	html << "    <ul>\n";
@@ -233,6 +229,11 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
 	switch ( this->_statusCode )
 	{
+		case 201:
+		{
+			std::cout << RED << __func__ << RESET << std::endl; // DBG
+			break;
+		}
 		case 204:
 			break;
 		case 301:
@@ -240,7 +241,6 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 		case 307:
 		case 308:
 		{
-			std::cout << "HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n"; // TO BORROW
 			std::map<int, std::string> status = getStatusCodeMap(); 
 			std::stringstream str;
 			str << _statusCode;

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 09:10:51 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:04:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,22 +360,11 @@ void ServerManager::checkErrors()
 		}
 
 		if (error)
-		{
-			conn->requestComplete = true;
-			conn->resp			  = new Response(conn->req);
-			conn->resp->setClientFd(conn->clientFd);
-			conn->resp->prepResponse(conn->incoming);
-
-			for (size_t i = 0; i < _polls.size(); ++i)
-			{
-				if (_polls[i].fd == conn->clientFd)
-				{
-					_polls[i].events = POLLOUT;
-					break;
-				}
-			}
-		}
+			timed_out_clients.push_back(it->first);
 	}
+
+	for (size_t i = 0; i < timed_out_clients.size(); ++i)
+		closeConnection(timed_out_clients[i]);
 }
 
 std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
