@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 11:56:24 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:58:09 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 	else
 		content = prepFile();
 
-	if (_statusCode == 301)
+	if (_statusCode == 301 || _statusCode == 302 ||_statusCode == 307 ||_statusCode == 308)
 		return;	
 	std::ostringstream output;
 	output << content.length();
@@ -241,7 +241,11 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 		case 204:
 			break;
 		case 301:
+		case 302:
+		case 307:
+		case 308:
 		{
+			std::cout << "HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n"; // TO BORROW
 			std::map<int, std::string> status = getStatusCodeMap(); 
 			std::stringstream str;
 			str << _statusCode;
@@ -250,7 +254,6 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 			replaceContent(_response, "{{STATUS_CODE}}", str.str());
 			replaceContent(_response, "{{REASON_PHRASE}}", status[_statusCode]);
 			replaceContent(_response, "{{LOCATION}}", _request->getUriFirst()  + _blockLoc.getReturnDirective()[1]);
-			std::cout << "REDIRECTTT" << std::endl;
 			break;
 		}
 		default:
@@ -261,6 +264,8 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 				std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
 				if (errorPageIt != errorPages.end())
 					_location = _request->getFullPath().first + errorPageIt->second;
+				else
+					_location = _request->getFullPath().first + "/error_pages/error.html"; 
 			}
 			else { 
 				ServerData serv = HttpParser::checkIfServerExist(this->_request->getServersList(), incoming);
@@ -273,8 +278,6 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 					_location = serv.getRoot() + "/error_pages/error.html"; 
 		
 			}
-		
-
 			std::cout << "LOCATIONNNNNNN: " << _location << std::endl;
 			_contentType = "text/html";
 			content = prepFile();

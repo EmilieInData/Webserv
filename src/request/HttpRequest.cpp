@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 12:45:32 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:57:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -653,6 +653,7 @@ std::string	HttpRequest::getUriFirst()const
 		return uri->getScheme() + "://" + uri->getAuthority();
 	return uri->getScheme() + "://" + uri->getAuthority() + ":" + getHost().second;
 }
+
 
 std::vector<ServerData>	HttpRequest::getServersList() const
 {
