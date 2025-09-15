@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 16:58:43 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 17:33:42 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -424,6 +424,8 @@ void ServerManager::servInput()
 		else
 			printBoxError("Command unavailable - [q/s]");
 	}
+	else
+		return;
 }
 
 std::vector<ServerData> ServerManager::getServersList() const

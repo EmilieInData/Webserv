@@ -90,7 +90,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 			scriptFile = scriptPath.substr(lastSlash + 1);
 			if (chdir(scriptDir.c_str()) != 0)
 			{
-				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno) << std::endl;
+				printBoxError("chdir failed");
 				exit(1);
 			}
 		}
@@ -110,8 +110,6 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 		char *argv[] = {const_cast<char *>(interpreterPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(interpreterPath.c_str(), argv, envServ);
-
-		// std::cerr << "Execve failed for " << request.getFullPath().second << ": " << strerror(errno) << std::endl; // DBG
 		exit(1);
 	}
 	else

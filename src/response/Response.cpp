@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 16:36:12 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 17:32:29 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,7 +329,7 @@ void Response::sendResponse()
 			totalSent += sent;
 		else if (sent == 0)
 		{
-			std::cerr << "Connection closed by client during send" << std::endl;
+			printBoxError("Connection closed by client during send");
 			break;
 		}
 		else
