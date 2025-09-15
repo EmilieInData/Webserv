@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 16:32:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/12 15:54:24 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/14 22:50:25 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,15 @@ class ServerManager;
 #define RED "\033[31m"
 
 #define CLIENT_HEADER_TIMEOUT 5
-#define CLIENT_BODY_TIMEOUT 5
+#define CLIENT_BODY_TIMEOUT 5 // TODO change back
+
+// cookies
+struct CookieData
+{
+	std::string username;
+	bool		isAuthenticated;
+	time_t		lastAccessTime;
+};
 
 // listen
 bool		isInt(std::string const &value);
@@ -67,11 +75,11 @@ std::string socketToIp(std::string const &value);
 int			socketToPort(std::string const &value);
 
 // server_name
-bool		checkDns(std::vector<std::string> &tmp);
-bool		checkLabel(std::string const &str);
+bool checkDns(std::vector<std::string> &tmp);
+bool checkLabel(std::string const &str);
 
 // body_size
-unsigned int	strToSize(std::string const &value);
+unsigned int strToSize(std::string const &value);
 
 // error_page
 std::map<int, std::pair<std::string, std::string> > defaultErrorPages();
