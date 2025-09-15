@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 09:20:33 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:19:45 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,22 +320,23 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 
 void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path, LocationConf &blockLoc, std::string const &method)
 {
+	
+	std::string full(path.first + path.second);
+	
+	if (!blockLoc.getReturnDirective().empty())
+	throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+	
+	if (path.second == "/" || path.second.empty())
+	full = path.first;
+	
+	std::cout << PINK << "FULL: " << full << std::endl << RESET;
+	if (access(full.c_str(), F_OK) == -1)
+	throw std::invalid_argument(E_404);
+	
 	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
 	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
 		throw std::invalid_argument(E_405);
-
-	std::string full(path.first + path.second);
-
-	if (!blockLoc.getReturnDirective().empty())
-		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
-
-	if (path.second == "/" || path.second.empty())
-		full = path.first;
-
-	std::cout << PINK << "FULL: " << full << std::endl << RESET;
-	if (access(full.c_str(), F_OK) == -1)
-		throw std::invalid_argument(E_404);
-
+		
 	if (isBinary(full) && method != "DELETE")
 	{
 		std::ifstream file(full.c_str(), std::ios::binary);

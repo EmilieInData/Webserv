@@ -17,22 +17,23 @@ Script::Script() {}
 
 Script::~Script() {}
 
-void Script::setScriptType(std::string const &cgiPath)
+bool Script::setScriptType(std::string const &cgiPath)
 {
 	size_t lastDot = cgiPath.find_last_of('.');
 	if (lastDot == std::string::npos)
 	{
 		_statusCode = 501;
-		return;
+		return false;
 	}
 	_scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
-	if (_scriptType != ".py" && _scriptType != ".php")
+	if (_scriptType != ".py") // && _scriptType != ".php") // HERE
 	{
 		printBoxError("Invalid script type");
 		_statusCode = 501;
-		return;
+		return false;
 	}
+	return true;
 }
 
 void Script::runScript(HttpRequest &request, std::string const &interpreterPath, ServerManager &server)
@@ -47,7 +48,8 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 	std::string query = request.getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
-	setScriptType(_cgiPath);
+	if (!setScriptType(_cgiPath))
+		return;
 	int pipeIn[2];
 	int pipeOut[2];
 
@@ -100,6 +102,9 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 				std::cerr << "Error: chdir failed for " << scriptDir << ": " << strerror(errno) << std::endl;
 				exit(1);
 			}
+			// char cwd[PATH_MAX];
+			// getcwd(cwd, PATH_MAX);
+			// std::cout << RED  << __func__ << " [in location] " << cwd << RESET << std::endl; // HERE
 		}
 		else
 		{

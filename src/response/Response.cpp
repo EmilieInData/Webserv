@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 10:12:05 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/15 11:56:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,7 @@ std::string Response::prepFile()
 			return pageContent.str();
 		}
 		if (_request->getHttpMethod() == "GET")
-		{
-			closedir(dir);
 			return doAutoindex(_request->getFullPath().second, dir);
-		}
 		else
 		{
 			closedir(dir);
@@ -236,6 +233,11 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
 	switch ( this->_statusCode )
 	{
+		case 201:
+		{
+			std::cout << RED << __func__ << RESET << std::endl; // DBG
+			break;
+		}
 		case 204:
 			break;
 		case 301:
