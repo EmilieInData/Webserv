@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 12:53:31 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 14:56:12 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 #define PIPE_READ 0
 #define PIPE_WRITE 1
+#define SCRIPT_TIMEOUT 5
 
 class HttpRequest;
 

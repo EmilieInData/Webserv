@@ -131,8 +131,6 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 		close(pipeIn[PIPE_WRITE]);
 
-		// --- TIMEOUT IMPLEMENTATION ---
-		int	  timeout_seconds = 5; // Set your desired timeout in seconds
 		pid_t timer_pid		  = fork();
 		if (timer_pid < 0)
 		{
@@ -145,7 +143,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		}
 		if (timer_pid == 0)
 		{
-			sleep(timeout_seconds);
+			sleep(SCRIPT_TIMEOUT);
 			exit(0);
 		}
 
@@ -154,11 +152,11 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 		if (exited_pid == timer_pid)
 		{
-			// Timer process finished first, so the script timed out
 			kill(child, SIGKILL);
-			waitpid(child, &status, 0); // Clean up the killed script process
-			std::cerr << "CGI script " << _cgiPath << " timed out after " << timeout_seconds << " seconds." << std::endl;
-			_statusCode = 507; // Gateway Timeout
+			waitpid(child, &status, 0);
+			printBoxError("Script timeout");
+			std::cerr << "CGI script " << _cgiPath << " timed out after " << SCRIPT_TIMEOUT << " seconds." << std::endl;
+			_statusCode = 504;
 		}
 		else
 		{
