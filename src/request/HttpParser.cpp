@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 13:03:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 15:08:30 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,19 +325,40 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		throw std::invalid_argument(E_405);
 
 	std::string full(path.first + path.second);
+	std::cout << ERROR << blockLoc.getKey() << std::endl;
 
+	// if (!blockLoc.getReturnDirective().empty())
+	// {
+	// 	if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
+	// 	|| blockLoc.getReturnDirective()[0] == "307" || blockLoc.getReturnDirective()[0] == "308")
+	// 	{
+	// 		full = path.first + blockLoc.getReturnDirective()[1];
+	// 		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+	// 	}
+	// 	else
+	// 		throw std::invalid_argument(E_500);
+	// }
 	if (!blockLoc.getReturnDirective().empty())
 	{
 		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
 		|| blockLoc.getReturnDirective()[0] == "307" || blockLoc.getReturnDirective()[0] == "308")
 		{
-			full = path.first + blockLoc.getReturnDirective()[1]; // TO CHANGE
+			DIR *dir = opendir(full.c_str());
+			if (!dir)
+				throw std::invalid_argument(E_403);
+			full = path.first + blockLoc.getReturnDirective()[1];
+			if (path.second[path.second.size() - 1] != '/') // HERE
+				full = path.first + blockLoc.getReturnDirective()[1] + '/'; // HERE
+			closedir(dir);
 			throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
 		}
 		else
 			throw std::invalid_argument(E_500);
 	}
-	if (path.second == "/" || path.second.empty())
+	
+	// if (path.second == "/" || path.second.empty()) HERE
+	if (path.second.empty())
+
 		full = path.first;
 
 	std::cout << PINK << "FULL: " << full << std::endl << RESET;
@@ -359,15 +380,15 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 				throw std::invalid_argument(E_403);
 			return;
 		}
-
 		if (method == "DELETE")
 			throw std::invalid_argument(E_403);
 
 		DIR *dir = opendir(full.c_str());
 		if (!dir)
 			throw std::invalid_argument(E_403);
-
-		std::string index = full + "/index.html";
+		if (path.second[path.second.size() - 1] != '/') // HERE
+			full = full + '/';
+		std::string index = full + "index.html";// HERE
 		if (access(index.c_str(), F_OK) == 0)
 		{
 			if (access(index.c_str(), R_OK) != 0)
@@ -380,6 +401,7 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		{
 			if (access(full.c_str(), R_OK) != 0 || blockLoc.getAutoindex() == false)
 			{
+				std::cout << ERROR << blockLoc.getAutoindex() << std::endl;
 				closedir(dir);
 				throw std::invalid_argument(E_403);
 			}
