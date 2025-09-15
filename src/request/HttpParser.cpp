@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 13:03:14 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:57:47 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,12 +320,9 @@ ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &
 
 void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path, LocationConf &blockLoc, std::string const &method)
 {
-	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
-	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
-		throw std::invalid_argument(E_405);
-
+	
 	std::string full(path.first + path.second);
-
+	
 	if (!blockLoc.getReturnDirective().empty())
 	{
 		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
@@ -338,12 +335,16 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 			throw std::invalid_argument(E_500);
 	}
 	if (path.second == "/" || path.second.empty())
-		full = path.first;
-
+	full = path.first;
+	
 	std::cout << PINK << "FULL: " << full << std::endl << RESET;
 	if (access(full.c_str(), F_OK) == -1)
-		throw std::invalid_argument(E_404);
-
+	throw std::invalid_argument(E_404);
+	
+	const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
+	if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
+		throw std::invalid_argument(E_405);
+		
 	if (isBinary(full) && method != "DELETE")
 	{
 		std::ifstream file(full.c_str(), std::ios::binary);

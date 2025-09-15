@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 13:03:24 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:57:56 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 		this->fullRequest.push_back(buffer[i]);
 
 	std::size_t found = fullRequest.find(CRLF);
-	// std::cout << "FULLREQUEST: " << fullRequest << std::endl; // DBG
+	std::cout << "[FULLREQUEST]\n" << fullRequest << std::endl; // HERE
 
 	// static int i = 0;
 
@@ -258,8 +258,8 @@ void HttpRequest::finalHeadersParsingRoutine()
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
 
-	HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
-								 this->req_line->getMethod());
+	// HttpParser::notAllowedMethod(serv.getItLocations(this->location), serv.getAllowedMethods(),
+	// 							 this->req_line->getMethod());
 
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
 	std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;

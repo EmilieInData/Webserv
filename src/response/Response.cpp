@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 13:36:28 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:58:09 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,11 @@ void Response::prepResponse( std::pair<int, std::string> incoming )
 void	Response::errorRoutine(std::string & content, std::pair<int, std::string> incoming) {
 	switch ( this->_statusCode )
 	{
+		case 201:
+		{
+			std::cout << RED << __func__ << RESET << std::endl; // DBG
+			break;
+		}
 		case 204:
 			break;
 		case 301:

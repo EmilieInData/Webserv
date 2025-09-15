@@ -17,22 +17,23 @@ Script::Script() {}
 
 Script::~Script() {}
 
-void Script::setScriptType(std::string const &cgiPath)
+bool Script::setScriptType(std::string const &cgiPath)
 {
 	size_t lastDot = cgiPath.find_last_of('.');
 	if (lastDot == std::string::npos)
 	{
 		_statusCode = 501;
-		return;
+		return false;
 	}
 	_scriptType = cgiPath.substr(lastDot);
 	std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
-	if (_scriptType != ".py" && _scriptType != ".php")
+	if (_scriptType != ".py")												  // && _scriptType != ".php") // HERE
 	{
 		printBoxError("Invalid script type");
 		_statusCode = 501;
-		return;
+		return false;
 	}
+	return true;
 }
 
 void Script::runScript(HttpRequest &request, std::string const &interpreterPath, ServerManager &server)
@@ -47,13 +48,13 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 	std::string query = request.getQuery();
 	std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
-	setScriptType(_cgiPath);
+	if (!setScriptType(_cgiPath))
+		return;
 	int pipeIn[2];
 	int pipeOut[2];
 
 	if (pipe(pipeIn) == -1 || pipe(pipeOut) == -1)
 	{
-		// TODO what error number here?
 		printBoxError("Pipe Error");
 		request.setStatusCode(E_500);
 		_scriptOutput = "";
@@ -62,28 +63,20 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 	char **envServ = setEnv(request, server);
 
-	std::cout << RED << "[ENV variables before execution]" << std::endl;
-	for (int i = 0; envServ[i] != NULL; i++)
-		std::cout << envServ[i] << std::endl;
-	std::cout << RESET << std::endl;
-
 	pid_t child = fork();
 
 	if (child < 0)
 	{
-		// TODO also here, what error?
 		printBoxError("Fork error");
 		close(pipeOut[PIPE_WRITE]);
 		close(pipeOut[PIPE_READ]);
 		close(pipeIn[PIPE_WRITE]);
 		close(pipeIn[PIPE_READ]);
-		// _statusCode = 500;
 		request.setStatusCode(E_500);
 		_scriptOutput = "";
 		deleteArray(envServ);
 		return;
 	}
-
 	else if (child == 0)
 	{
 		std::string scriptPath = _cgiPath;
@@ -106,7 +99,6 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 			scriptFile = scriptPath;
 		}
 
-		std::string runPath;
 		close(pipeIn[PIPE_WRITE]);
 		dup2(pipeIn[PIPE_READ], STDIN_FILENO);
 		close(pipeIn[PIPE_READ]);
@@ -115,11 +107,6 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		dup2(pipeOut[PIPE_WRITE], STDOUT_FILENO);
 		dup2(pipeOut[PIPE_WRITE], STDERR_FILENO);
 		close(pipeOut[PIPE_WRITE]);
-
-		// if (_scriptType == ".py")
-		// 	runPath = "/usr/bin/python3";
-		// else if (_scriptType == ".php")
-		// 	runPath = "/usr/bin/php-cgi";
 
 		char *argv[] = {const_cast<char *>(interpreterPath.c_str()), const_cast<char *>(scriptFile.c_str()), NULL};
 		execve(interpreterPath.c_str(), argv, envServ);
@@ -144,37 +131,70 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 		close(pipeIn[PIPE_WRITE]);
 
-		char	buffer[4096];
-		ssize_t bytesRead;
-
-		while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
+		pid_t timer_pid		  = fork();
+		if (timer_pid < 0)
 		{
-			buffer[bytesRead] = '\0';
-			_scriptOutput += buffer;
+			printBoxError("Fork error for timer");
+			kill(child, SIGKILL);	 // Kill the script process
+			waitpid(child, NULL, 0); // Clean up
+			request.setStatusCode(E_500);
+			deleteArray(envServ);
+			return;
 		}
-		close(pipeOut[PIPE_READ]);
-
-		int status;
-		waitpid(child, &status, 0);
-		deleteArray(envServ);
-
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+		if (timer_pid == 0)
 		{
-			std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
-			_statusCode = 500;
+			sleep(SCRIPT_TIMEOUT);
+			exit(0);
 		}
-		else if (WIFSIGNALED(status))
+
+		int	  status;
+		pid_t exited_pid = waitpid(-1, &status, 0);
+
+		if (exited_pid == timer_pid)
 		{
-			std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
-			_statusCode = 500;
+			kill(child, SIGKILL);
+			waitpid(child, &status, 0);
+			printBoxError("Script timeout");
+			std::cerr << "CGI script " << _cgiPath << " timed out after " << SCRIPT_TIMEOUT << " seconds." << std::endl;
+			_statusCode = 504;
 		}
 		else
 		{
-			std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
-			_statusCode = 200;
-			printRaw(_scriptOutput);
-			parseOutput();
+			// Script finished or was killed by another signal
+			kill(timer_pid, SIGKILL);	 // Kill the timer process
+			waitpid(timer_pid, NULL, 0); // Clean up the timer process
+
+			char	buffer[4096];
+			ssize_t bytesRead;
+			while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
+			{
+				buffer[bytesRead] = '\0';
+				_scriptOutput += buffer;
+			}
+			close(pipeOut[PIPE_READ]);
+
+			if (exited_pid == child)
+			{
+				if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+				{
+					std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
+					_statusCode = 500;
+				}
+				else if (WIFSIGNALED(status))
+				{
+					std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
+					_statusCode = 500;
+				}
+				else
+				{
+					std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
+					_statusCode = 200;
+					printRaw(_scriptOutput);
+					parseOutput();
+				}
+			}
 		}
+		deleteArray(envServ);
 	}
 }
 
@@ -315,12 +335,12 @@ void Script::parseOutput()
 				value = value.substr(firstChar);
 
 			_outputHeaders[key] = value;
-			
+
 			// Handle Status header from CGI
 			if (key == "STATUS")
 			{
 				std::istringstream statusStream(value);
-				int statusCode;
+				int				   statusCode;
 				if (statusStream >> statusCode)
 				{
 					_statusCode = statusCode;
