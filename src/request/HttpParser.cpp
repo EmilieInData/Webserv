@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 09:20:33 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:03:14 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,8 +327,16 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	std::string full(path.first + path.second);
 
 	if (!blockLoc.getReturnDirective().empty())
-		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
-
+	{
+		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
+		|| blockLoc.getReturnDirective()[0] == "307" || blockLoc.getReturnDirective()[0] == "308")
+		{
+			full = path.first + blockLoc.getReturnDirective()[1]; // TO CHANGE
+			throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+		}
+		else
+			throw std::invalid_argument(E_500);
+	}
 	if (path.second == "/" || path.second.empty())
 		full = path.first;
 

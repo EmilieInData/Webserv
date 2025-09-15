@@ -126,9 +126,6 @@
 
 --> TO DO
 
-// gerer si pas d'adresse de redirection ce qu'on doit faire et quelel num de redirection accepter
-// if (!isInt(buffer[i]) || num < 100 || num > 599) // TO CHECK IF CORRECT
-
 --> TO ASK
 
 
@@ -142,5 +139,5 @@
 
 --> TO FIX
 
-// http://localhost:8080/redirect/, image not downloaded
 // if we put wrong return directive code it's still open redirect/ in browser
+// ../uploads without '/' at the end, need to redirect
