@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 19:47:56 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:55:31 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,6 +252,8 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 				std::map<int, std::string>::const_iterator errorPageIt = errorPages.find(_statusCode);
 				if (errorPageIt != errorPages.end())
 					_location = _request->getFullPath().first + errorPageIt->second;
+				else
+					_location = _request->getFullPath().first + "/error_pages/error.html"; 
 			}
 			else { 
 				ServerData serv = HttpParser::checkIfServerExist(this->_request->getServersList(), incoming);

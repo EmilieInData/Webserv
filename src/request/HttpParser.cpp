@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/12 16:15:18 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:48:43 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,12 +329,14 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 	//check redirection
 	if (!blockLoc.getReturnDirective().empty())
 	{
-		full = path.first + blockLoc.getReturnDirective()[1]; // TO CHANGE
-		// HTTP/1.1 302 Found
-		// Location: /newpage
-		// Content-Length: 0
-		//checker le code ??
-		throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+		if (blockLoc.getReturnDirective()[0] == "301" || blockLoc.getReturnDirective()[0] == "302" 
+		|| blockLoc.getReturnDirective()[0] == "307" || blockLoc.getReturnDirective()[0] == "308")
+		{
+			full = path.first + blockLoc.getReturnDirective()[1]; // TO CHANGE
+			throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+		}
+		else
+			throw std::invalid_argument(E_500);
 	}
 	if (path.second == "/" || path.second.empty())
 		full = path.first;
