@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/14 22:59:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/15 09:24:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,16 @@ std::string Response::prepFile()
 			closedir(dir);
 			return pageContent.str();
 		}
-		return doAutoindex(_request->getFullPath().second, dir);
+		if (_request->getHttpMethod() == "GET")
+		{
+			closedir(dir);
+			return doAutoindex(_request->getFullPath().second, dir);
+		}
+		else
+		{
+			closedir(dir);
+			return "";
+		}
 	}
 	else
 	{
