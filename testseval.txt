@@ -1,5 +1,0 @@
->> Configuration
-	1. Http codes
-		check internet
-	
-	2. 

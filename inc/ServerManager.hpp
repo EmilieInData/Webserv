@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 14:48:18 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 17:14:08 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include <poll.h>
 #include <set>
 #include <sys/socket.h>
-#include <time.h>
+#include <ctime>
 #include <vector>
 
 class ServerManager;

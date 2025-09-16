@@ -12,6 +12,7 @@
 
 #include "Script.hpp"
 #include "ServerManager.hpp"
+#include <sys/time.h>
 
 Script::Script() {}
 
@@ -45,7 +46,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 	_scriptOutput = "";
 
 	std::string query = request.getQuery();
-	_cgiPath = request.getFullPath().first + request.getFullPath().second;
+	_cgiPath		  = request.getFullPath().first + request.getFullPath().second;
 	if (!setScriptType(_cgiPath))
 		return;
 	int pipeIn[2];
@@ -120,7 +121,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 			const std::string &requestBody = request.getRawBody();
 			if (!requestBody.empty())
 			{
-				ssize_t written = write(pipeIn[PIPE_WRITE], requestBody.c_str(), requestBody.length()); // HERE 4
+				ssize_t written = write(pipeIn[PIPE_WRITE], requestBody.c_str(), requestBody.length());
 				if (written == -1)
 					printBoxError("Error parent writing POST body");
 				else if (written < static_cast<ssize_t>(requestBody.length()))
@@ -130,26 +131,41 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 		close(pipeIn[PIPE_WRITE]);
 
-		pid_t timer_pid = fork();
-		if (timer_pid < 0)
+		struct timeval start_time, current_time;
+		gettimeofday(&start_time, NULL);
+
+		int	 status;
+		bool timeCheck = false;
+
+		while (true)
 		{
-			printBoxError("Fork error for timer");
-			kill(child, SIGKILL);
-			waitpid(child, NULL, 0);
-			request.setStatusCode(E_500);
-			deleteArray(envServ);
-			return;
-		}
-		if (timer_pid == 0)
-		{
-			sleep(SCRIPT_TIMEOUT);
-			exit(0);
+			pid_t result = waitpid(child, &status, WNOHANG);
+
+			if (result == child)
+			{
+				break;
+			}
+			else if (result == -1)
+			{
+				printBoxError("waitpid error");
+				kill(child, SIGKILL);
+				waitpid(child, NULL, 0);
+				request.setStatusCode(E_500);
+				deleteArray(envServ);
+				return;
+			}
+
+			gettimeofday(&current_time, NULL);
+			long elapsed = (current_time.tv_sec - start_time.tv_sec);
+
+			if (elapsed >= SCRIPT_TIMEOUT)
+			{
+				timeCheck = true;
+				break;
+			}
 		}
 
-		int	  status;
-		pid_t exited_pid = waitpid(-1, &status, 0);
-
-		if (exited_pid == timer_pid)
+		if (timeCheck)
 		{
 			kill(child, SIGKILL);
 			waitpid(child, &status, 0);
@@ -158,42 +174,35 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		}
 		else
 		{
-
-			kill(timer_pid, SIGKILL);
-			waitpid(timer_pid, NULL, 0);
-
 			char	buffer[4096];
 			ssize_t bytesRead;
-			while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0) // HERE 4
+			while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
 			{
 				buffer[bytesRead] = '\0';
 				_scriptOutput += buffer;
 			}
 			if (bytesRead == -1)
 				printBoxError("Read error occurred");
-			close(pipeOut[PIPE_READ]);
 
-			if (exited_pid == child)
+			if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 			{
-				if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-				{
-					std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
-					_statusCode = 500;
-				}
-				else if (WIFSIGNALED(status))
-				{
-					std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
-					_statusCode = 500;
-				}
-				else
-				{
-					std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
-					_statusCode = 200;
-					// printRaw(_scriptOutput); // DBG
-					parseOutput();
-				}
+				std::cerr << "CGI script " << _cgiPath << " exited with code " << WEXITSTATUS(status) << std::endl;
+				_statusCode = 500;
+			}
+			else if (WIFSIGNALED(status))
+			{
+				std::cerr << "CGI script " << _cgiPath << " killed by signal " << WTERMSIG(status) << std::endl;
+				_statusCode = 500;
+			}
+			else
+			{
+				std::cout << GREEN << "CGI script output captured: " << _scriptOutput.length() << " bytes" << RESET << std::endl;
+				_statusCode = 200;
+				parseOutput();
 			}
 		}
+
+		close(pipeOut[PIPE_READ]);
 		deleteArray(envServ);
 	}
 }

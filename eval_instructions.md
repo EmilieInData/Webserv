@@ -129,4 +129,71 @@ printBoxError("getcwd failed");
 #### Look at the request header and response header.
 
 - option 1: print from terminal ==PRINT Request== and ==PRINT Response==
-- 
+- option 2: on browser -> inspect -> network -> raw request/response
+
+#### Try a wrong URL on the server.
+
+- browser to `http://localhost:8080/ciao.html`
+
+#### Try to list a directory.
+
+- visit a folder with autoindex on that does not have an index.html
+- run `./webserv configuration_files/eval01.conf`
+- browser to `http://localhost:8080/uploads/`
+
+#### Try a redirected URL.
+
+- run `./webserv configuration_files/eval01.conf`
+- browser to `http:localhost:8080/redirect/`
+- check redirection in terminal ==PRINT Response==
+
+***
+
+## Port issues
+
+#### In the configuration file setup multiple ports and use different websites. Use the browser to ensure that the configuration works as expected and shows the right website.
+
+- see question above
+
+#### In the configuration, try to setup the same port multiple times. It should not work.
+
+- run `./webserv configuration_files/eval02.conf`
+
+#### Launch multiple servers at the same time with different configurations but with common ports. Does it work? If it does, ask why the server should work if one of the configurations isn't functional. Keep going.
+
+- run `./webserv configuration_files/eval03.conf`
+
+***
+
+## Siege and stress test
+
+#### Use Siege to run some stress tests.
+
+- run `./webserv configuration_files/eval01.conf`
+- in a new terminal window run `siege -t30S -b http://localhost:8080/empty.html`
+
+#### Verify there is no memory leak (Monitor the process memory usage. It should not go up indefinitely).
+
+- run commands above
+- in a third terminal window run `ps aux | grep webserv`
+- copy the ./webserv pid and run `top -p <PID>` while siege runs
+- check RES value
+
+#### Check if there is no hanging connection.
+
+- run `siege -t30S -b http://localhost:8080/empty.html`
+- wait approx 1 min
+- run `netstat -an | grep ":8080"`
+
+***
+
+## Bonus part
+
+#### Cookies and session
+
+- browser to `http:localhost:8080/cookie_test.html`
+- on browser: inspect -> storage
+
+#### CGI
+
+- browser to `http://localhost:8080/cgi-bin/mult.php?a=15&b=10`
