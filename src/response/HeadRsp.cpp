@@ -27,10 +27,7 @@ HeadRsp::HeadRsp(Response &response) : _response(&response)
 
 HeadRsp::~HeadRsp() {};
 
-void HeadRsp::setContentType()
-{
-		_contentType = "Content-Type: " + _response->getType() + HEADNL;
-}
+void HeadRsp::setContentType() { _contentType = "Content-Type: " + _response->getType() + HEADNL; }
 
 void HeadRsp::setCookieString()
 {
@@ -43,50 +40,29 @@ void HeadRsp::setCookieString()
 
 void HeadRsp::setProtocol()
 {
-		/* TODO needed a way to extract
-		protocol from request
-		for now this is left as standard */
 		_protocol = "HTTP/1.1";
 }
 
 void HeadRsp::setRspStatusCode()
 {
-		// const std::map<std::string, std::string> &cgiHeaders =
-		// _response->getCgiHeaders();
-
-		// if (!cgiHeaders.empty())
-		// {
-		// 	std::map<std::string, std::string>::const_iterator it =
-		// cgiHeaders.find("Status"); 	if (it != cgiHeaders.end())
-		// 	{
-		// 		_statusCode = it->second;
-		// 		return;
-		// 	}
-		// }
-
 		int code = _response->getStatusCode();
 		std::stringstream ss;
 		ss << code;
 
 		const std::map<int, std::string> &statusCodeMap = getStatusCodeMap();
-		std::map<int, std::string>::const_iterator it =
-			statusCodeMap.find(code);
+		std::map<int, std::string>::const_iterator it = statusCodeMap.find(code);
 		if (it != statusCodeMap.end())
 		{
 				_statusCode = ss.str() + " " + it->second;
-		} else
+		}
+		else
 		{
 				_statusCode = ss.str() + " Unknown Status";
 		}
-
-		// std::cout << RED << __func__ << " > " << _statusCode << RESET <<
-		// std::endl; // DBG
 }
 
 void HeadRsp::setConnectionType()
 {
-		/* TODO extract connection type from
-		request */
 		_connectionType = "Connection: close" + std::string(HEADNL);
 }
 
@@ -102,8 +78,7 @@ void HeadRsp::setCacheControl()
 		if (_contentType == "text/html")
 				cache = "public, max-age=3600";
 		else if (_contentType == "image/jpg" || _contentType == "image/png" ||
-				 _contentType == "image/gif" ||
-				 _contentType == "text/javascript")
+				 _contentType == "image/gif" || _contentType == "text/javascript")
 				cache = "public, max-age=300, must-revalidate";
 		else
 				cache = "no-cache, no-store, must-revalidate";
@@ -118,24 +93,21 @@ void HeadRsp::buildHeader()
 		_header += "Date: " + getHttpDate() + std::string(HEADNL);
 		_header += _connectionType;
 
-		const std::map<std::string, std::string> &cgiHeaders =
-			_response->getCgiHeaders();
+		const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
 
 		if (!cgiHeaders.empty())
 		{
-				for (std::map<std::string, std::string>::const_iterator it =
-						 cgiHeaders.begin();
+				for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin();
 					 it != cgiHeaders.end(); ++it)
 				{
-						if (it->first != "Status" &&
-							it->first != "Content-Type")
+						if (it->first != "Status" && it->first != "Content-Type")
 						{
-								_header +=
-									it->first + ": " + it->second + HEADNL;
+								_header += it->first + ": " + it->second + HEADNL;
 						}
 				}
 				_header += _contentType;
-		} else
+		}
+		else
 		{
 				_header += _contentType;
 				_header += _cacheControl;
@@ -144,8 +116,6 @@ void HeadRsp::buildHeader()
 
 				_header += _contentLength;
 		_header += HEADNL;
-		// std::cout << RED << "[BUILT HEADER]\n" << _header << RESET <<
-		// std::endl; // DBG
 }
 
 std::string HeadRsp::getHeader() { return _header; }

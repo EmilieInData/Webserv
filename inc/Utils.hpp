@@ -85,7 +85,7 @@ bool checkLabel(std::string const &str);
 unsigned int strToSize(std::string const &value);
 
 // error_page
-std::map<int, std::pair<std::string, std::string>> defaultErrorPages();
+std::map<int, std::pair<std::string, std::string> > defaultErrorPages();
 bool isErrorPage(std::string const &value);
 bool isHtmlAddress(std::string const &value);
 

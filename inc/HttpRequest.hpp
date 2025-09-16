@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 15:32:05 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 18:05:30 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 19:16:19 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 
 #include "Headers.hpp"
 #include "HttpParser.hpp"
-#include "HttpParserTester.hpp"
 #include "RequestLine.hpp"
 #include "Script.hpp"
 #include "ServerData.hpp"
@@ -80,9 +79,8 @@ class HttpRequest
 
 		HttpRequest();
 
-		void checkHost(
-			std::map<std::string, std::vector<std::string>>::const_iterator it,
-			ServerData &serv);
+		void checkHost(std::map<std::string, std::vector<std::string> >::const_iterator it,
+					   ServerData &serv);
 		void finalHeadersParsingRoutine();
 		void setFullPath(ServerData const &serv);
 		void setLocation(std::map<std::string, LocationConf> const &location,
@@ -91,8 +89,7 @@ class HttpRequest
 		void runSimpleTest();
 
 	public:
-		HttpRequest(std::pair<int, std::string> incoming,
-					ServerManager &server);
+		HttpRequest(std::pair<int, std::string> incoming, ServerManager &server);
 		HttpRequest(HttpRequest const &src);
 		~HttpRequest();
 
@@ -113,16 +110,13 @@ class HttpRequest
 		bool getAutoindex() const;
 		std::string getRspType() const;
 		std::string getQueryValue(const std::string &key) const;
-		MultiBody fillBody(Headers const &header,
-						   std::string const &bodyContent);
+		MultiBody fillBody(Headers const &header, std::string const &bodyContent);
 		void fileUpload();
 		Headers *getReqHeaders() const;
 		ServerManager &getServ() const;
 		std::pair<int, std::string> getAddrPort() const;
 		std::pair<std::string, std::string> getHost() const;
-		LocationConf
-		findLocation(std::string path,
-					 std::map<std::string, LocationConf> const &loc);
+		LocationConf findLocation(std::string path, std::map<std::string, LocationConf> const &loc);
 		LocationConf getBlockLoc() const;
 		std::string getRawBody() const;
 		std::string &getInterpreterPath() const;

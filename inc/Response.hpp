@@ -38,8 +38,7 @@ class Response
 		Response &operator=(Response const &copy);
 		Response();
 
-		void errorRoutine(std::string &content,
-						  std::pair<int, std::string> incoming);
+		void errorRoutine(std::string &content, std::pair<int, std::string> incoming);
 
 	public:
 		Response(HttpRequest const &request);
@@ -49,8 +48,7 @@ class Response
 		std::string prepFile();
 		void setClientFd(int _clientFd);
 		void setResponse(std::string response);
-		void setContent(std::pair<std::string, std::string> fullPath,
-						std::string method);
+		void setContent(std::pair<std::string, std::string> fullPath, std::string method);
 		void prepResponse(std::pair<int, std::string> incoming);
 		void sendResponse();
 		std::string getType();

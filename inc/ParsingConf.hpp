@@ -40,11 +40,10 @@ class ParsingConf
 		size_t fillServers(std::vector<std::string> &buffer, size_t &i,
 						   std::vector<ABlockBase *> &blocks,
 						   std::vector<ServerData>::iterator &itServer);
-		size_t fillLocations(
-			std::vector<std::string> &buffer, size_t &i,
-			std::vector<ABlockBase *> &blocks,
-			std::vector<ServerData>::iterator &itServer,
-			std::map<std::string, LocationConf>::iterator &itLocation);
+		size_t fillLocations(std::vector<std::string> &buffer, size_t &i,
+							 std::vector<ABlockBase *> &blocks,
+							 std::vector<ServerData>::iterator &itServer,
+							 std::map<std::string, LocationConf>::iterator &itLocation);
 		void fillStructs(std::vector<std::string> &buffer);
 
 	private:

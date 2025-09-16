@@ -43,8 +43,7 @@ struct ClientConnection
 		time_t lastActivityTime;
 
 		ClientConnection(int fd, const struct sockaddr_in &addr, socklen_t len,
-						 const std::pair<int, std::string> &inc,
-						 ServerManager &sm);
+						 const std::pair<int, std::string> &inc, ServerManager &sm);
 		~ClientConnection();
 };
 
@@ -55,7 +54,7 @@ class ServerManager
 		int _reqCount;
 		int _rspCount;
 		std::vector<ServerData> _serverData;
-		std::set<std::pair<int, std::string>> _uniqueListens;
+		std::set<std::pair<int, std::string> > _uniqueListens;
 		std::vector<int> _socketFd;
 		std::vector<struct sockaddr_in> _servAddr;
 		int _inputFd;
@@ -76,7 +75,7 @@ class ServerManager
 		Script &getScript();
 		int getReqCount() const;
 		int getRspCount() const;
-		std::set<std::pair<int, std::string>> getUniqueListens();
+		std::set<std::pair<int, std::string> > getUniqueListens();
 		CookieData *getSession(const std::string &sessionId);
 		std::string createSession(const std::string &username);
 		void servListen(std::pair<int, std::string> _listens);

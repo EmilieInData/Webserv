@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 18:31:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 19:36:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 #include "ServerData.hpp"
 #include "Utils.hpp"
 
-std::vector<std::string> HttpParser::split(std::string const &str,
-										   char const delimiter)
+std::vector<std::string> HttpParser::split(std::string const &str, char const delimiter)
 {
 
 		std::vector<std::string> tokens;
@@ -101,13 +100,11 @@ bool HttpParser::isUnreservedForUri(char c)
 
 bool HttpParser::isReservedForUri(char c)
 {
-		if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' ||
-			c == ']' || c == '@')
+		if (c == ':' || c == '/' || c == '?' || c == '#' || c == '[' || c == ']' || c == '@')
 				return true;
 
-		if (c == '!' || c == '$' || c == '&' || c == '\\' || c == '(' ||
-			c == ')' || c == '*' || c == '+' || c == ',' || c == ';' ||
-			c == '=')
+		if (c == '!' || c == '$' || c == '&' || c == '\\' || c == '(' || c == ')' || c == '*' ||
+			c == '+' || c == ',' || c == ';' || c == '=')
 				return true;
 
 		return false;
@@ -117,14 +114,12 @@ bool HttpParser::isTokenChar(char c)
 {
 		const std::string specials = "!#$%&'*+-.^_`|~";
 
-		return std::isalnum(static_cast<unsigned char>(c)) ||
-			   specials.find(c) != std::string::npos;
+		return std::isalnum(static_cast<unsigned char>(c)) || specials.find(c) != std::string::npos;
 }
 
 bool HttpParser::isHexChar(char c)
 {
-		return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
-			   (c >= 'a' && c <= 'f');
+		return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
 }
 
 bool HttpParser::isDNS(std::string s)
@@ -204,8 +199,7 @@ void HttpParser::parseReqTarget(std::string &uri)
 
 		for (it = uri.begin(); it != ite; ++it)
 		{
-				if (!isUnreservedForUri(*it) && !isReservedForUri(*it) &&
-					*it != '%')
+				if (!isUnreservedForUri(*it) && !isReservedForUri(*it) && *it != '%')
 						throw std::invalid_argument(E_400);
 				if (*it == '%')
 				{
@@ -260,8 +254,8 @@ std::string HttpParser::parseFragment(std::string const &uri)
 				return "";
 }
 
-const std::string HttpParser::valid_method[] = {
-	"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "CONNECT"};
+const std::string HttpParser::valid_method[] = {"GET",	"POST",	   "PUT",	"DELETE",
+												"HEAD", "OPTIONS", "TRACE", "CONNECT"};
 const int HttpParser::valid_method_count = 8;
 
 bool HttpParser::notImplementedMethod(std::string const &method)
@@ -272,21 +266,17 @@ bool HttpParser::notImplementedMethod(std::string const &method)
 		return false;
 }
 
-ServerData const &
-HttpParser::checkIfServerExist(std::vector<ServerData> const &servers,
-							   std::pair<int, std::string> incoming)
+ServerData const &HttpParser::checkIfServerExist(std::vector<ServerData> const &servers,
+												 std::pair<int, std::string> incoming)
 {
 		std::vector<ServerData>::const_iterator it, ite = servers.end();
-		std::vector<std::pair<int, std::string>>::const_iterator it_listen,
-			ite_listen;
+		std::vector<std::pair<int, std::string> >::const_iterator it_listen, ite_listen;
 
 		for (it = servers.begin(); it != ite; ++it)
 		{
-				const std::vector<std::pair<int, std::string>> &listens =
-					it->getListens();
+				const std::vector<std::pair<int, std::string> > &listens = it->getListens();
 				ite_listen = listens.end();
-				for (it_listen = listens.begin(); it_listen != ite_listen;
-					 ++it_listen)
+				for (it_listen = listens.begin(); it_listen != ite_listen; ++it_listen)
 				{
 						if (*it_listen == incoming)
 								return *it;
@@ -295,9 +285,8 @@ HttpParser::checkIfServerExist(std::vector<ServerData> const &servers,
 		throw std::invalid_argument(E_421);
 }
 
-void HttpParser::checkIfPathExist(
-	std::pair<std::string, std::string> const &path, LocationConf &blockLoc,
-	std::string const &method)
+void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &path,
+								  LocationConf &blockLoc, std::string const &method)
 {
 
 		std::string full(path.first + path.second);
@@ -315,9 +304,9 @@ void HttpParser::checkIfPathExist(
 								throw std::invalid_argument(E_403);
 						full = path.first + blockLoc.getReturnDirective()[1];
 						closedir(dir);
-						throw std::invalid_argument(
-							blockLoc.getReturnDirective()[0]);
-				} else
+						throw std::invalid_argument(blockLoc.getReturnDirective()[0]);
+				}
+				else
 						throw std::invalid_argument(E_500);
 		}
 
@@ -328,10 +317,8 @@ void HttpParser::checkIfPathExist(
 		if (access(full.c_str(), F_OK) == -1)
 				throw std::invalid_argument(E_404);
 
-		const std::vector<std::string> &allowedMethods =
-			blockLoc.getAllowedMethods();
-		if (std::find(allowedMethods.begin(), allowedMethods.end(), method) ==
-			allowedMethods.end())
+		const std::vector<std::string> &allowedMethods = blockLoc.getAllowedMethods();
+		if (std::find(allowedMethods.begin(), allowedMethods.end(), method) == allowedMethods.end())
 				throw std::invalid_argument(E_405);
 
 		if (isBinary(full) && method != "DELETE")
@@ -340,7 +327,8 @@ void HttpParser::checkIfPathExist(
 				if (!file.is_open())
 						throw std::invalid_argument(E_403);
 				file.close();
-		} else if (isFolder(full))
+		}
+		else if (isFolder(full))
 		{
 				if (method == "POST")
 				{
@@ -354,9 +342,9 @@ void HttpParser::checkIfPathExist(
 				DIR *dir = opendir(full.c_str());
 				if (!dir)
 						throw std::invalid_argument(E_403);
-				if (path.second[path.second.size() - 1] != '/') // HERE
+				if (path.second[path.second.size() - 1] != '/')
 						full = full + '/';
-				std::string index = full + "index.html"; // HERE
+				std::string index = full + "index.html";
 				if (access(index.c_str(), F_OK) == 0)
 				{
 						if (access(index.c_str(), R_OK) != 0)
@@ -364,19 +352,19 @@ void HttpParser::checkIfPathExist(
 								closedir(dir);
 								throw std::invalid_argument(E_403);
 						}
-				} else
+				}
+				else
 				{
-						if (access(full.c_str(), R_OK) != 0 ||
-							blockLoc.getAutoindex() == false)
+						if (access(full.c_str(), R_OK) != 0 || blockLoc.getAutoindex() == false)
 						{
-								std::cout << ERROR << blockLoc.getAutoindex()
-										  << std::endl;
+								std::cout << ERROR << blockLoc.getAutoindex() << std::endl;
 								closedir(dir);
 								throw std::invalid_argument(E_403);
 						}
 				}
 				closedir(dir);
-		} else
+		}
+		else
 		{
 				if (method != "DELETE")
 				{
@@ -395,13 +383,12 @@ void HttpParser::checkIfPathExist(
 		}
 }
 
-void HttpParser::notAllowedMethod(
-	std::map<std::string, LocationConf>::iterator location,
-	std::vector<std::string> const &allowed_serv, std::string const &method)
+void HttpParser::notAllowedMethod(std::map<std::string, LocationConf>::iterator location,
+								  std::vector<std::string> const &allowed_serv,
+								  std::string const &method)
 {
 
-		std::vector<std::string> const &allowed_loc =
-			location->second.getAllowedMethods();
+		std::vector<std::string> const &allowed_loc = location->second.getAllowedMethods();
 
 		if (!allowed_loc.empty())
 		{
@@ -420,8 +407,7 @@ void HttpParser::notAllowedMethod(
 		}
 }
 
-std::pair<std::string, std::string>
-HttpParser::parseHost(std::string const &str)
+std::pair<std::string, std::string> HttpParser::parseHost(std::string const &str)
 {
 		std::string tmp(str);
 		std::string port = "";
@@ -434,7 +420,7 @@ HttpParser::parseHost(std::string const &str)
 				port = tmp.substr(found + 1, tmp.size() - found);
 				if (port.empty())
 						throw std::invalid_argument(
-							E_400); // si hay localhost: dos puntos sin puerto
+							E_400);
 				if (!isInt(port))
 						throw std::invalid_argument(E_400);
 				if (port[0] == '0')
@@ -449,8 +435,8 @@ HttpParser::parseHost(std::string const &str)
 		return std::make_pair(name, port);
 }
 
-bool HttpParser::checkIfHostNameExistInServer(
-	std::string &host_name, std::vector<std::string> const &serv_name)
+bool HttpParser::checkIfHostNameExistInServer(std::string &host_name,
+											  std::vector<std::string> const &serv_name)
 {
 
 		if (host_name == "localhost" || host_name == "127.0.0.1")
@@ -464,16 +450,14 @@ bool HttpParser::checkIfHostNameExistInServer(
 		return false;
 }
 
-const std::string HttpParser::one_header[] = {
-	"host", "content-type", "content-length", "content-disposition", "cookie"};
+const std::string HttpParser::one_header[] = {"host", "content-type", "content-length",
+											  "content-disposition", "cookie"};
 const int HttpParser::one_h_count = 5;
-const std::string HttpParser::many_header[] = {"accept", "accept-encoding",
-											   "accept-lenguage", "connection",
-											   "cache-control"};
+const std::string HttpParser::many_header[] = {"accept", "accept-encoding", "accept-lenguage",
+											   "connection", "cache-control"};
 const int HttpParser::many_h_count = 5;
 
-std::pair<std::string, std::string>
-HttpParser::parseHeaderSyntaxis(std::string h)
+std::pair<std::string, std::string> HttpParser::parseHeaderSyntaxis(std::string h)
 {
 
 		std::size_t found = h.find(":");
@@ -487,8 +471,7 @@ HttpParser::parseHeaderSyntaxis(std::string h)
 				if (!HttpParser::isTokenChar(*it_n))
 						throw std::invalid_argument(E_400);
 
-		return make_pair(toLower(name),
-						 h.substr(found + 1, h.length() - found + 1));
+		return make_pair(toLower(name), h.substr(found + 1, h.length() - found + 1));
 }
 
 bool HttpParser::oneValueHeader(std::string name)
@@ -536,8 +519,8 @@ std::vector<std::string> HttpParser::pushValues(std::string n, std::string v)
 		return values;
 }
 
-void HttpParser::pushMoreValues(
-	std::map<std::string, std::vector<std::string>>::iterator h, std::string v)
+void HttpParser::pushMoreValues(std::map<std::string, std::vector<std::string> >::iterator h,
+								std::string v)
 {
 
 		if (oneValueHeader(h->first))
@@ -553,12 +536,10 @@ void HttpParser::pushMoreValues(
 		for (it = more_values.begin(); it != ite; ++it)
 				trimSpaceAndTab(*it);
 
-		h->second.insert(h->second.end(), more_values.begin(),
-						 more_values.end());
+		h->second.insert(h->second.end(), more_values.begin(), more_values.end());
 }
 
-int HttpParser::parseContentLengthHeader(std::string const &v,
-										 std::size_t body_max)
+int HttpParser::parseContentLengthHeader(std::string const &v, std::size_t body_max)
 {
 		if (v.empty())
 				throw std::invalid_argument(E_400);
@@ -572,8 +553,7 @@ int HttpParser::parseContentLengthHeader(std::string const &v,
 		return tmp;
 }
 
-std::string
-HttpParser::parseContentTypeBoundary(std::vector<std::string> const &v)
+std::string HttpParser::parseContentTypeBoundary(std::vector<std::string> const &v)
 {
 		if (v.at(0) != "multipart/form-data")
 				return "";

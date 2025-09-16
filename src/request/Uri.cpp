@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Uri.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cle-tron <cle-tron@student.42barcelon      +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 13:30:49 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/07/14 12:20:15 by cle-tron         ###   ########.fr       */
+/*   Updated: 2025/09/16 19:36:38 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 #include <iostream>
 #include <string>
 
-Uri::Uri(std::string const &req_target, std::string const &host)
-	: scheme("http"), authority(host)
+Uri::Uri(std::string const &req_target, std::string const &host) : scheme("http"), authority(host)
 {
 
 		path = HttpParser::parsePath(req_target);
@@ -28,8 +27,6 @@ Uri::Uri(std::string const &req_target, std::string const &host)
 				uri += "?" + query;
 		if (!fragment.empty())
 				uri += "#" + fragment;
-
-		//	std::cout << "URI: " << uri << std::endl;
 }
 
 Uri::Uri(Uri const &src) { *this = src; }

@@ -51,12 +51,12 @@ void printServerNames(std::vector<std::string> names)
 				graTextElement(*it);
 }
 
-void printServerListens(std::vector<std::pair<int, std::string>> listens)
+void printServerListens(std::vector<std::pair<int, std::string> > listens)
 {
 		graTextHeader("Listening Sockets");
 
-		std::vector<std::pair<int, std::string>>::iterator it;
-		std::vector<std::pair<int, std::string>>::iterator ite = listens.end();
+		std::vector<std::pair<int, std::string> >::iterator it;
+		std::vector<std::pair<int, std::string> >::iterator ite = listens.end();
 
 		for (it = listens.begin(); it != ite; it++)
 		{
@@ -73,8 +73,7 @@ void printServerLocations(ServerData const &serv)
 		graTextHeader("Locations");
 
 		std::map<std::string, LocationConf>::const_iterator it;
-		std::map<std::string, LocationConf>::const_iterator ite =
-			serv.getLocations().end();
+		std::map<std::string, LocationConf>::const_iterator ite = serv.getLocations().end();
 
 		for (it = serv.getLocations().begin(); it != ite; it++)
 		{
@@ -93,11 +92,9 @@ void printServersStatus(ServerManager &serv)
 		graTextElement(intToString(serv.getRspCount()));
 		graTextHeader("Listening Sockets");
 
-		const std::set<std::pair<int, std::string>> &listens =
-			serv.getUniqueListens();
-		std::set<std::pair<int, std::string>>::const_iterator it;
-		std::set<std::pair<int, std::string>>::const_iterator ite =
-			listens.end();
+		const std::set<std::pair<int, std::string> > &listens = serv.getUniqueListens();
+		std::set<std::pair<int, std::string> >::const_iterator it;
+		std::set<std::pair<int, std::string> >::const_iterator ite = listens.end();
 
 		for (it = listens.begin(); it != ite; it++)
 				graTextElement(it->second + ":" + intToString(it->first));
@@ -105,8 +102,8 @@ void printServersStatus(ServerManager &serv)
 		graBottomLine();
 }
 
-void printRequest(ServerManager &serv, int socketFd, std::string request,
-				  std::string fullPath, std::string method)
+void printRequest(ServerManager &serv, int socketFd, std::string request, std::string fullPath,
+				  std::string method)
 {
 		std::pair<int, std::string> incoming = serv.getSocketData(socketFd);
 		graTopLine();
@@ -133,14 +130,12 @@ void printRequest(ServerManager &serv, int socketFd, std::string request,
 void printRaw(std::string const &text)
 {
 		if (text.size() > 10 &&
-			((text.substr(0, 4) == "\xFF\xD8\xFF") ||	   // JPEG
-			 (text.substr(0, 8) == "\x89PNG\r\n\x1A\n") || // PNG
-			 (text.substr(0, 6) == "GIF87a" ||
-			  text.substr(0, 6) == "GIF89a"))) // GIF
+			((text.substr(0, 4) == "\xFF\xD8\xFF") ||							// JPEG
+			 (text.substr(0, 8) == "\x89PNG\r\n\x1A\n") ||						// PNG
+			 (text.substr(0, 6) == "GIF87a" || text.substr(0, 6) == "GIF89a"))) // GIF
 		{
-				std::cout << GREEN << "[Image content detected - "
-						  << text.size() << " bytes - content not displayed]"
-						  << RESET << std::endl;
+				std::cout << GREEN << "[Image content detected - " << text.size()
+						  << " bytes - content not displayed]" << RESET << std::endl;
 				return;
 		}
 

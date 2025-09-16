@@ -76,7 +76,8 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 				_scriptOutput = "";
 				deleteArray(envServ);
 				return;
-		} else if (child == 0)
+		}
+		else if (child == 0)
 		{
 				std::string scriptPath = _cgiPath;
 				std::string scriptDir;
@@ -92,7 +93,8 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 								printBoxError("chdir failed");
 								exit(1);
 						}
-				} else
+				}
+				else
 				{
 						scriptFile = scriptPath;
 				}
@@ -110,7 +112,8 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 								const_cast<char *>(scriptFile.c_str()), NULL};
 				execve(interpreterPath.c_str(), argv, envServ);
 				exit(1);
-		} else
+		}
+		else
 		{
 				close(pipeIn[PIPE_READ]);
 				close(pipeOut[PIPE_WRITE]);
@@ -120,14 +123,11 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 						const std::string &requestBody = request.getRawBody();
 						if (!requestBody.empty())
 						{
-								ssize_t written = write(pipeIn[PIPE_WRITE],
-														requestBody.c_str(),
+								ssize_t written = write(pipeIn[PIPE_WRITE], requestBody.c_str(),
 														requestBody.length());
 								if (written == -1)
-										printBoxError(
-											"Error parent writing POST body");
-								else if (written < static_cast<ssize_t>(
-													   requestBody.length()))
+										printBoxError("Error parent writing POST body");
+								else if (written < static_cast<ssize_t>(requestBody.length()))
 										printBoxError("Partial write occurred");
 						}
 				}
@@ -147,7 +147,8 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 						if (result == child)
 						{
 								break;
-						} else if (result == -1)
+						}
+						else if (result == -1)
 						{
 								printBoxError("waitpid error");
 								kill(child, SIGKILL);
@@ -158,8 +159,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 						}
 
 						gettimeofday(&current_time, NULL);
-						long elapsed =
-							(current_time.tv_sec - start_time.tv_sec);
+						long elapsed = (current_time.tv_sec - start_time.tv_sec);
 
 						if (elapsed >= SCRIPT_TIMEOUT)
 						{
@@ -174,12 +174,13 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 						waitpid(child, &status, 0);
 						printBoxError("Script timeout");
 						_statusCode = 504;
-				} else
+				}
+				else
 				{
 						char buffer[4096];
 						ssize_t bytesRead;
-						while ((bytesRead = read(pipeOut[PIPE_READ], buffer,
-												 sizeof(buffer) - 1)) > 0)
+						while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) >
+							   0)
 						{
 								buffer[bytesRead] = '\0';
 								_scriptOutput += buffer;
@@ -189,22 +190,22 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 
 						if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 						{
-								std::cerr << "CGI script " << _cgiPath
-										  << " exited with code "
+								std::cerr << "CGI script " << _cgiPath << " exited with code "
 										  << WEXITSTATUS(status) << std::endl;
 								_statusCode = 500;
-						} else if (WIFSIGNALED(status))
+						}
+						else if (WIFSIGNALED(status))
 						{
-								std::cerr << "CGI script " << _cgiPath
-										  << " killed by signal "
+								std::cerr << "CGI script " << _cgiPath << " killed by signal "
 										  << WTERMSIG(status) << std::endl;
 								_statusCode = 500;
-						} else
+						}
+						else
 						{
-								std::cout << GREEN
-										  << "CGI script output captured: "
-										  << _scriptOutput.length() << " bytes"
-										  << RESET << std::endl;
+								std::cout
+									<< GREEN
+									<< "CGI script output captured: " << _scriptOutput.length()
+									<< " bytes" << RESET << std::endl;
 								_statusCode = 200;
 								parseOutput();
 						}
@@ -234,19 +235,17 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 		envVars.push_back("PATH_TRANSLATED=" + _cgiPath);
 		envVars.push_back("REMOTE_ADDR=" + request.getAddrPort().second);
 		envVars.push_back("SERVER_NAME=" + request.getHost().first);
-		envVars.push_back("SERVER_PORT=" +
-						  intToString(request.getAddrPort().first));
+		envVars.push_back("SERVER_PORT=" + intToString(request.getAddrPort().first));
 
 		Headers *reqHeaders = request.getReqHeaders();
 		std::map<std::string, std::string> httpEnvVars;
 
-		for (std::map<std::string, std::vector<std::string>>::const_iterator
-				 it = reqHeaders->getHeaderBegin();
+		for (std::map<std::string, std::vector<std::string> >::const_iterator it =
+				 reqHeaders->getHeaderBegin();
 			 it != reqHeaders->getHeaderEnd(); it++)
 		{
 				std::string envEntry = "HTTP_" + it->first;
-				std::transform(envEntry.begin(), envEntry.end(),
-							   envEntry.begin(), ::toupper);
+				std::transform(envEntry.begin(), envEntry.end(), envEntry.begin(), ::toupper);
 				std::replace(envEntry.begin(), envEntry.end(), '-', '_');
 
 				if (!it->second.empty())
@@ -257,38 +256,32 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 
 		if (scriptName == "/cgi-bin/login.py")
 		{
-				std::string username =
-					getQueryValue(request.getQuery(), "username");
+				std::string username = getQueryValue(request.getQuery(), "username");
 				if (username.empty())
 						username = "guest";
 				std::string sessionId = serverManager.createSession(username);
 				envVars.push_back("WEBSERV_SESSION_ID=" + sessionId);
-		} else if (scriptName == "/cgi-bin/profile.py")
+		}
+		else if (scriptName == "/cgi-bin/profile.py")
 		{
 				if (httpEnvVars.count("HTTP_COOKIE"))
 				{
-						const std::string &cookieValue =
-							httpEnvVars["HTTP_COOKIE"];
-						std::string sessionId =
-							getCookieValue(cookieValue, "session_id");
+						const std::string &cookieValue = httpEnvVars["HTTP_COOKIE"];
+						std::string sessionId = getCookieValue(cookieValue, "session_id");
 
-						CookieData *session =
-							serverManager.getSession(sessionId);
+						CookieData *session = serverManager.getSession(sessionId);
 						if (session)
 						{
-								envVars.push_back("WEBSERV_USERNAME=" +
-												  session->username);
+								envVars.push_back("WEBSERV_USERNAME=" + session->username);
 						}
 				}
 		}
 
-		if (reqHeaders->getHeader("content-length") !=
-			reqHeaders->getHeaderEnd())
-				envVars.push_back(
-					"CONTENT_LENGTH=" +
-					reqHeaders->getHeaderOnlyOneValue("content-length", 0));
+		if (reqHeaders->getHeader("content-length") != reqHeaders->getHeaderEnd())
+				envVars.push_back("CONTENT_LENGTH=" +
+								  reqHeaders->getHeaderOnlyOneValue("content-length", 0));
 
-		std::map<std::string, std::vector<std::string>>::const_iterator it_ct =
+		std::map<std::string, std::vector<std::string> >::const_iterator it_ct =
 			reqHeaders->getHeader("content-type");
 		if (it_ct != reqHeaders->getHeaderEnd())
 		{
@@ -301,8 +294,7 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 				envVars.push_back("CONTENT_TYPE=" + contentTypeValue);
 		}
 
-		for (std::map<std::string, std::string>::const_iterator it =
-				 httpEnvVars.begin();
+		for (std::map<std::string, std::string>::const_iterator it = httpEnvVars.begin();
 			 it != httpEnvVars.end(); ++it)
 		{
 				envVars.push_back(it->first + "=" + it->second);
@@ -335,7 +327,8 @@ void Script::parseOutput()
 		{
 				headersPart = _scriptOutput.substr(0, separatorPos);
 				_outputBody = _scriptOutput.substr(separatorPos + separatorLen);
-		} else
+		}
+		else
 		{
 				_outputBody = _scriptOutput;
 				return;
@@ -375,9 +368,6 @@ void Script::parseOutput()
 
 std::string Script::getOutputBody() const { return _outputBody; }
 
-std::map<std::string, std::string> Script::getOutputHeaders() const
-{
-		return _outputHeaders;
-}
+std::map<std::string, std::string> Script::getOutputHeaders() const { return _outputHeaders; }
 
 int Script::getStatusCode() const { return _statusCode; }

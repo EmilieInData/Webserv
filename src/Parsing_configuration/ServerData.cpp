@@ -13,17 +13,11 @@
 #include "ServerData.hpp"
 #include "Utils.hpp"
 
-ServerData::ServerData()
-{
-		_listens.push_back(std::make_pair(8080, "127.0.0.1"));
-}
+ServerData::ServerData() { _listens.push_back(std::make_pair(8080, "127.0.0.1")); }
 
 ServerData::~ServerData() {}
 
-ServerData::ServerData(ServerData const &other) : ABlockBase(other)
-{
-		*this = other;
-}
+ServerData::ServerData(ServerData const &other) : ABlockBase(other) { *this = other; }
 
 ServerData &ServerData::operator=(ServerData const &other)
 {
@@ -39,31 +33,21 @@ ServerData &ServerData::operator=(ServerData const &other)
 
 std::string const &ServerData::getRoot() const { return _root; }
 
-std::map<std::string, LocationConf> &ServerData::getLocations()
-{
-		return _locations;
-}
+std::map<std::string, LocationConf> &ServerData::getLocations() { return _locations; }
 
 std::map<std::string, LocationConf> const &ServerData::getLocations() const
 {
 		return const_cast<std::map<std::string, LocationConf> &>(_locations);
 }
 
-std::map<std::string, LocationConf>::iterator
-ServerData::getItLocations(std::string const &key)
+std::map<std::string, LocationConf>::iterator ServerData::getItLocations(std::string const &key)
 {
 		return _locations.find(key);
 }
 
-std::vector<std::pair<int, std::string>> ServerData::getListens() const
-{
-		return _listens;
-}
+std::vector<std::pair<int, std::string> > ServerData::getListens() const { return _listens; }
 
-std::vector<std::string> ServerData::getServerName() const
-{
-		return _serverName;
-}
+std::vector<std::string> ServerData::getServerName() const { return _serverName; }
 
 size_t ServerData::fillListens(std::vector<std::string> &buffer, size_t i)
 {
@@ -72,19 +56,20 @@ size_t ServerData::fillListens(std::vector<std::string> &buffer, size_t i)
 
 		if (i >= buffer.size() || buffer[i].empty() || i + 1 >= buffer.size() ||
 			buffer[i + 1].empty() || buffer[i + 1] != ";")
-				throw std::invalid_argument(
-					" Parsing error with 'listen' argument,"
-					" need one argument followed by a semicolon\n");
+				throw std::invalid_argument(" Parsing error with 'listen' argument,"
+											" need one argument followed by a semicolon\n");
 		if (isInt(buffer[i]))
 		{
 				port = strToInt(buffer[i]);
 				ip = "127.0.0.1";
-		} else if (isLocal(buffer[i]))
+		}
+		else if (isLocal(buffer[i]))
 		{
 				port = strToInt(buffer[i].substr(10));
 				;
 				ip = "127.0.0.1";
-		} else if (isSocket(buffer[i]))
+		}
+		else if (isSocket(buffer[i]))
 		{
 				if (!checkSocketAddress(buffer[i]))
 						throw std::invalid_argument(
@@ -92,21 +77,20 @@ size_t ServerData::fillListens(std::vector<std::string> &buffer, size_t i)
 							"correct\n");
 				ip = socketToIp(buffer[i]);
 				port = socketToPort(buffer[i]);
-		} else
-				throw std::invalid_argument(
-					" Parsing error, 'listen' argument is not correct\n");
+		}
+		else
+				throw std::invalid_argument(" Parsing error, 'listen' argument is not correct\n");
 		if (checkFlag("listen"))
 		{
 				for (size_t i = 0; i < _listens.size(); i++)
 				{
-						if (_listens[i].first == port &&
-							_listens[i].second == ip)
-								throw std::invalid_argument(
-									" Parsing error, duplicate 'listen' "
-									"arguments\n");
+						if (_listens[i].first == port && _listens[i].second == ip)
+								throw std::invalid_argument(" Parsing error, duplicate 'listen' "
+															"arguments\n");
 				}
 				_listens.push_back(std::make_pair(port, ip));
-		} else
+		}
+		else
 				_listens[0] = std::make_pair(port, ip);
 		return (i + 2);
 }
@@ -114,12 +98,10 @@ size_t ServerData::fillListens(std::vector<std::string> &buffer, size_t i)
 size_t ServerData::fillServerName(std::vector<std::string> &buffer, size_t i)
 {
 		if (checkFlag("server_name"))
-				throw std::invalid_argument(
-					" Parsing error, only one 'server_name'"
-					" directive allowed by server block\n");
+				throw std::invalid_argument(" Parsing error, only one 'server_name'"
+											" directive allowed by server block\n");
 		if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
-				throw std::invalid_argument(
-					" Parsing error, miss 'server_name' arguments\n");
+				throw std::invalid_argument(" Parsing error, miss 'server_name' arguments\n");
 		if (!_serverName.empty())
 				_serverName.clear(); // supprimer l'arg par defaut (vide tout le
 									 // vector)
@@ -128,9 +110,8 @@ size_t ServerData::fillServerName(std::vector<std::string> &buffer, size_t i)
 				if (buffer[i] == ";")
 						break;
 				if (buffer[i] == "{" || buffer[i] == "}")
-						throw std::invalid_argument(
-							" Parsing error, miss semicolon after"
-							" 'server_name' directive\n");
+						throw std::invalid_argument(" Parsing error, miss semicolon after"
+													" 'server_name' directive\n");
 				for (size_t j = 0; j < _serverName.size(); j++)
 				{
 						if (buffer[i] == _serverName[j])
@@ -142,8 +123,7 @@ size_t ServerData::fillServerName(std::vector<std::string> &buffer, size_t i)
 				i++;
 		}
 		if (!checkDns(_serverName))
-				throw std::invalid_argument(
-					" Parsing error, 'server_name' arguments"
-					" need to follow DNS's rules\n");
+				throw std::invalid_argument(" Parsing error, 'server_name' arguments"
+											" need to follow DNS's rules\n");
 		return (i + 1);
 }

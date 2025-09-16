@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/16 12:41:58 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 19:29:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,8 @@ bool isInt(std::string const &value)
 		}
 		num = strToInt(value);
 		if (num < 0 || num > 65535)
-				throw std::invalid_argument(
-					" Parsing error, 'listen' port number is"
-					" not correct, only int between 0 & 65535 accepted\n");
+				throw std::invalid_argument(" Parsing error, 'listen' port number is"
+											" not correct, only int between 0 & 65535 accepted\n");
 		return true;
 }
 
@@ -42,9 +41,8 @@ bool isLocal(std::string const &value)
 		}
 		num = strToInt(value.substr(10));
 		if (num < 0 || num > 65535)
-				throw std::invalid_argument(
-					" Parsing error, 'listen' local port number is"
-					" not correct, only int between 0 & 65535 accepted\n");
+				throw std::invalid_argument(" Parsing error, 'listen' local port number is"
+											" not correct, only int between 0 & 65535 accepted\n");
 		return true;
 }
 
@@ -54,13 +52,11 @@ bool isSocket(std::string const &value)
 
 		for (size_t i = 0; i < value.length(); i++)
 		{
-				if ((value[i] > '9' || value[i] < '0') && value[i] != '.' &&
-					value[i] != ':')
+				if ((value[i] > '9' || value[i] < '0') && value[i] != '.' && value[i] != ':')
 						return false;
 				if (value[i] == '.')
 				{
-						if (!value[i + 1] || value[i + 1] == '.' ||
-							value[i + 1] == ':' || i == 0)
+						if (!value[i + 1] || value[i + 1] == '.' || value[i + 1] == ':' || i == 0)
 								throw std::invalid_argument(
 									" Parsing error, 'listen' socket address "
 									"is not correct\n");
@@ -68,11 +64,10 @@ bool isSocket(std::string const &value)
 				}
 				if (value[i] == ':')
 				{
-						if (!value[i + 1] || value[i + 1] == '.' ||
-							value[i + 1] == ':' || flag != 3)
-								throw std::invalid_argument(
-									" Parsing error, 'listen' socket"
-									" address is not correct\n");
+						if (!value[i + 1] || value[i + 1] == '.' || value[i + 1] == ':' ||
+							flag != 3)
+								throw std::invalid_argument(" Parsing error, 'listen' socket"
+															" address is not correct\n");
 				}
 		}
 		return true;
@@ -85,8 +80,7 @@ int strToInt(std::string const &value)
 
 		str >> num;
 		if (str.fail())
-				throw std::runtime_error(
-					" error to convert the string argument in int");
+				throw std::runtime_error(" error to convert the string argument in int");
 		return num;
 }
 
@@ -133,9 +127,8 @@ std::string socketToIp(std::string const &value)
 				}
 		}
 		if (str == "")
-				throw std::invalid_argument(
-					" Parsing error, 'listen' socket address"
-					" is not correct\n");
+				throw std::invalid_argument(" Parsing error, 'listen' socket address"
+											" is not correct\n");
 		return str;
 }
 
@@ -152,9 +145,8 @@ int socketToPort(std::string const &value)
 				}
 		}
 		if (str == "")
-				throw std::invalid_argument(
-					" Parsing error, 'listen' socket address"
-					" is not correct\n");
+				throw std::invalid_argument(" Parsing error, 'listen' socket address"
+											" is not correct\n");
 		int num = strToInt(str);
 		return num;
 }
@@ -167,8 +159,8 @@ bool checkDns(std::vector<std::string> &tmp)
 				{
 						if ((tmp[i][j] >= '0' && tmp[i][j] <= '9') ||
 							(tmp[i][j] >= 'a' && tmp[i][j] <= 'z') ||
-							(tmp[i][j] >= 'A' && tmp[i][j] <= 'Z') ||
-							tmp[i][j] == '.' || tmp[i][j] == '-')
+							(tmp[i][j] >= 'A' && tmp[i][j] <= 'Z') || tmp[i][j] == '.' ||
+							tmp[i][j] == '-')
 								continue;
 						return false;
 				}
@@ -183,11 +175,10 @@ bool checkLabel(std::string const &str)
 		std::vector<std::string> tmp;
 
 		if (str.length() > 255)
-				throw std::invalid_argument(
-					" Parsing error, 'server_name' arguments"
-					" may not exceed 255 characters\n");
+				throw std::invalid_argument(" Parsing error, 'server_name' arguments"
+											" may not exceed 255 characters\n");
 		int j = 0;
-		for (size_t i = 0; i < str.length(); i++) // cutted in label in a vector
+		for (size_t i = 0; i < str.length(); i++)
 		{
 				if (str[i] == '.')
 				{
@@ -206,16 +197,14 @@ bool checkLabel(std::string const &str)
 		if (tmp.empty())
 				j = 0;
 		tmp.push_back(str.substr(j));
-		for (size_t i = 0; i < tmp.size(); i++) // checking labels
+		for (size_t i = 0; i < tmp.size(); i++)
 		{
 				if (tmp[i].length() > 63)
-						throw std::invalid_argument(
-							" Parsing error, 'server_name' argument's"
-							" labels may not exceed 63 characters\n");
+						throw std::invalid_argument(" Parsing error, 'server_name' argument's"
+													" labels may not exceed 63 characters\n");
 				if (tmp[i][0] == '-' || tmp[i][tmp[i].length() - 1] == '-')
-						throw std::invalid_argument(
-							" Parsing error, 'server_name' argument's"
-							" labels cannot begin or end by '-'\n");
+						throw std::invalid_argument(" Parsing error, 'server_name' argument's"
+													" labels cannot begin or end by '-'\n");
 		}
 		return true;
 }
@@ -230,17 +219,14 @@ unsigned int strToSize(std::string const &value)
 				{
 						tmp = value.substr(0, i);
 						if (i + 1 != value.length())
-								throw std::invalid_argument(
-									" Parsing error, wrong "
-									"client_max_body_size' arguments\n");
+								throw std::invalid_argument(" Parsing error, wrong "
+															"client_max_body_size' arguments\n");
 				}
 		}
 		unsigned int num = strToInt(tmp);
-		if (value[value.length() - 1] == 'k' ||
-			value[value.length() - 1] == 'K')
+		if (value[value.length() - 1] == 'k' || value[value.length() - 1] == 'K')
 				num = num * 1024;
-		else if (value[value.length() - 1] == 'm' ||
-				 value[value.length() - 1] == 'M')
+		else if (value[value.length() - 1] == 'm' || value[value.length() - 1] == 'M')
 				num = num * 1024 * 1024;
 		else
 				throw std::invalid_argument(
@@ -267,8 +253,8 @@ bool isHtmlAddress(std::string const &value)
 				return false;
 		for (size_t i = 0; i < value.length(); i++)
 		{
-				if (value[i] != '_' && value[i] != '-' && value[i] != '.' &&
-					value[i] != '/' && !isalnum(value[i]))
+				if (value[i] != '_' && value[i] != '-' && value[i] != '.' && value[i] != '/' &&
+					!isalnum(value[i]))
 						return false;
 		}
 		return true;
@@ -298,9 +284,8 @@ const std::string timeStamp()
 		int microseconds = tv.tv_usec % 1000;
 
 		std::ostringstream milSec;
-		milSec << buffer << "." << std::setfill('0') << std::setw(3)
-			   << milliseconds << "." << std::setfill('0') << std::setw(3)
-			   << microseconds << "] ";
+		milSec << buffer << "." << std::setfill('0') << std::setw(3) << milliseconds << "."
+			   << std::setfill('0') << std::setw(3) << microseconds << "] ";
 
 		timeStamp = "\033[35m" + milSec.str() + "\033[0m";
 		return timeStamp;
@@ -338,9 +323,8 @@ bool isBinary(std::string location)
 		if (dotPos != std::string::npos)
 				extension = location.substr(dotPos);
 
-		return (extension == ".jpg" || extension == ".jpeg" ||
-				extension == ".png" || extension == ".gif" ||
-				extension == ".ico");
+		return (extension == ".jpg" || extension == ".jpeg" || extension == ".png" ||
+				extension == ".gif" || extension == ".ico");
 }
 
 bool isFolder(std::string location)
@@ -352,8 +336,6 @@ bool isFolder(std::string location)
 		}
 		return S_ISDIR(statbuf.st_mode);
 }
-// vector<std::string>	HttpParser::split( std::string & const str, std::string
-// & const delimiter ) {}
 
 void deleteArray(char **array)
 {
@@ -381,10 +363,12 @@ std::string upperKey(std::string const &key)
 				{
 						normalized[i] = std::toupper(normalized[i]);
 						capitalize = false;
-				} else if (normalized[i] == '-')
+				}
+				else if (normalized[i] == '-')
 				{
 						capitalize = true;
-				} else
+				}
+				else
 				{
 						normalized[i] = std::tolower(normalized[i]);
 				}
@@ -398,11 +382,10 @@ void replaceContent(std::string &htmlContent, const std::string &target,
 		if (target.empty())
 				return;
 		size_t startPos = 0;
-		while ((startPos = htmlContent.find(target, startPos)) !=
-			   std::string::npos)
+		while ((startPos = htmlContent.find(target, startPos)) != std::string::npos)
 		{
 				htmlContent.replace(startPos, target.length(), newContent);
-				startPos += newContent.length(); // Move past the replacement
+				startPos += newContent.length(); 
 		}
 }
 
@@ -464,8 +447,7 @@ std::string getQueryValue(const std::string &query, const std::string &key)
 						if (valueEnd == std::string::npos)
 								return query.substr(valueStart);
 						else
-								return query.substr(valueStart,
-													valueEnd - valueStart);
+								return query.substr(valueStart, valueEnd - valueStart);
 				}
 				pos = query.find(keyToFind, pos + 1);
 		}
@@ -483,8 +465,7 @@ std::string getCookieValue(const std::string &cookie, const std::string &key)
 
 		while (pos != std::string::npos)
 		{
-				if (pos == 0 ||
-					(cookie[pos - 1] == ' ' && cookie[pos - 2] == ';'))
+				if (pos == 0 || (cookie[pos - 1] == ' ' && cookie[pos - 2] == ';'))
 				{
 						size_t valueStart = pos + keyToFind.length();
 						size_t valueEnd = cookie.find(';', valueStart);
@@ -492,8 +473,7 @@ std::string getCookieValue(const std::string &cookie, const std::string &key)
 						if (valueEnd == std::string::npos)
 								return cookie.substr(valueStart);
 						else
-								return cookie.substr(valueStart,
-													 valueEnd - valueStart);
+								return cookie.substr(valueStart, valueEnd - valueStart);
 				}
 				pos = cookie.find(keyToFind, pos + 1);
 		}

@@ -30,13 +30,12 @@ Headers &Headers::operator=(Headers const &rhs)
 
 void Headers::setHeader(std::string &str)
 {
-		std::pair<std::string, std::string> tmp =
-			HttpParser::parseHeaderSyntaxis(str);
+		std::pair<std::string, std::string> tmp = HttpParser::parseHeaderSyntaxis(str);
 
 		if (!HttpParser::recognizeHeaderName(tmp.first))
 				return;
 
-		std::map<std::string, std::vector<std::string>>::iterator found =
+		std::map<std::string, std::vector<std::string> >::iterator found =
 			this->header.find(tmp.first);
 
 		if (found != this->header.end())
@@ -48,23 +47,21 @@ void Headers::setHeader(std::string &str)
 		this->header[tmp.first] = HttpParser::pushValues(tmp.first, tmp.second);
 }
 
-std::map<std::string, std::vector<std::string>>::const_iterator
+std::map<std::string, std::vector<std::string> >::const_iterator
 Headers::getHeader(std::string const &name) const
 {
-		std::map<std::string, std::vector<std::string>>::const_iterator it =
+		std::map<std::string, std::vector<std::string> >::const_iterator it =
 			this->header.find(name);
 
 		return it;
 }
 
-std::map<std::string, std::vector<std::string>>::const_iterator
-Headers::getHeaderBegin() const
+std::map<std::string, std::vector<std::string> >::const_iterator Headers::getHeaderBegin() const
 {
 		return this->header.begin();
 }
 
-std::map<std::string, std::vector<std::string>>::const_iterator
-Headers::getHeaderEnd() const
+std::map<std::string, std::vector<std::string> >::const_iterator Headers::getHeaderEnd() const
 {
 		return this->header.end();
 }
@@ -76,7 +73,7 @@ std::vector<std::string> &Headers::getHeaderValue(std::string const &name)
 
 std::vector<std::string> Headers::getHeaderValue(std::string const &name) const
 {
-		std::map<std::string, std::vector<std::string>>::const_iterator it =
+		std::map<std::string, std::vector<std::string> >::const_iterator it =
 			this->header.find(name);
 
 		if (it == this->header.end())
@@ -85,10 +82,9 @@ std::vector<std::string> Headers::getHeaderValue(std::string const &name) const
 		return it->second;
 }
 
-std::string Headers::getHeaderOnlyOneValue(std::string const &name,
-										   int index) const
+std::string Headers::getHeaderOnlyOneValue(std::string const &name, int index) const
 {
-		std::map<std::string, std::vector<std::string>>::const_iterator it =
+		std::map<std::string, std::vector<std::string> >::const_iterator it =
 			this->header.find(name);
 
 		if (it == this->header.end())
@@ -98,7 +94,7 @@ std::string Headers::getHeaderOnlyOneValue(std::string const &name,
 
 void Headers::printHeader() const
 {
-		std::map<std::string, std::vector<std::string>>::const_iterator it,
+		std::map<std::string, std::vector<std::string> >::const_iterator it,
 			ite = this->header.end();
 		std::vector<std::string>::const_iterator it_v, ite_v;
 

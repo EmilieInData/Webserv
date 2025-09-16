@@ -31,10 +31,7 @@ LocationConf::LocationConf(ServerData const &S)
 
 LocationConf::~LocationConf() {}
 
-LocationConf::LocationConf(LocationConf const &other) : ABlockBase(other)
-{
-		*this = other;
-}
+LocationConf::LocationConf(LocationConf const &other) : ABlockBase(other) { *this = other; }
 
 LocationConf &LocationConf::operator=(LocationConf const &other)
 {
@@ -62,24 +59,19 @@ void LocationConf::setKey(std::string const value)
 size_t LocationConf::fillAutoIndex(std::vector<std::string> &buffer, size_t i)
 {
 		if (i >= buffer.size() || buffer[i].empty())
-				throw std::invalid_argument(
-					" Parsing error, miss 'autoindex' argument\n");
+				throw std::invalid_argument(" Parsing error, miss 'autoindex' argument\n");
 		if (buffer[i] != "on" && buffer[i] != "off")
-				throw std::invalid_argument(
-					" Parsing error, 'autoindex' allow only"
-					" 'on' or 'off' arguments\n");
+				throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
+											" 'on' or 'off' arguments\n");
 		if (i + 1 >= buffer.size())
-				throw std::invalid_argument(
-					" Parsing error, miss semicolon after"
-					" 'autoindex' argument\n");
+				throw std::invalid_argument(" Parsing error, miss semicolon after"
+											" 'autoindex' argument\n");
 		if (i + 1 < buffer.size() && buffer[i + 1] != ";")
-				throw std::invalid_argument(
-					" Parsing error, 'autoindex' allow only"
-					" one argument\n");
+				throw std::invalid_argument(" Parsing error, 'autoindex' allow only"
+											" one argument\n");
 		if (checkFlag("autoindex"))
-				throw std::invalid_argument(
-					" Parsing error, only one 'autoindex'"
-					" directive allowed by location block\n");
+				throw std::invalid_argument(" Parsing error, only one 'autoindex'"
+											" directive allowed by location block\n");
 		if (buffer[i] == "on")
 				_autoindex = true;
 		else

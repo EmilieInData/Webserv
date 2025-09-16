@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 18:29:56 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 19:38:00 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,17 @@
 #include <time.h>
 #include <unistd.h>
 
-ClientConnection::ClientConnection(int fd, const struct sockaddr_in &addr,
-								   socklen_t len,
-								   const std::pair<int, std::string> &inc,
-								   ServerManager &sm)
-	: clientFd(fd), clientAddr(addr), clientLen(len), req(inc, sm), resp(NULL),
-	  incoming(inc), requestComplete(false)
+ClientConnection::ClientConnection(int fd, const struct sockaddr_in &addr, socklen_t len,
+								   const std::pair<int, std::string> &inc, ServerManager &sm)
+	: clientFd(fd), clientAddr(addr), clientLen(len), req(inc, sm), resp(NULL), incoming(inc),
+	  requestComplete(false)
 {
 		time(&lastActivityTime);
 }
 
 ClientConnection::~ClientConnection() { delete resp; }
 
-ServerManager::ServerManager(ParsingConf &parsData)
-	: _running(false), _reqCount(0), _rspCount(0)
+ServerManager::ServerManager(ParsingConf &parsData) : _running(false), _reqCount(0), _rspCount(0)
 {
 		_serverData = parsData.servers;
 }
@@ -58,8 +55,7 @@ void ServerManager::servSetup()
 		graTopLine();
 		graTime("Listening Sockets Setup");
 		graEmptyLine();
-		for (std::set<std::pair<int, std::string>>::iterator it =
-				 _uniqueListens.begin();
+		for (std::set<std::pair<int, std::string> >::iterator it = _uniqueListens.begin();
 			 it != _uniqueListens.end(); ++it)
 				servListen(*it);
 		graBottomLine();
@@ -74,8 +70,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 				graError("Socket creation error");
 
 		int opt = 1;
-		if (setsockopt(newsocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) <
-			0)
+		if (setsockopt(newsocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 				graError("setsockopt failed");
 
 		if (fcntl(newsocket, F_SETFL, O_NONBLOCK) < 0)
@@ -96,8 +91,7 @@ void ServerManager::servListen(std::pair<int, std::string> _listens)
 
 		if (listen(newsocket, 128) < 0)
 		{
-				graError("Listen error for " + _listens.second + ":" +
-						 intToString(_listens.first));
+				graError("Listen error for " + _listens.second + ":" + intToString(_listens.first));
 				close(newsocket);
 				return;
 		}
@@ -134,8 +128,7 @@ void ServerManager::servRun()
 
 		while (_running)
 		{
-				_polls.erase(std::remove_if(_polls.begin(), _polls.end(),
-											PollFdIsInvalid()),
+				_polls.erase(std::remove_if(_polls.begin(), _polls.end(), PollFdIsInvalid()),
 							 _polls.end()); // HERE 6
 
 				int check = poll(_polls.data(), _polls.size(), 1000); // HERE 1
@@ -184,8 +177,7 @@ void ServerManager::handleNewConnection(int listeningSocket)
 {
 		struct sockaddr_in clientAddr;
 		socklen_t clientLen = sizeof(clientAddr);
-		int clientFd =
-			accept(listeningSocket, (struct sockaddr *)&clientAddr, &clientLen);
+		int clientFd = accept(listeningSocket, (struct sockaddr *)&clientAddr, &clientLen);
 
 		if (clientFd < 0)
 		{
@@ -202,8 +194,7 @@ void ServerManager::handleNewConnection(int listeningSocket)
 
 		_reqCount++;
 		std::pair<int, std::string> incoming = getSocketData(listeningSocket);
-		_clients[clientFd] = new ClientConnection(clientFd, clientAddr,
-												  clientLen, incoming, *this);
+		_clients[clientFd] = new ClientConnection(clientFd, clientAddr, clientLen, incoming, *this);
 
 		struct pollfd pfd;
 		pfd.fd = clientFd;
@@ -256,21 +247,17 @@ void ServerManager::handleRead(int clientFd)
 						}
 						conn->resp = new Response(conn->req);
 						if (conn->req.getStatusCode() < 400)
-								conn->resp->setContent(
-									conn->req.getFullPath(),
-									conn->req.getHttpMethod());
-						if (conn->req.getFullPath().second ==
-							"/cgi-bin/login.py")
+								conn->resp->setContent(conn->req.getFullPath(),
+													   conn->req.getHttpMethod());
+						if (conn->req.getFullPath().second == "/cgi-bin/login.py")
 						{
-								std::string username = getQueryValue(
-									conn->req.getQuery(), "username");
+								std::string username =
+									getQueryValue(conn->req.getQuery(), "username");
 								if (!username.empty())
 								{
-										std::string sessionId =
-											createSession(username);
-										conn->resp->setCookie(
-											"session_id=" + sessionId +
-											"; HttpOnly; Max-Age=3600; Path=/");
+										std::string sessionId = createSession(username);
+										conn->resp->setCookie("session_id=" + sessionId +
+															  "; HttpOnly; Max-Age=3600; Path=/");
 								}
 						}
 						conn->resp->setClientFd(clientFd);
@@ -284,10 +271,12 @@ void ServerManager::handleRead(int clientFd)
 								}
 						}
 				}
-		} else if (bytes == 0)
+		}
+		else if (bytes == 0)
 		{
 				closeConnection(clientFd);
-		} else // HERE 4
+		}
+		else // HERE 4
 		{
 				printBoxError("Recv error");
 				closeConnection(clientFd); // HERE 3
@@ -301,8 +290,7 @@ void ServerManager::handleWrite(int clientFd)
 				return;
 
 		const std::string &response = conn->resp->getResponse();
-		ssize_t bytes_sent =
-			send(clientFd, response.c_str(), response.length(), 0); // HERE 2
+		ssize_t bytes_sent = send(clientFd, response.c_str(), response.length(), 0); // HERE 2
 
 		if (bytes_sent >= 0)
 		{
@@ -311,7 +299,8 @@ void ServerManager::handleWrite(int clientFd)
 				// conn->req.getFullPath().first +
 				// conn->req.getFullPath().second); // PRINT response
 				closeConnection(clientFd);
-		} else
+		}
+		else
 		{
 				printBoxError("Send error");
 				closeConnection(clientFd); // HERE 3
@@ -328,8 +317,7 @@ void ServerManager::closeConnection(int clientFd) // HERE 3
 				_clients.erase(clientFd);
 		}
 
-		for (std::vector<struct pollfd>::iterator it = _polls.begin();
-			 it != _polls.end(); ++it)
+		for (std::vector<struct pollfd>::iterator it = _polls.begin(); it != _polls.end(); ++it)
 		{
 				if (it->fd == clientFd)
 				{
@@ -359,16 +347,17 @@ void ServerManager::checkErrors()
 				int state = conn->req.getParsingState();
 				bool error = false;
 
-				if (state >= SKIP && state <= REQ_LINE &&
-					timeDiff > REQ_LINE_TIMEOUT)
+				if (state >= SKIP && state <= REQ_LINE && timeDiff > REQ_LINE_TIMEOUT)
 				{
-						conn->req.setStatusCode(E_408); // TODO check here
+						conn->req.setStatusCode(E_408); // FABIO check here
 						error = true;
-				} else if (state == HEADERS && timeDiff > CLIENT_HEADER_TIMEOUT)
+				}
+				else if (state == HEADERS && timeDiff > CLIENT_HEADER_TIMEOUT)
 				{
 						conn->req.setStatusCode(E_408);
 						error = true;
-				} else if (state == BODY && timeDiff > CLIENT_BODY_TIMEOUT)
+				}
+				else if (state == BODY && timeDiff > CLIENT_BODY_TIMEOUT)
 				{
 						conn->req.setStatusCode(E_408);
 						error = true;
@@ -405,8 +394,7 @@ std::pair<int, std::string> ServerManager::getSocketData(int socketFd)
 				{
 						struct sockaddr_in socketIn = _servAddr[i];
 						char ipStr[INET_ADDRSTRLEN];
-						inet_ntop(AF_INET, &socketIn.sin_addr, ipStr,
-								  INET_ADDRSTRLEN);
+						inet_ntop(AF_INET, &socketIn.sin_addr, ipStr, INET_ADDRSTRLEN);
 						int portIn = ntohs(socketIn.sin_port);
 						return std::make_pair(portIn, ipStr);
 				}
@@ -424,8 +412,7 @@ void ServerManager::servQuit()
 void ServerManager::servInput()
 {
 		char buffer[256];
-		ssize_t charsRead =
-			read(STDIN_FILENO, buffer, sizeof(buffer) - 1); // HERE 2
+		ssize_t charsRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1); // HERE 2
 		if (charsRead > 0)
 		{
 				buffer[charsRead] = '\0';
@@ -438,14 +425,12 @@ void ServerManager::servInput()
 						printServersStatus(*this);
 				else
 						printBoxError("Command unavailable - [q/s]");
-		} else
+		}
+		else
 				return;
 }
 
-std::vector<ServerData> ServerManager::getServersList() const
-{
-		return _serverData;
-}
+std::vector<ServerData> ServerManager::getServersList() const { return _serverData; }
 
 Script &ServerManager::getScript() { return _script; }
 
@@ -453,10 +438,7 @@ int ServerManager::getReqCount() const { return _reqCount; }
 
 int ServerManager::getRspCount() const { return _rspCount; }
 
-std::set<std::pair<int, std::string>> ServerManager::getUniqueListens()
-{
-		return _uniqueListens;
-}
+std::set<std::pair<int, std::string> > ServerManager::getUniqueListens() { return _uniqueListens; }
 
 std::string ServerManager::createSession(const std::string &username)
 {
