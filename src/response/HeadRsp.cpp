@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HeadRsp.cpp                                         :+:      :+:    :+:   */
+/*   HeadRsp.cpp                                         :+:      :+:    :+: */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -15,131 +15,137 @@
 
 HeadRsp::HeadRsp(Response &response) : _response(&response)
 {
-	setContentType();
-	setProtocol();
-	setRspStatusCode();
-	setContentLength();
-	setConnectionType();
-	setCacheControl();
-	setCookieString();
-	buildHeader();
+		setContentType();
+		setProtocol();
+		setRspStatusCode();
+		setContentLength();
+		setConnectionType();
+		setCacheControl();
+		setCookieString();
+		buildHeader();
 }
 
 HeadRsp::~HeadRsp() {};
 
 void HeadRsp::setContentType()
 {
-	_contentType = "Content-Type: " + _response->getType() + HEADNL;
+		_contentType = "Content-Type: " + _response->getType() + HEADNL;
 }
 
 void HeadRsp::setCookieString()
 {
-	std::string cookie = _response->getCookie();
-	if (!cookie.empty())
-		_cookieString = "Set-Cookie:" + cookie + std::string(HEADNL);
-	else
-		_cookieString = "";
+		std::string cookie = _response->getCookie();
+		if (!cookie.empty())
+				_cookieString = "Set-Cookie:" + cookie + std::string(HEADNL);
+		else
+				_cookieString = "";
 }
 
 void HeadRsp::setProtocol()
 {
-	/* TODO needed a way to extract
-	protocol from request
-	for now this is left as standard */
-	_protocol = "HTTP/1.1";
+		/* TODO needed a way to extract
+		protocol from request
+		for now this is left as standard */
+		_protocol = "HTTP/1.1";
 }
 
 void HeadRsp::setRspStatusCode()
 {
-	// const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
+		// const std::map<std::string, std::string> &cgiHeaders =
+		// _response->getCgiHeaders();
 
-	// if (!cgiHeaders.empty())
-	// {
-	// 	std::map<std::string, std::string>::const_iterator it = cgiHeaders.find("Status");
-	// 	if (it != cgiHeaders.end())
-	// 	{
-	// 		_statusCode = it->second;
-	// 		return;
-	// 	}
-	// }
+		// if (!cgiHeaders.empty())
+		// {
+		// 	std::map<std::string, std::string>::const_iterator it =
+		// cgiHeaders.find("Status"); 	if (it != cgiHeaders.end())
+		// 	{
+		// 		_statusCode = it->second;
+		// 		return;
+		// 	}
+		// }
 
-	int				  code = _response->getStatusCode();
-	std::stringstream ss;
-	ss << code;
+		int code = _response->getStatusCode();
+		std::stringstream ss;
+		ss << code;
 
-	const std::map<int, std::string>		  &statusCodeMap = getStatusCodeMap();
-	std::map<int, std::string>::const_iterator it			 = statusCodeMap.find(code);
-	if (it != statusCodeMap.end())
-	{
-		_statusCode = ss.str() + " " + it->second;
-	}
-	else
-	{
-		_statusCode = ss.str() + " Unknown Status";
-	}
+		const std::map<int, std::string> &statusCodeMap = getStatusCodeMap();
+		std::map<int, std::string>::const_iterator it =
+			statusCodeMap.find(code);
+		if (it != statusCodeMap.end())
+		{
+				_statusCode = ss.str() + " " + it->second;
+		} else
+		{
+				_statusCode = ss.str() + " Unknown Status";
+		}
 
-	// std::cout << RED << __func__ << " > " << _statusCode << RESET << std::endl; // DBG
+		// std::cout << RED << __func__ << " > " << _statusCode << RESET <<
+		// std::endl; // DBG
 }
 
 void HeadRsp::setConnectionType()
 {
-	/* TODO extract connection type from
-	request */
-	_connectionType = "Connection: close" + std::string(HEADNL);
+		/* TODO extract connection type from
+		request */
+		_connectionType = "Connection: close" + std::string(HEADNL);
 }
 
 void HeadRsp::setContentLength()
 {
-	_contentLength = "Content-Length: " + _response->getLength() + HEADNL;
+		_contentLength = "Content-Length: " + _response->getLength() + HEADNL;
 }
 
 void HeadRsp::setCacheControl()
 {
-	std::string cache;
+		std::string cache;
 
-	if (_contentType == "text/html")
-		cache = "public, max-age=3600";
-	else if (_contentType == "image/jpg" || _contentType == "image/png" || _contentType == "image/gif" || _contentType == "text/javascript")
-		cache = "public, max-age=300, must-revalidate";
-	else
-		cache = "no-cache, no-store, must-revalidate";
+		if (_contentType == "text/html")
+				cache = "public, max-age=3600";
+		else if (_contentType == "image/jpg" || _contentType == "image/png" ||
+				 _contentType == "image/gif" ||
+				 _contentType == "text/javascript")
+				cache = "public, max-age=300, must-revalidate";
+		else
+				cache = "no-cache, no-store, must-revalidate";
 
-	_cacheControl = "Cache-Control: " + cache + HEADNL;
+		_cacheControl = "Cache-Control: " + cache + HEADNL;
 }
 
 void HeadRsp::buildHeader()
 {
-	_header = _protocol + " " + _statusCode + HEADNL;
-	_header += "Server: webserv/1.0" + std::string(HEADNL);
-	_header += "Date: " + getHttpDate() + std::string(HEADNL);
-	_header += _connectionType;
+		_header = _protocol + " " + _statusCode + HEADNL;
+		_header += "Server: webserv/1.0" + std::string(HEADNL);
+		_header += "Date: " + getHttpDate() + std::string(HEADNL);
+		_header += _connectionType;
 
-	const std::map<std::string, std::string> &cgiHeaders = _response->getCgiHeaders();
+		const std::map<std::string, std::string> &cgiHeaders =
+			_response->getCgiHeaders();
 
-	if (!cgiHeaders.empty())
-	{
-		for (std::map<std::string, std::string>::const_iterator it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it)
+		if (!cgiHeaders.empty())
 		{
-			if (it->first != "Status" && it->first != "Content-Type")
-			{
-				_header += it->first + ": " + it->second + HEADNL;
-			}
+				for (std::map<std::string, std::string>::const_iterator it =
+						 cgiHeaders.begin();
+					 it != cgiHeaders.end(); ++it)
+				{
+						if (it->first != "Status" &&
+							it->first != "Content-Type")
+						{
+								_header +=
+									it->first + ": " + it->second + HEADNL;
+						}
+				}
+				_header += _contentType;
+		} else
+		{
+				_header += _contentType;
+				_header += _cacheControl;
 		}
-		_header += _contentType;
-	}
-	else
-	{
-		_header += _contentType;
-		_header += _cacheControl;
-	}
-	if (!_response->getCookie().empty())
+		if (!_response->getCookie().empty())
 
-		_header += _contentLength;
-	_header += HEADNL;
-	// std::cout << RED << "[BUILT HEADER]\n" << _header << RESET << std::endl; // DBG
+				_header += _contentLength;
+		_header += HEADNL;
+		// std::cout << RED << "[BUILT HEADER]\n" << _header << RESET <<
+		// std::endl; // DBG
 }
 
-std::string HeadRsp::getHeader()
-{
-	return _header;
-}
+std::string HeadRsp::getHeader() { return _header; }

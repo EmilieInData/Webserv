@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 14:09:44 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 18:00:57 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:35:28 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,23 @@
 #define LINELENGTH 100
 #define PADDING 1
 
-#define WEBSERV_BANNER                                                   \
-		"\n"                                                             \
-		"              ,,,,,,\n"                                         \
-		"          o#'9MMHb':'-,o,\n"                                    \
-		"       .oH\":HH$' \"' ' -*R&o,\n"                               \
-		"      dMMM*\"\"'`'      .oM\"HM?.\n"                            \
-		"    ,MMM'          \"HLbd< ?&H\\\n"                             \
-		"   .:MH .\"          ` MM  MM&b\n"                              \
-		"  . \"*H    -        &MMMMMMMMMH:  le_webserv_fantastique\n"    \
-		"  .    dboo        MMMMMMMMMMMM.  42_bcn\n"                     \
-		"  .   dMMMMMMb      *MMMMMMMMMP.  cle-tron_esellier_fdi-cecc\n" \
-		"  .    MMMMMMMP        *MMMMMP .\n"                             \
-		"       `#MMMMM           MM6P ,\n"                              \
-		"   '    `MMMP\"           HM*`,\n"                              \
-		"    '    :MM             .- ,\n"                                \
-		"     '.   `#?..  .       ..'\n"                                 \
-		"        -.   .         .-\n"                                    \
+#define WEBSERV_BANNER                                                         \
+		"\n"                                                                   \
+		"              ,,,,,,\n"                                               \
+		"          o#'9MMHb':'-,o,\n"                                          \
+		"       .oH\":HH$' \"' ' -*R&o,\n"                                     \
+		"      dMMM*\"\"'`'      .oM\"HM?.\n"                                  \
+		"    ,MMM'          \"HLbd< ?&H\\\n"                                   \
+		"   .:MH .\"          ` MM  MM&b\n"                                    \
+		"  . \"*H    -        &MMMMMMMMMH:  le_webserv_fantastique\n"          \
+		"  .    dboo        MMMMMMMMMMMM.  42_bcn\n"                           \
+		"  .   dMMMMMMb      *MMMMMMMMMP.  cle-tron_esellier_fdi-cecc\n"       \
+		"  .    MMMMMMMP        *MMMMMP .\n"                                   \
+		"       `#MMMMM           MM6P ,\n"                                    \
+		"   '    `MMMP\"           HM*`,\n"                                    \
+		"    '    :MM             .- ,\n"                                      \
+		"     '.   `#?..  .       ..'\n"                                       \
+		"        -.   .         .-\n"                                          \
 		"          ''-.oo,oo.-''\n"
 
 #define PROJ_TITLE "le webserv fantastique - 42 bcn"
@@ -66,5 +66,3 @@ std::string graPad(std::string const &str);
 void graError(std::string const &error);
 
 #endif
-
-/* ═ ║ ╔ ╗ ╚ ╝ ╠ ╣ ╦ ╩ ╬ */

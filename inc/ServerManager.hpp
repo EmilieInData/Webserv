@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 18:09:50 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:43:24 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ class ServerManager;
 
 #define REQ_LINE_TIMEOUT 5
 
-struct ClientConnection {
+struct ClientConnection
+{
 		int clientFd;
 		struct sockaddr_in clientAddr;
 		socklen_t clientLen;
@@ -47,13 +48,14 @@ struct ClientConnection {
 		~ClientConnection();
 };
 
-class ServerManager {
+class ServerManager
+{
 	private:
 		bool _running;
 		int _reqCount;
 		int _rspCount;
 		std::vector<ServerData> _serverData;
-		std::set<std::pair<int, std::string> > _uniqueListens;
+		std::set<std::pair<int, std::string>> _uniqueListens;
 		std::vector<int> _socketFd;
 		std::vector<struct sockaddr_in> _servAddr;
 		int _inputFd;
@@ -74,7 +76,7 @@ class ServerManager {
 		Script &getScript();
 		int getReqCount() const;
 		int getRspCount() const;
-		std::set<std::pair<int, std::string> > getUniqueListens();
+		std::set<std::pair<int, std::string>> getUniqueListens();
 		CookieData *getSession(const std::string &sessionId);
 		std::string createSession(const std::string &username);
 		void servListen(std::pair<int, std::string> _listens);

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 13:30:53 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 18:10:06 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:23:14 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 #include <string>
 #include <vector>
 
-class Uri {
+class Uri
+{
 	private:
 		std::string uri;
 		std::string scheme;
@@ -28,11 +29,11 @@ class Uri {
 		Uri();
 
 	public:
-		Uri(std::string const& req_target, std::string const& host);
-		Uri(Uri const& src);
+		Uri(std::string const &req_target, std::string const &host);
+		Uri(Uri const &src);
 		~Uri();
 
-		Uri& operator=(Uri const& rhs);
+		Uri &operator=(Uri const &rhs);
 
 		std::string getUri() const;
 		std::string getScheme() const;

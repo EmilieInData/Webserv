@@ -40,17 +40,21 @@ class ServerManager;
 class Headers;
 class Script;
 
-struct MultiBody {
+struct MultiBody
+{
 		Headers bodyHeader;
 		std::string bodyContent;
 
 		MultiBody() {}
 
 		MultiBody(const Headers &header, const std::string &content)
-			: bodyHeader(header), bodyContent(content) {}
+			: bodyHeader(header), bodyContent(content)
+		{
+		}
 };
 
-class HttpRequest {
+class HttpRequest
+{
 	private:
 		std::vector<MultiBody> _bodies;
 		RequestLine *req_line;
@@ -77,7 +81,7 @@ class HttpRequest {
 		HttpRequest();
 
 		void checkHost(
-			std::map<std::string, std::vector<std::string> >::const_iterator it,
+			std::map<std::string, std::vector<std::string>>::const_iterator it,
 			ServerData &serv);
 		void finalHeadersParsingRoutine();
 		void setFullPath(ServerData const &serv);
@@ -116,8 +120,9 @@ class HttpRequest {
 		ServerManager &getServ() const;
 		std::pair<int, std::string> getAddrPort() const;
 		std::pair<std::string, std::string> getHost() const;
-		LocationConf findLocation(
-			std::string path, std::map<std::string, LocationConf> const &loc);
+		LocationConf
+		findLocation(std::string path,
+					 std::map<std::string, LocationConf> const &loc);
 		LocationConf getBlockLoc() const;
 		std::string getRawBody() const;
 		std::string &getInterpreterPath() const;

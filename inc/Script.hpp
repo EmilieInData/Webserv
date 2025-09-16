@@ -23,7 +23,8 @@
 
 class HttpRequest;
 
-class Script {
+class Script
+{
 	private:
 		int _statusCode;
 		std::string _outputBody;

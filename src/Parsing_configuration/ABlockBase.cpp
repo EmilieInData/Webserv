@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/16 18:11:13 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:36:30 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 #include "../../inc/Utils.hpp"
 
-ABlockBase::ABlockBase() {
+ABlockBase::ABlockBase()
+{
 		_root = "/www";
 		_index.push_back("index.html");
 		_bodySize = 1048576;
@@ -26,9 +27,11 @@ ABlockBase::ABlockBase() {
 
 ABlockBase::~ABlockBase() {}
 
-ABlockBase::ABlockBase(ABlockBase const& other) { *this = other; }
-ABlockBase& ABlockBase::operator=(ABlockBase const& other) {
-		if (this != &other) {
+ABlockBase::ABlockBase(ABlockBase const &other) { *this = other; }
+ABlockBase &ABlockBase::operator=(ABlockBase const &other)
+{
+		if (this != &other)
+		{
 				this->_root = other._root;
 				this->_index = other._index;
 				this->_bodySize = other._bodySize;
@@ -40,40 +43,48 @@ ABlockBase& ABlockBase::operator=(ABlockBase const& other) {
 		return *this;
 }
 
-std::vector<std::string> const& ABlockBase::getIndex() const { return _index; }
+std::vector<std::string> const &ABlockBase::getIndex() const { return _index; }
 
-unsigned int const& ABlockBase::getBodySize() const { return _bodySize; }
+unsigned int const &ABlockBase::getBodySize() const { return _bodySize; }
 
-std::vector<std::string> const& ABlockBase::getReturnDirective() const {
+std::vector<std::string> const &ABlockBase::getReturnDirective() const
+{
 		return _returnDirective;
 }
 
-std::map<int, std::string> const& ABlockBase::getErrorPage() const {
+std::map<int, std::string> const &ABlockBase::getErrorPage() const
+{
 		return _errorPage;
 }
 
-std::vector<std::string> const& ABlockBase::getAllowedMethods() const {
+std::vector<std::string> const &ABlockBase::getAllowedMethods() const
+{
 		return _allowedMethods;
 }
 
-std::map<std::string, std::string> const& ABlockBase::getCgiPass() const {
+std::map<std::string, std::string> const &ABlockBase::getCgiPass() const
+{
 		return _cgiPass;
 }
 
-bool ABlockBase::checkFlag(std::string const& value) {
-		for (size_t i = 0; i < _flag.size(); i++) {
-				if (_flag[i] == value) return true;
+bool ABlockBase::checkFlag(std::string const &value)
+{
+		for (size_t i = 0; i < _flag.size(); i++)
+		{
+				if (_flag[i] == value)
+						return true;
 		}
 		_flag.push_back(value);
 		return false;
 }
 
-size_t ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i) {
+size_t ABlockBase::fillRoot(std::vector<std::string> &buffer, size_t i)
+{
 		if (i >= buffer.size() || buffer[i].empty())
 				throw std::invalid_argument(
 					" Parsing error, miss 'root' argument\n");
 		if (buffer[i][0] !=
-			'/')  // FABIO paused it to use relative paths for testing
+			'/') // FABIO paused it to use relative paths for testing
 				throw std::invalid_argument(
 					" Parsing error, 'root' expects an absolute path\n");
 		if (i + 1 >= buffer.size())
@@ -81,9 +92,8 @@ size_t ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i) {
 					" Parsing error, miss semicolon after"
 					" 'root' argument\n");
 		if (i + 1 < buffer.size() && buffer[i + 1] != ";")
-				throw std::invalid_argument(
-					" Parsing error, 'root' allows only"
-					" one argument\n");
+				throw std::invalid_argument(" Parsing error, 'root' allows only"
+											" one argument\n");
 		if (checkFlag("root"))
 				throw std::invalid_argument(
 					" Parsing error, only one 'root'"
@@ -92,7 +102,8 @@ size_t ABlockBase::fillRoot(std::vector<std::string>& buffer, size_t i) {
 		return (i + 2);
 }
 
-size_t ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i) {
+size_t ABlockBase::fillIndex(std::vector<std::string> &buffer, size_t i)
+{
 		if (checkFlag("index"))
 				throw std::invalid_argument(
 					" Parsing error, only one 'index'"
@@ -100,14 +111,18 @@ size_t ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i) {
 		if (i >= buffer.size() || buffer[i].empty() || buffer[i] == ";")
 				throw std::invalid_argument(
 					" Parsing error, miss 'index' arguments\n");
-		if (!_index.empty()) _index.clear();
-		while (i < buffer.size()) {
-				if (buffer[i] == ";") break;
+		if (!_index.empty())
+				_index.clear();
+		while (i < buffer.size())
+		{
+				if (buffer[i] == ";")
+						break;
 				if (buffer[i] == "{" || buffer[i] == "}")
 						throw std::invalid_argument(
 							" Parsing error, miss semicolon after"
 							" 'index' directive\n");
-				for (size_t j = 0; j < _index.size(); j++) {
+				for (size_t j = 0; j < _index.size(); j++)
+				{
 						if (buffer[i] == _index[j])
 								throw std::invalid_argument(
 									" Parsing error, 'index' argument "
@@ -119,7 +134,8 @@ size_t ABlockBase::fillIndex(std::vector<std::string>& buffer, size_t i) {
 		return (i + 1);
 }
 
-size_t ABlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i) {
+size_t ABlockBase::fillBodySize(std::vector<std::string> &buffer, size_t i)
+{
 		if (checkFlag("bodySize"))
 				throw std::invalid_argument(
 					" Parsing error, only one 'client_max_body_size'"
@@ -140,8 +156,9 @@ size_t ABlockBase::fillBodySize(std::vector<std::string>& buffer, size_t i) {
 		return i + 2;
 }
 
-size_t ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer,
-									  size_t i) {
+size_t ABlockBase::fillAllowedMethods(std::vector<std::string> &buffer,
+									  size_t i)
+{
 		if (checkFlag("allowMethods"))
 				throw std::invalid_argument(
 					" Parsing error, only one 'allow_methods'"
@@ -151,10 +168,13 @@ size_t ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer,
 				throw std::invalid_argument(
 					" Parsing error, miss 'allow_methods' arguments\n");
 		_allowedMethods.clear();
-		for (; i < buffer.size(); i++) {
+		for (; i < buffer.size(); i++)
+		{
 				if (buffer[i] == "GET" || buffer[i] == "POST" ||
-					buffer[i] == "DELETE") {
-						for (size_t j = 0; j < _allowedMethods.size(); j++) {
+					buffer[i] == "DELETE")
+				{
+						for (size_t j = 0; j < _allowedMethods.size(); j++)
+						{
 								if (_allowedMethods[j] == buffer[i])
 										throw std::invalid_argument(
 											" Parsing error, 'allow_methods' "
@@ -171,27 +191,28 @@ size_t ABlockBase::fillAllowedMethods(std::vector<std::string>& buffer,
 		return i + 1;
 }
 
-size_t ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer,
-										size_t i) {
+size_t ABlockBase::fillReturnDirectives(std::vector<std::string> &buffer,
+										size_t i)
+{
 		int num;
 
 		if (checkFlag("return"))
-				throw std::invalid_argument(
-					" Parsing error, only one 'return'"
-					" directive allowed by blocks\n");
+				throw std::invalid_argument(" Parsing error, only one 'return'"
+											" directive allowed by blocks\n");
 		if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";" ||
 			buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty() ||
 			buffer[i + 1] == "{" || buffer[i + 1] == "}")
 				throw std::invalid_argument(
 					" Parsing error, miss 'return' directive arguments\n");
 		_returnDirective.clear();
-		if (strToInt(buffer[i])) num = strToInt(buffer[i]);
+		if (strToInt(buffer[i]))
+				num = strToInt(buffer[i]);
 		if (!strToInt(buffer[i]) || num < 300 || num > 310)
-				throw std::invalid_argument(
-					" Parsing error, 'return' directive"
-					" argument is not correct\n");
+				throw std::invalid_argument(" Parsing error, 'return' directive"
+											" argument is not correct\n");
 		_returnDirective.push_back(buffer[i]);
-		if (buffer[i + 1] != ";") {
+		if (buffer[i + 1] != ";")
+		{
 				_returnDirective.push_back(buffer[i + 1]);
 				if (i + 2 >= buffer.size() || buffer[i + 2].empty() ||
 					buffer[i + 2] != ";")
@@ -203,19 +224,24 @@ size_t ABlockBase::fillReturnDirectives(std::vector<std::string>& buffer,
 		return i + 2;
 }
 
-size_t ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i) {
+size_t ABlockBase::fillErrorPage(std::vector<std::string> &buffer, size_t i)
+{
 		std::vector<int> num;
 		std::string path;
 
-		if (!checkFlag("errorPage")) _errorPage.clear();
+		if (!checkFlag("errorPage"))
+				_errorPage.clear();
 		if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";" ||
 			buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty() ||
 			buffer[i + 1] == "{" || buffer[i + 1] == "}" || buffer[i] == ";")
 				throw std::invalid_argument(
 					" Parsing error, miss 'error_page' arguments\n");
-		for (; i < buffer.size(); i++) {
-				if (isErrorPage(buffer[i])) {
-						for (size_t j = 0; j < num.size(); j++) {
+		for (; i < buffer.size(); i++)
+		{
+				if (isErrorPage(buffer[i]))
+				{
+						for (size_t j = 0; j < num.size(); j++)
+						{
 								if (num[j] == strToInt(buffer[i]))
 										throw std::invalid_argument(
 											" Parsing error, 'error_page' "
@@ -224,7 +250,8 @@ size_t ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i) {
 						num.push_back(strToInt(buffer[i]));
 				} else if (buffer[i] == ";")
 						break;
-				else if (isHtmlAddress(buffer[i])) {
+				else if (isHtmlAddress(buffer[i]))
+				{
 						path = buffer[i];
 						if (i + 1 >= buffer.size() || buffer[i + 1] != ";")
 								throw std::invalid_argument(
@@ -240,13 +267,15 @@ size_t ABlockBase::fillErrorPage(std::vector<std::string>& buffer, size_t i) {
 		if (path.empty())
 				throw std::invalid_argument(
 					" Parsing error, 'error_page' html adress is missed\n");
-		for (size_t j = 0; j < num.size(); j++) _errorPage[num[j]] = path;
-		// checkErrorPage(_errorPage);
+		for (size_t j = 0; j < num.size(); j++)
+				_errorPage[num[j]] = path;
 		return i + 1;
 }
 
-size_t ABlockBase::fillCgiPass(std::vector<std::string>& buffer, size_t i) {
-		if (!checkFlag("cgiPass")) _cgiPass.clear();
+size_t ABlockBase::fillCgiPass(std::vector<std::string> &buffer, size_t i)
+{
+		if (!checkFlag("cgiPass"))
+				_cgiPass.clear();
 		if (i + 1 >= buffer.size() || buffer[i].empty() || buffer[i] == ";" ||
 			buffer[i] == "{" || buffer[i] == "}" || buffer[i + 1].empty() ||
 			buffer[i + 1] == "{" || buffer[i + 1] == "}" || buffer[i] == ";")

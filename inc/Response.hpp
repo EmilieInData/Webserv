@@ -19,7 +19,8 @@
 
 class HttpRequest;
 
-class Response {
+class Response
+{
 	private:
 		const HttpRequest *_request;
 		int _clientFd;
