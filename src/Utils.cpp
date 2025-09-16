@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:49:32 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/15 13:53:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 12:41:58 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,7 +379,7 @@ void replaceContent(std::string &htmlContent, const std::string &target, const s
 	}
 }
 
-std::map<int, std::string> getStatusCodeMap()
+std::map<int, std::string> getStatusCodeMap() // HERE 7
 {
 	std::map<int, std::string> m;
 	m[100] = "Continue";

@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:53 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 17:33:42 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 14:51:02 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,12 +129,12 @@ void ServerManager::servRun()
 
 	while (_running)
 	{
-		_polls.erase(std::remove_if(_polls.begin(), _polls.end(), PollFdIsInvalid()), _polls.end());
+		_polls.erase(std::remove_if(_polls.begin(), _polls.end(), PollFdIsInvalid()), _polls.end()); // HERE 6
 
-		int check = poll(_polls.data(), _polls.size(), 1000);
+		int check = poll(_polls.data(), _polls.size(), 1000); // HERE 1
 		if (check < 0)
 		{
-			if (errno == EINTR)
+			if (errno == EINTR) // HERE 5
 				continue;
 			printBoxError("Poll error");
 			break;
@@ -232,7 +232,7 @@ void ServerManager::handleRead(int clientFd)
 {
 	// std::cout << RED << __func__ << RESET << std::endl; // DBG
 	char	buffer[4096];
-	ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+	ssize_t bytes = recv(clientFd, buffer, sizeof(buffer), 0); // HERE 2
 
 	ClientConnection *conn = _clients[clientFd];
 
@@ -276,10 +276,10 @@ void ServerManager::handleRead(int clientFd)
 	{
 		closeConnection(clientFd);
 	}
-	else
+	else // HERE 4
 	{
 		printBoxError("Recv error");
-		closeConnection(clientFd);
+		closeConnection(clientFd); // HERE 3
 	}
 }
 
@@ -291,7 +291,7 @@ void ServerManager::handleWrite(int clientFd)
 		return;
 
 	const std::string &response	  = conn->resp->getResponse();
-	ssize_t			   bytes_sent = send(clientFd, response.c_str(), response.length(), 0);
+	ssize_t			   bytes_sent = send(clientFd, response.c_str(), response.length(), 0); // HERE 2
 
 	if (bytes_sent >= 0)
 	{
@@ -302,11 +302,11 @@ void ServerManager::handleWrite(int clientFd)
 	else
 	{
 		printBoxError("Send error");
-		closeConnection(clientFd);
+		closeConnection(clientFd); // HERE 3
 	}
 }
 
-void ServerManager::closeConnection(int clientFd)
+void ServerManager::closeConnection(int clientFd) // HERE 3
 {
 	close(clientFd);
 
@@ -347,7 +347,7 @@ void ServerManager::checkErrors()
 
 		if (state >= SKIP && state <= REQ_LINE && timeDiff > REQ_LINE_TIMEOUT)
 		{
-			conn->req.setStatusCode(E_400);
+			conn->req.setStatusCode(E_408); // TODO check here
 			error = true;
 		}
 		else if (state == HEADERS && timeDiff > CLIENT_HEADER_TIMEOUT)
@@ -410,7 +410,7 @@ void ServerManager::servQuit()
 void ServerManager::servInput()
 {
 	char	buffer[256];
-	ssize_t charsRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+	ssize_t charsRead = read(STDIN_FILENO, buffer, sizeof(buffer) - 1); // HERE 2
 	if (charsRead > 0)
 	{
 		buffer[charsRead] = '\0';

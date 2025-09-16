@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/15 16:38:11 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 15:41:04 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,13 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 			this->code = server.getScript().getStatusCode();
 			// std::cout << RED << __func__ << " [status code check] " << this->code << RESET << std::endl; // DBG
 		}
-		else if (getHttpMethod() == "POST")
-			fileUpload();
+		else if (getHttpMethod() == "POST") // FABIO body limit
+		{
+			if (blockLoc.getBodySize() >= body.size())
+				fileUpload();
+			else
+				this->setStatusCode(E_413);
+		}
 	}
 	// FABIO end of request parsing here
 
@@ -253,7 +258,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 
 	setFullPath(serv);
 
-	this->max_body_size = serv.getBodySize();
+	this->max_body_size = blockLoc.getBodySize(); // FABIO changed this
 	//	std::cout << "FULLPATH: " << this->_fullPath.first << " " << this->_fullPath.second << std::endl;
 	//	std::cout << "PATH: " << this->uri->getPath() << std::endl;
 	setLocation(serv.getLocations(), this->_fullPath.second);
@@ -262,7 +267,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 	// 							 this->req_line->getMethod());
 
 	blockLoc = findLocation(this->_fullPath.second, serv.getLocations());
-	std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;
+	// std::cout << "BLOCK LOCK FINAL HEADERS: " << blockLoc.getErrorPage().begin()->second << std::endl;
 	HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
 
 	if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
@@ -629,6 +634,8 @@ LocationConf HttpRequest::findLocation(std::string								  path,
 	std::map<std::string, LocationConf>::const_iterator it;
 	std::map<std::string, LocationConf>::const_iterator tmp = loc.end();
 
+	if (path[path.size() -1] != '/') // HERE
+		path = path + '/';
 	for (it = loc.begin(); it != loc.end(); it++)
 	{
 		if (path.find(it->first) == 0)

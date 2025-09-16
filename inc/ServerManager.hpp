@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:30:50 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 16:41:47 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 14:48:18 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 class ServerManager;
 
-#define REQ_LINE_TIMEOUT 0.5
+#define REQ_LINE_TIMEOUT 5
 
 struct ClientConnection
 {

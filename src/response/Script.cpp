@@ -26,8 +26,7 @@ bool Script::setScriptType(std::string const &cgiPath)
 		return false;
 	}
 	_scriptType = cgiPath.substr(lastDot);
-	// std::cout << RED << "script type = " + _scriptType << RESET << std::endl; // DBG
-	if (_scriptType != ".py")												  // && _scriptType != ".php") // HERE
+	if (_scriptType != ".py" && _scriptType != ".php")
 	{
 		printBoxError("Invalid script type");
 		_statusCode = 501;
@@ -46,7 +45,6 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 	_scriptOutput = "";
 
 	std::string query = request.getQuery();
-	// std::cout << RED << std::string(__func__) + " " + query << RESET << std::endl; // DBG
 	_cgiPath = request.getFullPath().first + request.getFullPath().second;
 	if (!setScriptType(_cgiPath))
 		return;
@@ -88,7 +86,7 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 		{
 			scriptDir  = scriptPath.substr(0, lastSlash);
 			scriptFile = scriptPath.substr(lastSlash + 1);
-			if (chdir(scriptDir.c_str()) != 0)
+			if (chdir(scriptDir.c_str()) != 0) // HERE 9
 			{
 				printBoxError("chdir failed");
 				exit(1);
@@ -122,19 +120,22 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 			const std::string &requestBody = request.getRawBody();
 			if (!requestBody.empty())
 			{
-				if (write(pipeIn[PIPE_WRITE], requestBody.c_str(), requestBody.length()) == -1)
+				ssize_t written = write(pipeIn[PIPE_WRITE], requestBody.c_str(), requestBody.length()); // HERE 4
+				if (written == -1)
 					printBoxError("Error parent writing POST body");
+				else if (written < static_cast<ssize_t>(requestBody.length()))
+					printBoxError("Partial write occurred");
 			}
 		}
 
 		close(pipeIn[PIPE_WRITE]);
 
-		pid_t timer_pid		  = fork();
+		pid_t timer_pid = fork();
 		if (timer_pid < 0)
 		{
 			printBoxError("Fork error for timer");
-			kill(child, SIGKILL);	 // Kill the script process
-			waitpid(child, NULL, 0); // Clean up
+			kill(child, SIGKILL);
+			waitpid(child, NULL, 0);
 			request.setStatusCode(E_500);
 			deleteArray(envServ);
 			return;
@@ -153,22 +154,23 @@ void Script::runScript(HttpRequest &request, std::string const &interpreterPath,
 			kill(child, SIGKILL);
 			waitpid(child, &status, 0);
 			printBoxError("Script timeout");
-			std::cerr << "CGI script " << _cgiPath << " timed out after " << SCRIPT_TIMEOUT << " seconds." << std::endl;
 			_statusCode = 504;
 		}
 		else
 		{
-			// Script finished or was killed by another signal
-			kill(timer_pid, SIGKILL);	 // Kill the timer process
-			waitpid(timer_pid, NULL, 0); // Clean up the timer process
+
+			kill(timer_pid, SIGKILL);
+			waitpid(timer_pid, NULL, 0);
 
 			char	buffer[4096];
 			ssize_t bytesRead;
-			while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0)
+			while ((bytesRead = read(pipeOut[PIPE_READ], buffer, sizeof(buffer) - 1)) > 0) // HERE 4
 			{
 				buffer[bytesRead] = '\0';
 				_scriptOutput += buffer;
 			}
+			if (bytesRead == -1)
+				printBoxError("Read error occurred");
 			close(pipeOut[PIPE_READ]);
 
 			if (exited_pid == child)
@@ -334,7 +336,6 @@ void Script::parseOutput()
 
 			_outputHeaders[key] = value;
 
-			// Handle Status header from CGI
 			if (key == "STATUS")
 			{
 				std::istringstream statusStream(value);
@@ -360,6 +361,5 @@ std::map<std::string, std::string> Script::getOutputHeaders() const
 
 int Script::getStatusCode() const
 {
-	// std::cout << RED << __func__ << " [status code check] " << _statusCode << RESET << std::endl; // DBG
 	return _statusCode;
 }

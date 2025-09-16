@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 17:32:29 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 15:16:15 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 	_method		= method;
 	if (_statusCode >= 400)
 		return;
-	std::cout << PINK << "FullPath.first(set content): " << fullPath.first << "\n"
-			  << "FullPath.second: " << fullPath.second << RESET << std::endl; // TO BORROW
 	if (!_blockLoc.getReturnDirective().empty())
 		_location = fullPath.first + _blockLoc.getReturnDirective()[1];
 	else if (fullPath.second == "/" || fullPath.second.empty())
@@ -127,8 +125,6 @@ std::string Response::doAutoindex(std::string uri, DIR *dir)
 		if (uri[uri.size() - 1] != '/')
 			html << "/";
 		html << entry->d_name << "\">" << entry->d_name << "</a></li>\n";
-		// std::cout << BLUE << "URI: " << uri << "D_name: " << entry->d_name << RESET
-		// 		  << std::endl; // TO BORROW
 	}
 	html << "    </ul>\n</div>\n</body>\n</html>\n";
 	closedir(dir);
@@ -190,7 +186,7 @@ void Response::doHtmlAutoindex(std::string &uri, std::ostringstream &html)
 	html << "</head>\n<body>\n";
 	html << "    <div class=\"purple-text\">Index of " << uri << "</div>\n";
 	html << "    <div class=\"image-container\">\n";
-	html << "        <img src=\"/static/cat.png\" alt=\"Autoindex banner\">\n";
+	html << "        <img src=\"/static/02_cat.png\" alt=\"Autoindex banner\">\n";
 	html << "    </div>\n";
 	html << "    <div class=\"list-container\">\n";
 	html << "    <ul>\n";
@@ -245,7 +241,6 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 		case 307:
 		case 308:
 		{
-			std::cout << "HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n"; // TO BORROW
 			std::map<int, std::string> status = getStatusCodeMap(); 
 			std::stringstream str;
 			str << _statusCode;
@@ -275,7 +270,7 @@ void	Response::errorRoutine(std::string & content, std::pair<int, std::string> i
 				if (errorPageIt != errorPages2.end())
 					_location = serv.getRoot() + errorPageIt->second;
 				else
-					_location = serv.getRoot() + "/error_pages/error.html"; 
+					_location = serv.getRoot() + "/error_pages/error.html"; // HERE 8
 		
 			}
 			std::cout << "LOCATIONNNNNNN: " << _location << std::endl;
@@ -324,7 +319,7 @@ void Response::sendResponse()
 	while (totalSent < totalSize && attempts < maxAttempts)
 	{
 
-		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0);
+		ssize_t sent = send(_clientFd, data + totalSent, totalSize - totalSent, 0); 
 		if (sent > 0)
 			totalSent += sent;
 		else if (sent == 0)
@@ -332,7 +327,7 @@ void Response::sendResponse()
 			printBoxError("Connection closed by client during send");
 			break;
 		}
-		else
+		else // HERE 4
 		{
 			usleep(1000);
 			attempts++;

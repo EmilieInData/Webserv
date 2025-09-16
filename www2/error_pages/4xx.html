@@ -3,7 +3,7 @@
 <head>
     <link rel="icon" href="data:,">
     <meta charset="UTF-8">
-    <title>Baubau</title>
+    <title>Error {{STATUS_CODE}}</title>
     <style>
         body {
             background-color: white;
@@ -17,8 +17,8 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        .pink-text {
-            color: #4d4ae3;
+        .green-text {
+            color: rgb(146, 255, 3);
             font-size: 48px;
             text-align: center;
             margin-bottom: 20px;
@@ -34,9 +34,9 @@
     </style>
 </head>
 <body>
-    <div class="pink-text">Hello</div>
+    <div class="green-text">Error {{STATUS_CODE}} // {{REASON_PHRASE}} [400s]</div>
     <div class="image-container">
-        <img src="../static/shiba.jpg" alt="Miao">
+        <img src="/error_pages/images/05_dog.png" alt=":(">
     </div>
 </body>
 </html>
