@@ -34,8 +34,7 @@ class Headers
 		getHeader(std::string const &name) const;
 		std::map<std::string, std::vector<std::string> >::const_iterator getHeaderBegin() const;
 		std::map<std::string, std::vector<std::string> >::const_iterator getHeaderEnd() const;
-		std::vector<std::string>
-		getHeaderValue(std::string const &name) const;
+		std::vector<std::string> getHeaderValue(std::string const &name) const;
 		std::vector<std::string> &getHeaderValue(std::string const &name);
 		std::string getHeaderOnlyOneValue(std::string const &name, int index) const;
 		void printHeader() const;

@@ -38,10 +38,7 @@ void HeadRsp::setCookieString()
 				_cookieString = "";
 }
 
-void HeadRsp::setProtocol()
-{
-		_protocol = "HTTP/1.1";
-}
+void HeadRsp::setProtocol() { _protocol = "HTTP/1.1"; }
 
 void HeadRsp::setRspStatusCode()
 {
@@ -61,10 +58,7 @@ void HeadRsp::setRspStatusCode()
 		}
 }
 
-void HeadRsp::setConnectionType()
-{
-		_connectionType = "Connection: close" + std::string(HEADNL);
-}
+void HeadRsp::setConnectionType() { _connectionType = "Connection: close" + std::string(HEADNL); }
 
 void HeadRsp::setContentLength()
 {

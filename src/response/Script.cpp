@@ -308,6 +308,14 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 		}
 		envp[envVars.size()] = NULL;
 
+		// PRINT env
+		// std::cout << GREEN << "CGI Environment Variables:" << std::endl;
+		// for (size_t i = 0; i < envVars.size(); i++)
+		// {
+		// 		std::cout << "  " << envp[i] << std::endl;
+		// }
+		// std::cout << "Total env vars: " << envVars.size() <<  RESET << std::endl;
+
 		return envp;
 }
 

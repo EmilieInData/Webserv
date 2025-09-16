@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 19:37:16 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 20:04:34 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,12 @@ void Response::setContent(std::pair<std::string, std::string> fullPath, std::str
 				_location = fullPath.first + "/index.html";
 		else
 				_location = fullPath.first + fullPath.second;
-		std::cout << RED << "[STATCO]> " << _statusCode << " [LOC]> " << _location << RESET
-				  << std::endl;
 }
 
 void Response::setClientFd(int clientFd) { _clientFd = clientFd; }
 
 std::string Response::prepFile()
 {
-		std::cout << RED << "LOCATION (prepFile): " << _location << RESET << std::endl;
-
 		if (isBinary(_location))
 		{
 				std::ifstream file(_location.c_str(), std::ios::binary);
@@ -96,7 +92,6 @@ std::string Response::prepFile()
 		}
 		else
 		{
-				std::cout << "DBG prepFile()" << std::endl;
 				std::ifstream page(_location.c_str());
 				std::ostringstream pageContent;
 				pageContent << page.rdbuf();

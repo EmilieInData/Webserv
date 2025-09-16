@@ -385,7 +385,7 @@ void replaceContent(std::string &htmlContent, const std::string &target,
 		while ((startPos = htmlContent.find(target, startPos)) != std::string::npos)
 		{
 				htmlContent.replace(startPos, target.length(), newContent);
-				startPos += newContent.length(); 
+				startPos += newContent.length();
 		}
 }
 

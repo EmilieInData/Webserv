@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 19:36:54 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 20:05:27 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,6 @@ HttpRequest::HttpRequest(std::pair<int, std::string> incoming, ServerManager &se
 	: req_line(NULL), uri(NULL), headers(NULL), body(""), body_len(0), boundary(""),
 	  boundary_flag(false), code(200), state(SKIP), incoming(incoming), server(server)
 {
-		std::cout << "INCOMING FIRST: " << incoming.first << " SECOND: " << incoming.second
-				  << std::endl;
-
 		headers = new Headers();
 }
 
@@ -69,6 +66,7 @@ void HttpRequest::sendBuffer(char *buffer, ssize_t bytes)
 
 		std::size_t found = fullRequest.find(CRLF);
 		// std::cout << GREEN << "[FULLREQUEST]\n" << fullRequest << RESET << std::endl; // PRINT request
+		// request
 
 		try
 		{
@@ -157,7 +155,7 @@ void HttpRequest::setStatusCode(std::string error)
 		std::cout << error << std::endl;
 }
 
-void HttpRequest::printBodies() // PRINT
+void HttpRequest::printBodies() // PRINT bodies
 {
 		std::cout << "Bodies size: " << _bodies.size() << std::endl;
 
@@ -337,8 +335,6 @@ void HttpRequest::manyBodiesRoutine(std::size_t found)
 void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locations,
 							  std::string const &path)
 {
-		std::cout << PINK << "request path: " << path << std::endl << RESET;
-
 		std::map<std::string, LocationConf>::const_iterator best_match = locations.end();
 
 		for (std::map<std::string, LocationConf>::const_iterator it = locations.begin();
@@ -352,8 +348,6 @@ void HttpRequest::setLocation(std::map<std::string, LocationConf> const &locatio
 				throw std::invalid_argument(E_404);
 
 		this->location = best_match->first;
-		std::cout << PINK << "MATCHED LOCATION: " << this->location << std::endl;
-
 		setRspType();
 		if (_rspType == "cgi-script")
 		{
@@ -437,7 +431,6 @@ std::string HttpRequest::getPath() const { return this->uri->getPath(); }
 void HttpRequest::setFullPath(ServerData const &serv)
 {
 		_fullPath = std::make_pair<std::string, std::string>(serv.getRoot(), uri->getPath());
-
 }
 std::pair<std::string, std::string> HttpRequest::getFullPath() const { return _fullPath; }
 

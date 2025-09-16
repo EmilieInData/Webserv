@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 19:36:04 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 20:04:23 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,6 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 {
 
 		std::string full(path.first + path.second);
-		std::cout << ERROR << blockLoc.getKey() << std::endl;
 
 		if (!blockLoc.getReturnDirective().empty())
 		{
@@ -313,7 +312,6 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 		if (path.second.empty())
 				full = path.first;
 
-		std::cout << PINK << "FULL: " << full << std::endl << RESET;
 		if (access(full.c_str(), F_OK) == -1)
 				throw std::invalid_argument(E_404);
 
@@ -419,8 +417,7 @@ std::pair<std::string, std::string> HttpParser::parseHost(std::string const &str
 				name = tmp.substr(0, found);
 				port = tmp.substr(found + 1, tmp.size() - found);
 				if (port.empty())
-						throw std::invalid_argument(
-							E_400);
+						throw std::invalid_argument(E_400);
 				if (!isInt(port))
 						throw std::invalid_argument(E_400);
 				if (port[0] == '0')
