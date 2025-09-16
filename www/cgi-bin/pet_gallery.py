@@ -161,22 +161,18 @@ def display_gallery():
     params = urllib.parse.parse_qs(query_string)
     
     message = ""
-    message_class = ""
     
     # Handle delete action
     if params.get("action", [None])[0] == 'delete':
         if handle_delete(params):
             message = "Pet deleted successfully!"
-            message_class = "success"
         else:
             message = "Failed to delete pet."
-            message_class = "error"
     
     # Handle upload (POST)
     if os.environ.get("REQUEST_METHOD") == "POST":
         success, msg = handle_upload()
         message = msg
-        message_class = "success" if success else "error"
     
     # Load pets data
     try:
@@ -194,60 +190,83 @@ def display_gallery():
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pet Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="/static/style.css">
     <style>
-        body {{ font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; }}
-        h1, h2 {{ text-align: center; color: #5a4a78; }}
-        .message {{ max-width: 500px; margin: 20px auto; padding: 15px; border-radius: 5px; text-align: center; }}
-        .success {{ background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }}
-        .error {{ background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }}
-        .gallery {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 40px; }}
-        .card {{ background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; width: 250px; text-align: center; padding-bottom: 10px; }}
-        .card img {{ width: 100%; height: 200px; object-fit: cover; }}
-        .card h3 {{ margin: 15px 0; }}
-        .delete-link {{ color: #e74c3c; text-decoration: none; font-size: 14px; }}
-        .delete-link:hover {{ text-decoration: underline; }}
-        .upload-form {{ max-width: 500px; margin: auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }}
-        input[type=text], input[type=file] {{ width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }}
-        input[type=submit] {{ width: 100%; background-color: #5a4a78; color: white; padding: 14px 20px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }}
-        input[type=submit]:hover {{ background-color: #493b63; }}
-        .no-pets {{ text-align: center; margin: 40px 0; font-size: 18px; color: #666; }}
+        /* Small addition for delete link since it's not in the main style */
+        .delete-link {{
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: inline-block;
+        }}
+        .delete-link:hover {{
+            text-decoration: underline;
+        }}
+        .message {{
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--primary-color);
+        }}
     </style>
 </head>
 <body>
-    <h1>Pet Gallery</h1>""")
+    <header>
+        <nav>
+            <a href="index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="{script_url}" class="active">Gallery</a></li>
+            </ul>
+        </nav>
+    </header>
 
+    <main>
+        <div class="card">
+            <h1>Pet Gallery</h1>""")
+    
     if message:
-        print(f'    <div class="message {message_class}">{html.escape(message)}</div>')
-
-    print('    <div class="gallery">')
-
+        print(f'            <p class="message">{html.escape(message)}</p>')
+    
+    print("""            <div class="team-gallery">""")
+    
     if not pets:
-        print('        <div class="no-pets">No pets uploaded yet. Be the first!</div>')
+        print('                <p>No pets uploaded yet. Be the first!</p>')
     else:
         for pet in reversed(pets):
             safe_name = html.escape(pet['name'])
             image_url = IMAGE_WEB_PATH + pet['image']
             image_id = pet['image']
             delete_url = f"{script_url}?action=delete&id={image_id}"
-            print(f"""        <div class="card">
-            <img src="{image_url}" alt="{safe_name}">
-            <h3>{safe_name}</h3>
-            <a href="{delete_url}" class="delete-link">Delete</a>
-        </div>""")
+            print(f"""                <div class="team-member">
+                    <img src="{image_url}" alt="{safe_name}">
+                    <p><strong>{safe_name}</strong></p>
+                    <a href="{delete_url}" class="delete-link">Delete</a>
+                </div>""")
 
-    print(f"""    </div>
-    <hr>
-    <h2>Upload a New Pet</h2>
-    <div class="upload-form">
-        <form action="{script_url}" method="post" enctype="multipart/form-data">
-            <label for="pet_name">Pet's Name:</label>
-            <input type="text" id="pet_name" name="pet_name" required>
-            <label for="pet_picture">Picture:</label>
-            <input type="file" id="pet_picture" name="pet_picture" accept="image/*" required>
-            <input type="submit" value="Upload">
-        </form>
-    </div>
+    print(f"""            </div>
+
+            <h1>Upload a New Pet</h1>
+            <form action="{script_url}" method="post" enctype="multipart/form-data" class="contact-form">
+                <input type="text" id="pet_name" name="pet_name" placeholder="Pet's Name" required>
+                <input type="file" id="pet_picture" name="pet_picture" accept="image/*" required>
+                <button type="submit" class="btn">Upload Pet</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; {2025} 42 BCN / WEBSERV</p>
+    </footer>
 </body>
 </html>""")
 
