@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LocationConf.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 18:02:05 by esellier          #+#    #+#             */
-/*   Updated: 2025/08/30 16:24:49 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:15:57 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void	LocationConf::setKey(std::string const value)
 
 size_t	LocationConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 {
-	// std::cout << BLUE << buffer[i] << RESET << std::endl;
 	if ( i >= buffer.size() || buffer[i].empty())
 		throw std::invalid_argument(" Parsing error, miss 'autoindex' argument\n");
 	if (buffer[i] != "on" && buffer[i] != "off")
@@ -92,6 +91,5 @@ size_t	LocationConf::fillAutoIndex(std::vector<std::string>& buffer, size_t i)
 		_autoindex = true;
 	else
 		_autoindex = false;
-	// std::cout << BLUE << _autoindex << RESET << std::endl;
 	return (i + 2);
 }

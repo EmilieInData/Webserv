@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 09:39:10 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/15 14:56:12 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:08:54 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,42 +23,37 @@
 
 class HttpRequest;
 
-class Script
-{
-private:
-	int								   _statusCode;
-	std::string						   _outputBody;
-	std::map<std::string, std::string> _outputHeaders;
-	std::string						   _cgiPath;
-	std::string						   _message;
-	std::string						   _contentType;
-	std::string						   _scriptOutput;
-	std::string						   _scriptType;
-	std::string						   _scriptName;
+class Script {
+	private:
+		int _statusCode;
+		std::string _outputBody;
+		std::map<std::string, std::string> _outputHeaders;
+		std::string _cgiPath;
+		std::string _message;
+		std::string _contentType;
+		std::string _scriptOutput;
+		std::string _scriptType;
+		std::string _scriptName;
 
-	Script(Script const &src);
-	Script &operator=(Script const &rhs);
+		Script(Script const &src);
+		Script &operator=(Script const &rhs);
 
-public:
-	Script();
-	~Script();
+	public:
+		Script();
+		~Script();
 
-	void							   runScript(HttpRequest &request, std::string const &interpreterPath, ServerManager &server);
-	char							 **setEnv(HttpRequest const &request, ServerManager &server); // TODO put back to char** after testing
-	bool							   setScriptType(std::string const &cgiPath);
-	std::string						   getMessage() const;
-	std::string						   getContentType() const;
-	std::string						   getScriptOutput() const;
-	void							   parseOutput();
-	std::string						   getOutputBody() const;
-	std::map<std::string, std::string> getOutputHeaders() const;
-	void							   setStatusCode(int statusCode);
-	int								   getStatusCode() const;
+		void runScript(HttpRequest &request, std::string const &interpreterPath,
+					   ServerManager &server);
+		char **setEnv(HttpRequest const &request, ServerManager &server);
+		bool setScriptType(std::string const &cgiPath);
+		std::string getMessage() const;
+		std::string getContentType() const;
+		std::string getScriptOutput() const;
+		void parseOutput();
+		std::string getOutputBody() const;
+		std::map<std::string, std::string> getOutputHeaders() const;
+		void setStatusCode(int statusCode);
+		int getStatusCode() const;
 };
 
 #endif
-
-/* TODO
-script parsing
-	separate headers and body
-	create header fields */
