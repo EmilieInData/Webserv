@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 19:29:36 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/17 11:50:16 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "ParsingConf.hpp"
 #include "ServerManager.hpp"
 #include "Utils.hpp"
+#include "HttpParserTester.hpp"
 
 int main(int ac, char **av)
 {
@@ -49,6 +50,7 @@ int main(int ac, char **av)
 
 		ServerManager testserv(P);
 
+		// HttpParserTester::run(testserv); // PRINT
 		printServerManager(testserv);
 		testserv.servSetup();
 		testserv.servRun();

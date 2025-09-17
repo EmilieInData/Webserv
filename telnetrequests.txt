@@ -33,7 +33,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"test":"data"}' http://loc
 
 http://localhost:8080/cgi-bin/add.py?a=5&b=10
 
-http://localhost:9093/cgi-bin/mult.php?a=5&b=1
+http://localhost:8080/cgi-bin/mult.php?a=5&b=1
 
 
 -------------varios bodies---------------

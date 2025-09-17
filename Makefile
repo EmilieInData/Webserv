@@ -17,7 +17,7 @@ RSP_DIR		= response/
 PRT_DIR		= printlog/
 CONF_DIR	= Parsing_configuration/
 
-SRC_FILES	= main  ServerManager Utils \
+SRC_FILES	= HttpParserTester main  ServerManager Utils \
 
 REQ_FILES	= HttpRequest HttpParser RequestLine Uri Headers
 RSP_FILES	= Response HeadRsp Script

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 11:51:24 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/09/16 20:04:34 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:26:20 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,10 +248,13 @@ void Response::errorRoutine(std::string &content, std::pair<int, std::string> in
 						std::map<int, std::string>::const_iterator errorPageIt =
 							errorPages.find(_statusCode);
 						if (errorPageIt != errorPages.end())
-								_location = _request->getFullPath().first + errorPageIt->second;
+						{
+							_location = _request->getFullPath().first + errorPageIt->second;
+							if (access(_location.c_str(), F_OK | R_OK) == -1)
+								_location = _request->getFullPath().first + "/error_pages/error.html";
+						}
 						else
-								_location =
-									_request->getFullPath().first + "/error_pages/error.html";
+							_location = _request->getFullPath().first + "/error_pages/error.html";
 				}
 				else
 				{
