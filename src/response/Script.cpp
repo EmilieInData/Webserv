@@ -321,6 +321,7 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 
 void Script::parseOutput()
 {
+		printRaw(_scriptOutput); // PRINT script output
 		size_t separatorPos = _scriptOutput.find("\r\n\r\n");
 		size_t separatorLen = 4;
 
