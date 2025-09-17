@@ -1,42 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="data:,">
     <meta charset="UTF-8">
-    <title>Miaomiao</title>
-    <style>
-        body {
-            background-color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .pink-text {
-            color: pink;
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .image-container {
-            text-align: center;
-        }
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    <div class="pink-text">Hello</div>
-    <div class="image-container">
-        <img src="static/kitten.jpg" alt="Miao">
-    </div>
+
+    <header>
+        <nav>
+            <a href="index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/zodiac.html">Zodiac</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h1>Le Webserv Fantastique</h1>
+            <p>Welcome to the most adorable web server project on the internet. 🐈</p>
+            <img src="static/webcat.png" alt="A fluffy white kitten playing on a pink background">
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
+    </footer>
+
 </body>
 </html>
