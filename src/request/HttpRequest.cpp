@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/17 14:27:44 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/17 17:27:57 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,6 +246,7 @@ void HttpRequest::finalHeadersParsingRoutine()
 		HttpParser::checkIfPathExist(this->_fullPath, blockLoc, this->getHttpMethod());
 
 		if (this->headers->getHeader("content-type") != this->headers->getHeaderEnd())
+
 		{
 				this->boundary = HttpParser::parseContentTypeBoundary(
 					this->headers->getHeaderValue("content-type"));

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpParser.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:59:58 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 20:04:23 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/17 17:30:00 by cle-tron         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -372,8 +372,16 @@ void HttpParser::checkIfPathExist(std::pair<std::string, std::string> const &pat
 						page.close();
 				}
 		}
-
 		if (method == "DELETE")
+			throw std::invalid_argument(E_403);
+
+		DIR *dir = opendir(full.c_str());
+		if (!dir)
+			throw std::invalid_argument(E_403);
+		if (path.second[path.second.size() - 1] != '/') // HERE
+			full = full + '/';
+		std::string index = full + "index.html";// HERE
+		if (access(index.c_str(), F_OK) == 0)
 		{
 				if (std::remove(full.c_str()) != 0)
 						throw std::invalid_argument(E_403);
