@@ -254,7 +254,7 @@ char **Script::setEnv(HttpRequest const &request, ServerManager &serverManager)
 
 		std::string scriptName = request.getFullPath().second;
 
-		if (scriptName == "/cgi-bin/login.py")
+		if (scriptName == "/cgi-bin/login.py") // HERE 10
 		{
 				std::string username = getQueryValue(request.getQuery(), "username");
 				if (username.empty())

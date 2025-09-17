@@ -191,6 +191,7 @@ printBoxError("getcwd failed");
 
 #### Cookies and session
 
+- check ==HERE 10==
 - browser to `http:localhost:8080/cookie_test.html`
 - on browser: inspect -> storage
 
