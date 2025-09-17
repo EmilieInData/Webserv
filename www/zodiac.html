@@ -2,36 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zodiac Sign Calculator</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1, h2 { text-align: center; color: #5a5a5a; }
-        form { display: flex; flex-direction: column; gap: 15px; }
-        input[type="text"], input[type="date"] { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        input[type="submit"] { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        input[type="submit"]:hover { background-color: #0056b3; }
-        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #007bff; color: white; }
-        a { display: block; text-align: center; margin-top: 20px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zodiac Calculator | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Zodiac Sign Calculator</h1>
-        <form action="/cgi-bin/zodiac.py" method="post">
-            <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" required>
-
-            <label for="last_name">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" required>
-
-            <label for="dob">Date of Birth:</label>
-            <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" required>
-            
-            <input type="submit" value="Calculate and Add to List">
-        </form>
-    </div>
+    <header>
+        <nav>
+            <a href="/index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h1>Zodiac Sign Calculator</h1>
+            <form action="/cgi-bin/zodiac.py" method="post" class="contact-form">
+                <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+                <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
+                <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" required>
+                <button type="submit" class="btn">Calculate and Add</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
+    </footer>
 </body>
 </html>

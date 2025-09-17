@@ -2,35 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cookie Test</title>
-    <style>
-        body { font-family: sans-serif; padding: 2em; }
-        #status { margin-top: 1em; padding: 1em; background-color: #f0f0f0; border-radius: 5px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Test | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Cookie Session Test</h1>
-
-    <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" value="testuser">
-    </div>
-    <br>
-    <div>
-        <button id="loginBtn">Login</button>
-        <button id="checkBtn">Check Status</button>
-        <button id="logoutBtn">Logout</button>
-    </div>
-
-    <div id="status">
-        Server response will appear here.
-    </div>
+    <header>
+        <nav>
+            <a href="/index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h1>Cookie Session Test</h1>
+            <div class="contact-form">
+                <input type="text" id="username" value="testuser" placeholder="Username">
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="checkBtn" class="btn">Check Status</button>
+                <button id="logoutBtn" class="btn">Logout</button>
+            </div>
+            <div id="status" style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.8); border-radius: 8px;">
+                Server response will appear here.
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
+    </footer>
 
     <script>
         const usernameInput = document.getElementById('username');
         const statusDiv = document.getElementById('status');
 
-        // LOGIN: Send a request to the server to create a session
         document.getElementById('loginBtn').addEventListener('click', () => {
             const user = usernameInput.value;
             statusDiv.textContent = 'Attempting to log in...';
@@ -45,7 +64,6 @@
                 });
         });
 
-        // CHECK STATUS: Send a request that includes the cookie
         document.getElementById('checkBtn').addEventListener('click', () => {
             statusDiv.textContent = 'Checking login status...';
             
@@ -59,7 +77,6 @@
                 });
         });
         
-        // LOGOUT: Send a request to clear the session
         document.getElementById('logoutBtn').addEventListener('click', () => {
             statusDiv.textContent = 'Logging out...';
 

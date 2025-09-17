@@ -14,12 +14,10 @@ DATA_FILE = os.path.join(WWW_ROOT, "uploads", "gallery_data.json")
 IMAGE_WEB_PATH = "/uploads/gallery_images/"
 
 def ensure_directories():
-    """Create necessary directories if they don't exist."""
     os.makedirs(IMAGE_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 
 def parse_multipart_form_data():
-    """Simple multipart form data parser."""
     content_type = os.environ.get('CONTENT_TYPE', '')
     if 'multipart/form-data' not in content_type:
         return {}
@@ -35,17 +33,15 @@ def parse_multipart_form_data():
     if content_length == 0:
         return {}
     
-    # Read the entire body
     body = sys.stdin.buffer.read(content_length)
     
     form_data = {}
     parts = body.split(boundary.encode())
     
-    for part in parts[1:-1]:  # Skip first empty and last boundary parts
+    for part in parts[1:-1]:
         if not part.strip():
             continue
             
-        # Split headers and content
         if b'\r\n\r\n' in part:
             headers_section, content = part.split(b'\r\n\r\n', 1)
         elif b'\n\n' in part:
@@ -55,12 +51,10 @@ def parse_multipart_form_data():
             
         headers = headers_section.decode('utf-8', errors='ignore')
         
-        # Extract field name
         name_match = None
         filename_match = None
         for line in headers.split('\n'):
             if 'Content-Disposition:' in line and 'name=' in line:
-                # Simple extraction - look for name="fieldname"
                 if 'name="' in line:
                     start = line.find('name="') + 6
                     end = line.find('"', start)
@@ -74,26 +68,22 @@ def parse_multipart_form_data():
                         filename_match = line[start:end]
         
         if name_match:
-            # Remove trailing \r\n
             if content.endswith(b'\r\n'):
                 content = content[:-2]
             elif content.endswith(b'\n'):
                 content = content[:-1]
                 
             if filename_match:
-                # File field
                 form_data[name_match] = {
                     'filename': filename_match,
                     'content': content
                 }
             else:
-                # Text field
                 form_data[name_match] = content.decode('utf-8', errors='ignore')
     
     return form_data
 
 def handle_delete(params):
-    """Deletes a pet's image and its entry from the JSON data file."""
     image_id_to_delete = params.get("id", [None])[0]
     if not image_id_to_delete:
         return False
@@ -121,7 +111,6 @@ def handle_delete(params):
     return False
 
 def handle_upload():
-    """Processes the uploaded form data and saves the file."""
     form_data = parse_multipart_form_data()
     
     pet_name = form_data.get("pet_name", "Unnamed Pet")
@@ -154,7 +143,6 @@ def handle_upload():
     return False, "No valid image uploaded."
 
 def display_gallery():
-    """Displays the gallery and the upload form."""
     ensure_directories()
     
     query_string = os.environ.get("QUERY_STRING", "")
@@ -162,19 +150,16 @@ def display_gallery():
     
     message = ""
     
-    # Handle delete action
     if params.get("action", [None])[0] == 'delete':
         if handle_delete(params):
             message = "Pet deleted successfully!"
         else:
             message = "Failed to delete pet."
     
-    # Handle upload (POST)
     if os.environ.get("REQUEST_METHOD") == "POST":
         success, msg = handle_upload()
         message = msg
     
-    # Load pets data
     try:
         with open(DATA_FILE, 'r') as f:
             pets = json.load(f)
@@ -194,25 +179,14 @@ def display_gallery():
     <title>Gallery | Le Webserv Fantastique</title>
     <link rel="stylesheet" href="/static/style.css">
     <style>
-        /* Small addition for delete link since it's not in the main style */
         .delete-link {{
-            color: #e74c3c;
-            text-decoration: none;
-            font-size: 0.9em;
-            margin-top: 5px;
-            display: inline-block;
+            color: #e74c3c; text-decoration: none; font-size: 0.9em;
+            margin-top: 5px; display: inline-block;
         }}
-        .delete-link:hover {{
-            text-decoration: underline;
-        }}
+        .delete-link:hover {{ text-decoration: underline; }}
         .message {{
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 0.8);
+            max-width: 600px; margin: 20px auto; padding: 15px; border-radius: 8px;
+            text-align: center; font-weight: bold; background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid var(--primary-color);
         }}
     </style>
@@ -220,12 +194,22 @@ def display_gallery():
 <body>
     <header>
         <nav>
-            <a href="index.html" class="nav-brand">Le Webserv</a>
+            <a href="/index.html" class="nav-brand">Le Webserv</a>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="{script_url}" class="active">Gallery</a></li>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -265,7 +249,7 @@ def display_gallery():
     </main>
 
     <footer>
-        <p>&copy; {2025} 42 BCN / WEBSERV</p>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
     </footer>
 </body>
 </html>""")
@@ -276,11 +260,4 @@ if __name__ == "__main__":
     except Exception as e:
         print("Content-Type: text/html")
         print()
-        print(f"""<!DOCTYPE html>
-<html>
-<head><title>Error</title></head>
-<body>
-<h1>Error</h1>
-<p>An error occurred: {html.escape(str(e))}</p>
-</body>
-</html>""")
+        print(f"<h1>Error</h1><p>{html.escape(str(e))}</p>")

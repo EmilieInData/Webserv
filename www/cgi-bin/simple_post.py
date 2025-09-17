@@ -4,93 +4,79 @@ import sys
 import urllib.parse
 
 def handle_post():
-    """Handle POST request data"""
     content_length = int(os.environ.get('CONTENT_LENGTH', 0))
-    content_type = os.environ.get('CONTENT_TYPE', '')
-    
     if content_length == 0:
         return {}
-    
-    # Read the POST data
     post_data = sys.stdin.read(content_length)
-    
-    # Parse different content types
-    if 'application/x-www-form-urlencoded' in content_type:
-        # Standard form data
-        return urllib.parse.parse_qs(post_data)
-    elif 'application/json' in content_type:
-        # JSON data (you'd need to import json and parse it)
-        return {'raw_json': post_data}
-    else:
-        # Raw data
-        return {'raw_data': post_data}
+    return urllib.parse.parse_qs(post_data)
 
 def main():
     method = os.environ.get('REQUEST_METHOD', 'GET')
     
     print("Content-Type: text/html")
-    print()  # End of headers
+    print()
     
-    print("""<!DOCTYPE html>
-<html>
+    script_name = os.environ.get('SCRIPT_NAME', '')
+
+    print(f"""
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Simple POST Handler</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .form-container { max-width: 500px; }
-        input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
-        button { background: #007cba; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-        .result { background: #f0f0f0; padding: 15px; margin: 20px 0; border-radius: 5px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POST Test | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Simple POST Handler</h1>""")
+    <header>
+        <nav>
+            <a href="/index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h1>Simple POST Handler</h1>""")
     
     if method == 'POST':
-        # Handle POST request
         post_data = handle_post()
-        
-        print('<div class="result">')
+        print('<div class="team-member" style="text-align: left; padding: 20px; margin-bottom: 20px;">')
         print('<h3>POST Data Received:</h3>')
-        
         if post_data:
             for key, value in post_data.items():
-                if isinstance(value, list):
-                    # URL-encoded form data comes as lists
-                    value = value[0] if value else ''
-                print(f'<p><strong>{key}:</strong> {value}</p>')
+                val = value[0] if value else ''
+                print(f'<p><strong>{key}:</strong> {val}</p>')
         else:
             print('<p>No POST data received</p>')
-        
         print('</div>')
     
-    # Always show the form
-    script_name = os.environ.get('SCRIPT_NAME', '')
     print(f"""
-    <div class="form-container">
-        <h3>Send a POST Request:</h3>
-        <form action="{script_name}" method="post">
-            <label>Name:</label>
-            <input type="text" name="name" required>
-            
-            <label>Email:</label>
-            <input type="email" name="email" required>
-            
-            <label>Message:</label>
-            <textarea name="message" rows="4" required></textarea>
-            
-            <button type="submit">Submit POST Request</button>
-        </form>
-    </div>
-    
-    <hr>
-    
-    <h3>Environment Info:</h3>
-    <p><strong>Request Method:</strong> {method}</p>
-    <p><strong>Content Type:</strong> {os.environ.get('CONTENT_TYPE', 'None')}</p>
-    <p><strong>Content Length:</strong> {os.environ.get('CONTENT_LENGTH', '0')}</p>
-    <p><strong>Query String:</strong> {os.environ.get('QUERY_STRING', 'None')}</p>
-    
+            <form action="{script_name}" method="post" class="contact-form">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <textarea name="message" rows="4" placeholder="Message" required></textarea>
+                <button type="submit" class="btn">Submit POST</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
+    </footer>
 </body>
 </html>""")
 
