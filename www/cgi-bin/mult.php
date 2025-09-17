@@ -17,7 +17,6 @@
 
     // --- HTTP Header & Output ---
     // This line is crucial for CGI; it separates headers from the body.
-    echo "Content-Type: text/html\r\n\r\n";
 ?>
 <!DOCTYPE html>
 <html lang="en">

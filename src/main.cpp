@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:56:03 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/17 11:50:16 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:26:33 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int main(int ac, char **av)
 
 		ServerManager testserv(P);
 
-		// HttpParserTester::run(testserv); // PRINT
+		// HttpParserTester::run(testserv); // PRINT request tester
 		printServerManager(testserv);
 		testserv.servSetup();
 		testserv.servRun();

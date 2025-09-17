@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 15:03:08 by cle-tron          #+#    #+#             */
-/*   Updated: 2025/09/16 20:05:27 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:27:44 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,6 @@ void HttpRequest::setStatusCode(std::string error)
 		this->state = ERR;
 
 		this->code = std::atoi(code_str);
-		std::cout << "ERROR CODE: " << code << std::endl;
-		std::cout << error << std::endl;
 }
 
 void HttpRequest::printBodies() // PRINT bodies
@@ -449,7 +447,7 @@ ServerManager &HttpRequest::getServ() const { return this->server; }
 void HttpRequest::fileUpload()
 {
 
-		printBodies(); // PRINT bodies
+		// printBodies(); // PRINT bodies
 		std::map<std::string, std::string> formData;
 
 		for (std::vector<MultiBody>::const_iterator it = _bodies.begin(); it != _bodies.end(); ++it)

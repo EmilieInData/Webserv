@@ -50,7 +50,7 @@ ex: `/path/to/downloaded/repo/rootfolder`
 - run `./webserv configuration_files/eval01.conf`
 - new terminal window
 - `curl --resolve second.com:9090:127.0.0.1 http://second.com:9090/` 
-- `curl --resolve second.com:8080:127.0.0.1 http://second.com:8080/`
+- `curl --resolve first.com:8080:127.0.0.1 http://first.com:8080/`
 
 #### Setup default error page (try to change the error 404).
 
