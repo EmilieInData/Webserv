@@ -3,7 +3,7 @@ import os
 import sys
 import html
 
-UPLOAD_DIR = '/www/uploads/'
+UPLOAD_DIR = '../uploads/'
 
 def send_response(status="200 OK", content_type="text/html", body=""):
     sys.stdout.write(f"Status: {status}\r\n")
