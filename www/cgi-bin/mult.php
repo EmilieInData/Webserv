@@ -1,80 +1,67 @@
 #!/usr/bin/php-cgi
 <?php
-    // Set default values
+    // --- Script Logic ---
     $result = null;
-    $error_message = '';
-    $val_a = null;
-    $val_b = null;
+    $error_message = null;
 
-    // Check if the required parameters 'a' and 'b' are present in the URL
-    if (isset($_GET['a']) && isset($_GET['b'])) {
-        $val_a = $_GET['a'];
-        $val_b = $_GET['b'];
-
-        // Check if both parameters are numeric
-        if (is_numeric($val_a) && is_numeric($val_b)) {
-            // Perform the multiplication
-            $result = (float)$val_a * (float)$val_b;
-        } else {
-            // Set an error message for non-numeric input
-            $error_message = 'Error: Both parameters must be numbers.';
-        }
+    // Try to perform the multiplication.
+    // Checks if 'a' and 'b' are set and are numeric.
+    if (isset($_GET['a']) && isset($_GET['b']) && is_numeric($_GET['a']) && is_numeric($_GET['b'])) {
+        $val_a = (float)$_GET['a'];
+        $val_b = (float)$_GET['b'];
+        $result = $val_a * $val_b;
     } else {
-        // Set an error message if parameters are missing
-        $error_message = 'Please provide two numbers to multiply. Example: ?a=5&b=10';
+        // Set a generic error message if parameters are missing or not numbers.
+        $error_message = "Error: Please provide two numbers. Example: <strong>?a=5&b=10</strong>";
     }
 
-    // --- Start HTTP Output ---
+    // --- HTTP Header & Output ---
     // This line is crucial for CGI; it separates headers from the body.
-    // echo "Content-Type: text/html\r\n\r\n";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PHP Multiplier</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            background-color: #f0f2f5; 
-            color: #333;
-            text-align: center;
-        }
-        .container {
-            padding: 40px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .result {
-            font-size: 5rem;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .error {
-            font-size: 1.2rem;
-            color: #d9534f;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGI Multiplier | Le Webserv Fantastique</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>PHP Multiplication Result</h1>
-        
-        <?php if ($result !== null): ?>
-            <p class="result"><?php echo htmlspecialchars($result); ?></p>
-            <p>Calculation: <?php echo htmlspecialchars($val_a) . ' × ' . htmlspecialchars($val_b); ?></p>
-        
-        <?php else: ?>
-            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
-        
-        <?php endif; ?>
-
-    </div>
+    <header>
+        <nav>
+            <a href="/index.html" class="nav-brand">Le Webserv</a>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">CGI Tests</a>
+                    <div class="dropdown-content">
+                        <a href="/upload.html">Upload</a>
+                        <a href="/zodiac.html">Zodiac</a>
+                        <a href="/cgi-bin/simple_post.py">POST</a>
+                        <a href="/cgi-bin/pet_gallery.py">Pet Gallery</a>
+                        <a href="/cgi-bin/loop.py">Loop</a>
+                        <a href="/cgi-bin/error.py">Error</a>
+                        <a href="/cookie_test.html">Cookie Test</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+<?php
+if ($error_message) {
+    echo "<h1>Error</h1><p>{$error_message}</p>";
+} else {
+    echo "<h1>Result</h1><h1 style='font-size: 5em;'>{$result}</h1>";
+}
+?>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 42 BCN / WEBSERV</p>
+    </footer>
 </body>
 </html>

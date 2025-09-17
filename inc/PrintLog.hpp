@@ -6,7 +6,7 @@
 /*   By: fdi-cecc <fdi-cecc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 12:34:55 by fdi-cecc          #+#    #+#             */
-/*   Updated: 2025/08/07 17:04:52 by fdi-cecc         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:07:07 by fdi-cecc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,4 @@ void printServerListens(std::vector<std::pair<int, std::string> > listens);
 void printServerLocations(ServerData const &serv);
 void printRaw(std::string const &fullResponse);
 
-//TODO implement logging, maybe directly from the print functions?
-// void	createLog();
-// void	logRequest(std::string const &request);
-// void	logResponse(std::string const &response);
 #endif
-
-/* max line length for print 80 char */

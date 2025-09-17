@@ -1,0 +1,52 @@
+.
+├── about.html
+├── cgi-bin
+│   ├── add.py
+│   ├── error.py
+│   ├── index.html
+│   ├── login.py
+│   ├── logout.py
+│   ├── loop.py
+│   ├── mult.php
+│   ├── pet_gallery.py
+│   ├── profile.py
+│   ├── simple_post.py
+│   ├── test.py
+│   ├── upload.py
+│   ├── zodiac_list.json
+│   └── zodiac.py
+├── contact.html
+├── cookie_test.html
+├── empty.html
+├── error_pages
+│   ├── 404.html
+│   ├── 4xx.html
+│   ├── 50x.html
+│   ├── error.html
+│   └── images
+│       ├── 00_cat.jpg
+│       ├── 01_cat.png
+│       └── 05_dog.png
+├── index.html
+├── redirect
+│   └── shiba.jpg
+├── static
+│   ├── 02_cat.png
+│   ├── cat01.jpg
+│   ├── kitten.jpg
+│   ├── red.html
+│   ├── shiba.jpg
+│   ├── style.css
+│   ├── TitanOne-Regular.ttf
+│   └── webcat.png
+├── testsite
+├── tree.txt
+├── upload.html
+├── uploads
+│   ├── cat.png
+│   ├── gallery_data.json
+│   └── gallery_images
+│       └── placeholder
+└── zodiac.html
+
+9 directories, 41 files
