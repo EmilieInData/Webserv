@@ -1,9 +1,9 @@
-![Home page](Screenshots/Screenshot from 2025-09-17 17-24-15.png)
+![Home page](Screenshots/home.png)
 
-![Team page](Screenshots/Screenshot from 2025-09-17 17-24-45.png)
+![Team page](Screenshots/team.png)
 
-![Pet_Gallery page](Screenshots/Screenshot from 2025-09-17 17-28-12.png)
+![Pet_Gallery page](Screenshots/pet_gallery.png)
 
-![Error page](Screenshots/Screenshot from 2025-09-17 17-26-20.png)
+![Error page](Screenshots/error.png)
 
-![Static page](Screenshots/Screenshot from 2025-09-17 17-25-39.png)
+![Static page](Screenshots/static.png)
